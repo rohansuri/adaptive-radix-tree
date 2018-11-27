@@ -1,0 +1,55 @@
+package art;
+
+public class Node {
+    /*
+        path compressed keys
+
+        would this array be fixed or dynamically growing?
+        I think fixed again
+        since when we path compress we know the number of chars to compress
+
+        but what if lets say we have a path compressed
+        then we add a new char to that
+
+        F ---> path compressed ---> O
+                               \---> Z
+
+        I add a string with F"same chars as path compressed" then O then S?
+        you go via the same compression
+
+        essentially the case to think about is
+        if the existing prefixKeys would be recreated (grown) by simply appending newer chars to it?
+
+        F "same chars as path compressed" O S ?
+        i.e.
+
+        F ---> path compressed ---> O ---> S
+                               \---> Z
+
+        this would get lazy expanded actually
+
+        F ---> path compressed ---> "OS"
+                               \---> Z
+
+        I guess this one is complex to "pre-think"
+        Lets see when we code if such situations arise
+     */
+    byte[] prefixKeys;
+}
+
+/*
+    span is always 8 bits
+    But nodes are adaptive
+    An inner node should grow from 4 -> 16 -> 48 -> 256
+
+    Node could be a LeafNode too having a pointer to value
+    C has raw void pointers which could point to any pointer
+    To know which to typecast into before usage we could use 16bits left from the 64bit pointers
+    Since modern CPUs only addresses in 48bits range
+
+    How would we fit this flag in Java?
+    (we could using Unsafe allocateMemory and fool around there, but to keep things simplistic
+    lets not go there right now. Maybe in future.)
+
+    Anyways for now we treat leaves as a separate node
+ */
