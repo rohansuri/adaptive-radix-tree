@@ -9,7 +9,9 @@ public class Node16 extends AbstractNode {
 	@Override
 	public Node findChild(byte partialKey) {
 		// binary search for key
-		int index = Arrays.binarySearch(keys, partialKey);
+		// having the from and to gives us only a valid view into what are the
+		// valid array elements that actually have keys and are not ABSENT
+		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		if (index < 0) {
 			return null;
 		}
