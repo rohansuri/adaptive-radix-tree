@@ -1,15 +1,17 @@
 package art;
 
+// should be 16 bytes only
+
 public abstract class AbstractNode implements Node {
 
 	// max limit of 8 bytes (Pessimistic)
-    byte[] prefixKeys;
+    byte[] prefixKeys = new byte[8]; // 8 bytes
 
     // Optimistic
-    int prefixLen;
+    int prefixLen; // 4 bytes
 
     // to decide to grow or not
-    int noOfChildren;
+    int noOfChildren; // 4 bytes
 }
 
  /*

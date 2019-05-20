@@ -1,5 +1,7 @@
 package art;
 
+import java.util.Arrays;
+
 public class Node48 extends AbstractNode{
 	/*
 		48 * 8 (child pointers) + 256 = 640 bytes
@@ -11,6 +13,14 @@ public class Node48 extends AbstractNode{
 	// array index of the child pointer array
 	// the index value can only be between 0 to 47 (to index into the child pointer array)
     private final byte[] keyIndex = new byte[256];
+
+    // so that when you use the partial key to index into keyIndex
+	// and you see a -1, you know there's no mapping for this key
+    private static final byte ABSENT = -1;
+
+    public Node48(){
+		Arrays.fill(keyIndex, ABSENT);
+	}
 
 	@Override
 	public Node findChild(byte partialKey) {
