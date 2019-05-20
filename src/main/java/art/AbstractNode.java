@@ -1,6 +1,6 @@
 package art;
 
-public class Node {
+public class AbstractNode {
     /*
         path compressed keys
 
