@@ -1,8 +1,29 @@
 package art;
 
-public class Node48 {
+public class Node48 extends AbstractNode{
+	/*
+		48 * 8 (child pointers) + 256 = 640 bytes
+	 */
+
     private final Node child[] = new Node[48];
-    private final byte[] keyIndex = new byte[256]; // 256 + 48*8
+
+    // for partial keys of one byte size, you index directly into this array to find the
+	// array index of the child pointer array
+	// the index value can only be between 0 to 47 (to index into the child pointer array)
+    private final byte[] keyIndex = new byte[256];
+
+	@Override
+	public Node findChild(byte partialKey) {
+		int index = Byte.toUnsignedInt(partialKey);
+		byte intoChild = keyIndex[index];
+		assert intoChild >= 0 && intoChild <= 47;
+		return child[intoChild];
+	}
+
+	@Override
+	public void addChild(byte partialKey, Node child) {
+
+	}
 }
 
 /*

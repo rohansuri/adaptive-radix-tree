@@ -1,7 +1,18 @@
 package art;
 
-public class AbstractNode {
-    /*
+public abstract class AbstractNode implements Node {
+
+	// max limit of 8 bytes (Pessimistic)
+    byte[] prefixKeys;
+
+    // Optimistic
+    int prefixLen;
+
+    // to decide to grow or not
+    int noOfChildren;
+}
+
+ /*
         path compressed keys
 
         would this array be fixed or dynamically growing?
@@ -34,8 +45,6 @@ public class AbstractNode {
         I guess this one is complex to "pre-think"
         Lets see when we code if such situations arise
      */
-    byte[] prefixKeys;
-}
 
 /*
     span is always 8 bits
