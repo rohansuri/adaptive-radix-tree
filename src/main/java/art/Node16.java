@@ -6,6 +6,14 @@ public class Node16 extends AbstractNode {
     private final Node[] child = new Node[16];
     private final byte[] keys = new byte[16];
 
+    public Node16(Node4 node){
+    	super(node);
+		byte[] keys = node.getKeys();
+		Node[] child = node.getChild();
+		System.arraycopy(keys, 0, this.keys, 0, keys.length);
+		System.arraycopy(child, 0, this.child, 0, child.length);
+	}
+
 	@Override
 	public Node findChild(byte partialKey) {
 		// binary search for key
@@ -19,7 +27,21 @@ public class Node16 extends AbstractNode {
 	}
 
 	@Override
-	public void addChild(byte partialKey, Node child) {
+	public boolean addChild(byte partialKey, Node child) {
+		return false;
+	}
 
+	@Override
+	public Node grow() {
+		Node node = new Node48(this);
+		return node;
+	}
+
+	public byte[] getKeys(){
+    	return keys;
+	}
+
+	public Node[] getChild(){
+    	return child;
 	}
 }

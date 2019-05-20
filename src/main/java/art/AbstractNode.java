@@ -2,6 +2,8 @@ package art;
 
 // should be 16 bytes only
 
+import org.apache.commons.math3.analysis.function.Abs;
+
 public abstract class AbstractNode implements Node {
 
 	// max limit of 8 bytes (Pessimistic)
@@ -12,6 +14,18 @@ public abstract class AbstractNode implements Node {
 
     // to decide to grow or not
     int noOfChildren; // 4 bytes
+
+	public AbstractNode(){
+
+	}
+
+	// copy ctor. called when growing
+	public AbstractNode(AbstractNode node){
+		// copy header
+		this.noOfChildren = node.noOfChildren;
+		this.prefixLen = node.prefixLen;
+		this.prefixKeys = node.prefixKeys;
+	}
 }
 
  /*

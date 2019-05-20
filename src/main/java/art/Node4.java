@@ -22,8 +22,23 @@ public class Node4 extends AbstractNode {
 	}
 
 	@Override
-	public void addChild(byte partialKey, Node child) {
+	public boolean addChild(byte partialKey, Node child) {
+		return false;
+	}
 
+	@Override
+	public Node grow(){
+		// grow from Node4 to Node16
+		Node node = new Node16(this);
+		return node;
+	}
+
+	public byte[] getKeys(){
+		return keys;
+	}
+
+	public Node[] getChild(){
+		return child;
 	}
 }
 

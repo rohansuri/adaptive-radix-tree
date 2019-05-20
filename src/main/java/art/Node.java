@@ -9,5 +9,11 @@ public interface Node {
 	 */
 
 	Node findChild(byte partialKey);
-	void addChild(byte partialKey, Node child);
+
+	// returns false, if this node is full?
+	boolean addChild(byte partialKey, Node child);
+
+	// copies all mappings from given node
+	// and returns a new node with the same mappings
+	Node grow();
 }

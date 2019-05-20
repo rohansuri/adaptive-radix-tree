@@ -16,11 +16,24 @@ public class Node48 extends AbstractNode{
 
     // so that when you use the partial key to index into keyIndex
 	// and you see a -1, you know there's no mapping for this key
-    private static final byte ABSENT = -1;
+	static final byte ABSENT = -1;
 
-    public Node48(){
+    public Node48(Node16 node){
+		super(node);
 		Arrays.fill(keyIndex, ABSENT);
+
+		byte[] keys = node.getKeys();
+		Node[] child = node.getChild();
+
+		for(int i = 0; i < 16; i++){
+			byte key = keys[i];
+			int index = Byte.toUnsignedInt(key);
+			keyIndex[index] = (byte)i;
+			this.child[i] = child[i];
+		}
+
 	}
+
 
 	@Override
 	public Node findChild(byte partialKey) {
@@ -31,8 +44,22 @@ public class Node48 extends AbstractNode{
 	}
 
 	@Override
-	public void addChild(byte partialKey, Node child) {
+	public boolean addChild(byte partialKey, Node child) {
+		return false;
+	}
 
+	@Override
+	public Node grow() {
+		Node node = new Node256(this);
+		return node;
+	}
+
+	public byte[] getKeyIndex(){
+    	return keyIndex;
+	}
+
+	public Node[] getChild(){
+    	return child;
 	}
 }
 

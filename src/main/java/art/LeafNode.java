@@ -1,12 +1,43 @@
 package art;
 
 /*
-    make it generic?
     avoid this LeafNode extra hop? rather use child pointers as Object? (read notes below)
     i.e using the same pointer for both pointing to child Nodes as well as value
+
+    currently the Single-value leaves
  */
-public class LeafNode {
-    Object value;
+public class LeafNode<V> implements Node{
+    private final V value;
+
+    // we have to save the key, because leaves are lazy expanded at times (most of the times)
+    // confirm this is just a reference?
+    private final byte[] key;
+
+    public LeafNode(byte[] key, V value){
+        this.value = value;
+        this.key = key;
+    }
+
+    public V getValue(){
+        return value;
+    }
+
+    @Override
+    public Node findChild(byte partialKey) {
+        throw new UnsupportedOperationException("should not be called on LeafNode");
+    }
+
+    @Override
+    public boolean addChild(byte partialKey, Node child) {
+        throw new UnsupportedOperationException("should not be called on LeafNode");
+    }
+
+    @Override
+    public Node grow() {
+        throw new UnsupportedOperationException("should not be called on LeafNode");
+    }
+}
+
 
 
     /*
@@ -57,8 +88,6 @@ public class LeafNode {
         should we store pointer to key? rather than prefixKeys only?
         does the paper specifically take/suggest a side?
      */
-    byte[] prefixKeys;
-}
 
 /*
     when would we create a lazily expanded LeafNode?
