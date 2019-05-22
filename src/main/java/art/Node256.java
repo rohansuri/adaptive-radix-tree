@@ -36,6 +36,12 @@ public class Node256 extends AbstractNode{
     }
 
 	@Override
+	public void replace(byte partialKey, Node newChild) {
+		int index = Byte.toUnsignedInt(partialKey);
+		child[index] = newChild;
+	}
+
+	@Override
 	public Node grow() {
 		throw new IllegalStateException("Span of ART is 8 bits, so Node256 is the largest node type.");
 	}

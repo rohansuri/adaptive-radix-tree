@@ -1,25 +1,46 @@
 package art;
 
+// TODO: better design to avoid LeafNode not having those UnsupportedExceptions?
+
 /*
     avoid this LeafNode extra hop? rather use child pointers as Object? (read notes below)
     i.e using the same pointer for both pointing to child Nodes as well as value
 
     currently the Single-value leaves
  */
-public class LeafNode<V> implements Node{
-    private final V value;
+class LeafNode<V> implements Node{
+    private V value;
 
     // we have to save the key, because leaves are lazy expanded at times (most of the times)
     // confirm this is just a reference?
-    private final byte[] key;
+    private byte[] key;
 
-    public LeafNode(byte[] key, V value){
+    LeafNode(byte[] key, V value){
         this.value = value;
+        this.key = key;
+    }
+
+    // we have setters, to make LeafNode instances reusable
+    // could we do something better?
+    // or is it okie to do this here?
+    // anyways LeafNode is internal pojo
+    // it's constraints are to be kept in check by internal
+    // developers
+
+    public void setValue(V value){
+        this.value = value;
+    }
+
+    public void setKey(byte[] key){
         this.key = key;
     }
 
     public V getValue(){
         return value;
+    }
+
+    public byte[] getKey(){
+        return key;
     }
 
     @Override
@@ -29,6 +50,11 @@ public class LeafNode<V> implements Node{
 
     @Override
     public boolean addChild(byte partialKey, Node child) {
+        throw new UnsupportedOperationException("should not be called on LeafNode");
+    }
+
+    @Override
+    public void replace(byte partialKey, Node newChild) {
         throw new UnsupportedOperationException("should not be called on LeafNode");
     }
 

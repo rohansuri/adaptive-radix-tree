@@ -13,6 +13,8 @@ public interface Node {
 	// returns false, if this node is full?
 	boolean addChild(byte partialKey, Node child);
 
+	void replace(byte partialKey, Node newChild);
+
 	// copies all mappings from given node
 	// and returns a new node with the same mappings
 	Node grow();

@@ -6,21 +6,29 @@ import org.apache.commons.math3.analysis.function.Abs;
 
 public abstract class AbstractNode implements Node {
 
+	private static final int PESSIMISTIC_PATH_COMPRESSION_LIMIT = 8;
+
 	// max limit of 8 bytes (Pessimistic)
-    byte[] prefixKeys = new byte[8]; // 8 bytes
+	final byte[] prefixKeys;
 
-    // Optimistic
-    int prefixLen; // 4 bytes
+	// Optimistic
+	int prefixLen; // 4 bytes
 
-    // to decide to grow or not
-    int noOfChildren; // 4 bytes
+	// to decide to grow or not
+	int noOfChildren; // 4 bytes
 
-	public AbstractNode(){
+	void setPrefix(int prefixLen, byte[] key, int depth) {
+		this.prefixLen = prefixLen;
+		System.arraycopy(key, depth, this.prefixKeys, 0, Math.min(PESSIMISTIC_PATH_COMPRESSION_LIMIT, prefixLen));
+	}
+
+	public AbstractNode() {
+		prefixKeys = new byte[PESSIMISTIC_PATH_COMPRESSION_LIMIT];
 
 	}
 
 	// copy ctor. called when growing
-	public AbstractNode(AbstractNode node){
+	public AbstractNode(AbstractNode node) {
 		// copy header
 		this.noOfChildren = node.noOfChildren;
 		this.prefixLen = node.prefixLen;

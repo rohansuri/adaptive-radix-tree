@@ -37,15 +37,21 @@ public class Node48 extends AbstractNode{
 
 	@Override
 	public Node findChild(byte partialKey) {
-		int index = Byte.toUnsignedInt(partialKey);
-		byte intoChild = keyIndex[index];
-		assert intoChild >= 0 && intoChild <= 47;
-		return child[intoChild];
+		byte index = keyIndex[partialKey];
+		assert index >= 0 && index <= 47;
+		return child[index];
 	}
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
 		return false;
+	}
+
+	@Override
+	public void replace(byte partialKey, Node newChild) {
+		byte index = keyIndex[partialKey];
+		assert index >= 0 && index <= 47;
+		child[index] = newChild;
 	}
 
 	@Override

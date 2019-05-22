@@ -27,6 +27,17 @@ public class Node4 extends AbstractNode {
 	}
 
 	@Override
+	public void replace(byte partialKey, Node newChild) {
+		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		if (index < 0) {
+			// TODO: better flow/API design?
+			// start with thinking what do we finally return/throw in such a state?
+			throw new IllegalStateException("replace must be called from in a state where you know partialKey entry surely exists");
+		}
+		child[index] = newChild;
+	}
+
+	@Override
 	public Node grow(){
 		// grow from Node4 to Node16
 		Node node = new Node16(this);
