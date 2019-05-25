@@ -1,6 +1,5 @@
 package art;
 
-import org.apache.commons.math3.analysis.function.Abs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

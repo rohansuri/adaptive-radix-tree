@@ -44,7 +44,14 @@ class Node48 extends AbstractNode{
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		return false;
+    	if(noOfChildren == 48){
+    		return false;
+		}
+		assert keyIndex[partialKey] == -1;
+    	this.child[noOfChildren] = child;
+    	keyIndex[partialKey] = (byte)noOfChildren;
+		noOfChildren++;
+    	return true;
 	}
 
 	@Override

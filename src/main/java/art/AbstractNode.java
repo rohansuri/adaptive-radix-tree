@@ -2,8 +2,6 @@ package art;
 
 // should be 16 bytes only
 
-import org.apache.commons.math3.analysis.function.Abs;
-
 public abstract class AbstractNode implements Node {
 
 	static final int PESSIMISTIC_PATH_COMPRESSION_LIMIT = 8;
@@ -15,6 +13,9 @@ public abstract class AbstractNode implements Node {
 	int prefixLen; // 4 bytes
 
 	// to decide to grow or not
+	// TODO: we could save space by making this a short for Node256 and byte for other node types?
+	// since noOfChildren will never be more than 256 and we don't seem to be
+	// using it specifically on an AbstractNode level? (are we?)
 	int noOfChildren; // 4 bytes
 
 	void setPrefix(int prefixLen, byte[] key, int depth) {

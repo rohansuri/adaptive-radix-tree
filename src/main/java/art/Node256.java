@@ -32,7 +32,12 @@ class Node256 extends AbstractNode{
 
     @Override
     public boolean addChild(byte partialKey, Node child) {
-		return false;
+		if(noOfChildren == 256){
+			throw new IllegalStateException("ART span is 8 bits, so node 256 is the largest possible number of children you can have.");
+		}
+		assert this.child[partialKey] == null;
+		this.child[partialKey] = child;
+		return true;
     }
 
 	@Override

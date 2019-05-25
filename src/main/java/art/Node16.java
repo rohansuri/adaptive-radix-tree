@@ -3,10 +3,11 @@ package art;
 import java.util.Arrays;
 
 class Node16 extends AbstractNode {
-    private final Node[] child = new Node[16];
-    private final byte[] keys = new byte[16];
+	private static final int NODE_SIZE = 16;
+    private final Node[] child = new Node[NODE_SIZE];
+    private final byte[] keys = new byte[NODE_SIZE];
 
-    public Node16(Node4 node){
+    Node16(Node4 node){
     	super(node);
 		byte[] keys = node.getKeys();
 		Node[] child = node.getChild();
@@ -28,7 +29,22 @@ class Node16 extends AbstractNode {
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		return false;
+		if(noOfChildren == NODE_SIZE){
+			return false;
+		}
+		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		assert index < 0; // the partialKey should not exist
+		int insertionPoint = -(index + 1);
+		// shift elements from this point to right by one place
+		assert insertionPoint < NODE_SIZE;
+		for(int i = NODE_SIZE - 1; i > insertionPoint ; i--){
+			keys[i] = keys[i-1];
+			this.child[i] = this.child[i-1];
+		}
+		keys[insertionPoint] = partialKey;
+		this.child[insertionPoint] = child;
+		noOfChildren++;
+		return true;
 	}
 
 	@Override
