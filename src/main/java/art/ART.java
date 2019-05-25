@@ -11,14 +11,16 @@ public class ART<V> {
 	// TODO: is it unusual for a data structure library to log?
 	private Logger log = LoggerFactory.getLogger(ART.class);
 
-	private static final RuntimeException NOT_AN_ABSTRACT_NODE = new IllegalStateException("all node types are expected to extend from AbstractNode");
+	private static final String NOT_AN_ABSTRACT_NODE_EXCEPTION_MSG = "all node types are expected to extend from AbstractNode";
 
 	private Node root;
 
+	// TODO: make put replace the value if it exists and return old value
 	public void put(byte[] key, V value) {
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<V>(key, value);
+			log.debug("Tree empty, creating leaf node for key {} and making it root", new String(key));
 			return;
 		}
 		put(root, key, value, 0, null);
@@ -48,14 +50,14 @@ public class ART<V> {
 		}
 
 		if (!(node instanceof AbstractNode)) {
-			throw NOT_AN_ABSTRACT_NODE;
+			throw new IllegalStateException(NOT_AN_ABSTRACT_NODE_EXCEPTION_MSG);
 		}
 
 		// match compressed path, if match completely
 		// then skip over those many prefixLen bytes from key
 		// and do findChild and continue search over that child.
 		// if incomplete match, then we return null.
-		if(!matchesCompressedPathCompletely((AbstractNode) node, key, depth)){
+		if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
 			return null;
 		}
 
@@ -65,7 +67,7 @@ public class ART<V> {
 		if (nextNode == null) {
 			return null;
 		}
-		return get(nextNode, key, depth);
+		return get(nextNode, key, depth + 1);
 	}
 
 	private boolean matchesCompressedPathCompletely(AbstractNode node, byte[] key, int depth) {
@@ -92,10 +94,12 @@ public class ART<V> {
 				assert depth > 0;
 				prevDepth.replace(key[depth - 1], pathCompressedNode);
 			}
+			return;
 		}
 
 		if (!(node instanceof AbstractNode)) {
-			throw NOT_AN_ABSTRACT_NODE;
+			throw new IllegalStateException(String
+					.format(NOT_AN_ABSTRACT_NODE_EXCEPTION_MSG + ", %s does not", node.getClass()));
 		}
 
 		/*
@@ -183,6 +187,11 @@ public class ART<V> {
 		for (lcp = 0; lcp < node.prefixLen && depth < key.length && lcp < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && key[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
 
+		log.debug("LCP of key {} and compressed path {} is {}",
+				new String(key),
+				new String(node.prefixKeys)
+						.substring(0, Math.min(node.prefixLen, AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT)),
+				lcp);
 		// can lcp be 0? yes
 		// consider BAZ, BAR already inserted
 		// and we want to insert BOZ?
@@ -212,6 +221,9 @@ public class ART<V> {
 			// TODO: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
 			LeafNode leafNode = new LeafNode<V>(key, value);
 
+			log.debug("Entire compressed path didn't match, branching out on partialKey {} and {}",
+					new String(new byte[] {key[depth]}), new String(new byte[] {node.prefixKeys[depth]}));
+
 			// new node with updated prefix len, compressed path
 			Node4 branchOut = new Node4();
 			branchOut.prefixLen = lcp;
@@ -220,14 +232,24 @@ public class ART<V> {
 			branchOut.addChild(key[depth], leafNode);
 			branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 
+			log.debug("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut.validPrefixKey()));
+
 			// remove lcp common prefix key from "this" node
 			updateCompressedPath(node, lcp);
 
 			// replace "this" node with newNode
-			// initialDepth should never be zero, because if it is, prefixLen would be zero too
-			// and we'd have made an early exit from this method itself
-			assert initialDepth > 0;
-			prevDepth.replace(key[initialDepth - 1], branchOut);
+			// initialDepth can be zero even if prefixLen is not zero.
+			// the root node could have a prefix too, for example after insertions of
+			// BAR, BAZ? prefix would be BA kept in the root node itself
+			if (initialDepth == 0) {
+				assert prevDepth == null;
+				log.debug("replacing branched out node root");
+				root = branchOut; // no follow on pointer, since it's the root
+			}
+			else {
+				// prev level needs to have a follow on pointer to this child
+				prevDepth.replace(key[initialDepth - 1], branchOut);
+			}
 			return -1; // we've already inserted the leaf node, caller needs to do nothing more
 		}
 	}
@@ -282,7 +304,8 @@ public class ART<V> {
 		// TODO:optimization: combine setting the prefixLen, prefixKey array of the pathCompressedNode in this loop itself?
 		// so that later no array copying is needed!
 		for (lcp = 0; depth < leafKey.length && depth < key.length && leafKey[depth] == key[depth]; depth++, lcp++) ;
-		log.debug("longest common prefix between new key {} and lazily stored leaf {} is {}", key, node.getKey(), lcp);
+		log.debug("longest common prefix between new key {} and lazily stored leaf {} is {}", new String(key), new String(node
+				.getKey()), lcp);
 		return lcp;
 	}
 }

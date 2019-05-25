@@ -35,6 +35,12 @@ public abstract class AbstractNode implements Node {
 		this.prefixLen = node.prefixLen;
 		this.prefixKeys = node.prefixKeys;
 	}
+
+	public byte[] validPrefixKey(){
+		byte[] valid = new byte[prefixLen];
+		System.arraycopy(prefixKeys, 0, valid, 0, prefixLen);
+		return valid;
+	}
 }
 
  /*
