@@ -1,5 +1,8 @@
 package art;
 
+import java.util.Arrays;
+
+import org.apache.commons.math3.analysis.function.Abs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +14,7 @@ public class ART<V> {
 	private Node root;
 
 	public void put(byte[] key, V value) {
-		if(root == null){
+		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<V>(key, value);
 			return;
@@ -19,26 +22,78 @@ public class ART<V> {
 		put(root, key, value, 0, null);
 	}
 
-	public V get(byte[] key){
+	public V get(byte[] key) {
+		if (root == null) { // empty tree
+			return null;
+		}
+		return get(root, key, 0);
+	}
 
+	private V get(Node node, byte[] key, int depth) {
+		if (node instanceof LeafNode) {
+			// match key to leaf
+			// TODO: this is where the complete matching can be optimized
+			// if we keep track of what parts of key have already matched
+			// because of optimistic path compression, it may not be necessary
+			// that at depth D, first D bytes of key and this leaf node totally match.
+			// but we could skip matching the pessimistic parts of the key
+			// also the parts of the key that were directly taken traversed over (findChild)
+			LeafNode<V> leaf = (LeafNode<V>) node;
+			if (Arrays.equals(leaf.getKey(), key)) {
+				return leaf.getValue();
+			}
+			return null;
+		}
+
+		if (!(node instanceof AbstractNode)) {
+			throw new IllegalStateException("all node types are expected to extend from AbstractNode");
+		}
+
+		// match compressed path, if match completely
+		// then skip over those many prefixLen bytes from key
+		// and do findChild and continue search over that child.
+		// if incomplete match, then we return null.
+		if(!matchesCompressedPathCompletely((AbstractNode) node, key, depth)){
+			return null;
+		}
+
+		// complete match, continue search
+		depth = depth + ((AbstractNode) node).prefixLen;
+		Node nextNode = node.findChild(key[depth]);
+		if (nextNode == null) {
+			return null;
+		}
+		return get(nextNode, key, depth);
+	}
+
+	private boolean matchesCompressedPathCompletely(AbstractNode node, byte[] key, int depth) {
+		int lcp;
+		byte[] prefix = node.prefixKeys;
+		int upperLimitForPessimisticMatch = Math.min(AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
+		for (lcp = 0; lcp < upperLimitForPessimisticMatch
+				&& depth < key.length
+				&& prefix[lcp] == key[depth]; lcp++, depth++)
+			;
+		return (lcp == upperLimitForPessimisticMatch);
 	}
 
 	private void put(Node node, byte[] key, V value, int depth, Node prevDepth) {
 
-		if(node instanceof LeafNode){
-			Node pathCompressedNode = expandLazyLeafNode((LeafNode)node, key, value, depth);
+		if (node instanceof LeafNode) {
+			Node pathCompressedNode = expandLazyLeafNode((LeafNode) node, key, value, depth);
 			// we gotta replace the prevDepth's child pointer to this new node
-			if(prevDepth == null){
+			if (prevDepth == null) {
 				// change the root
 				root = pathCompressedNode;
-			} else {
+			}
+			else {
 				assert depth > 0;
 				prevDepth.replace(key[depth - 1], pathCompressedNode);
 			}
 		}
 
-		if(!(node instanceof AbstractNode)){
-			throw new IllegalStateException("all node types extend AbstractNode");
+		if (!(node instanceof AbstractNode)) {
+			throw new IllegalStateException("all node types are expected to extend AbstractNode");
 		}
 
 		/*
@@ -79,12 +134,13 @@ public class ART<V> {
 				node = node.grow();
 				assert node.addChild(partialKey, leaf);
 			}
-		} else {
+		}
+		else {
 			put(child, key, value, depth + 1, node);
 		}
 	}
 
-	private Node expandLazyLeafNode(LeafNode leaf, byte[] key, V value, int depth){
+	private Node expandLazyLeafNode(LeafNode leaf, byte[] key, V value, int depth) {
 		/*
 			 	we reached a lazy expanded leaf node, we gotta expand it now.
 			 	but how much should we expand?
