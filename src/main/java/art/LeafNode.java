@@ -188,7 +188,7 @@ class LeafNode<V> implements Node{
     shouldn't be since the table (ascii/unicode) is ordered lexicographically
     so we're good
 
-    btw, this null insert would only be needed in cases where such prefixes are possible
+    btw, this null put would only be needed in cases where such prefixes are possible
     for strings, always needed
 
     what about composite keys?

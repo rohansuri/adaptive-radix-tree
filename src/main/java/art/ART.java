@@ -14,11 +14,15 @@ public class ART<V> {
 		root = new Node4();
 	}
 
-	public void insert(byte[] key, V value) {
-		insert(root, key, value, 0, null);
+	public void put(byte[] key, V value) {
+		put(root, key, value, 0, null);
 	}
 
-	private void insert(Node node, byte[] key, V value, int depth, Node prevDepth) {
+	public V get(byte[] key){
+
+	}
+
+	private void put(Node node, byte[] key, V value, int depth, Node prevDepth) {
 		/*
 			before doing the find child, we gotta match the current node's prefix?
 			i.e. the compressed path it has?
@@ -76,7 +80,7 @@ public class ART<V> {
 
 		}
 		else {
-			insert(child, key, value, depth + 1, node);
+			put(child, key, value, depth + 1, node);
 		}
 	}
 
@@ -164,7 +168,7 @@ public class ART<V> {
 		// shouldn't be? else that'd mean one is a prefix of the other?
 		// but we said that shouldn't be the case?
 		// and input itself should have a separating character? 0 byte ASCII for strings for example?
-		// we should give a string parameterized insert? that adds a 0 ourselves?
+		// we should give a string parameterized put? that adds a 0 ourselves?
 		// but then to give it back as a string
 		// we will have to use generics. so that caller can stay type safe
 		// and doesn't have to do the work of turning null terminated bytes into String again

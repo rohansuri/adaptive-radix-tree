@@ -38,6 +38,10 @@ class Node48 extends AbstractNode{
 	@Override
 	public Node findChild(byte partialKey) {
 		byte index = keyIndex[partialKey];
+		if(index == ABSENT){
+			return null;
+		}
+
 		assert index >= 0 && index <= 47;
 		return child[index];
 	}
