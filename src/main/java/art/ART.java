@@ -11,6 +11,8 @@ public class ART<V> {
 	// TODO: is it unusual for a data structure library to log?
 	private Logger log = LoggerFactory.getLogger(ART.class);
 
+	private static final RuntimeException NOT_AN_ABSTRACT_NODE = new IllegalStateException("all node types are expected to extend from AbstractNode");
+
 	private Node root;
 
 	public void put(byte[] key, V value) {
@@ -46,7 +48,7 @@ public class ART<V> {
 		}
 
 		if (!(node instanceof AbstractNode)) {
-			throw new IllegalStateException("all node types are expected to extend from AbstractNode");
+			throw NOT_AN_ABSTRACT_NODE;
 		}
 
 		// match compressed path, if match completely
@@ -93,7 +95,7 @@ public class ART<V> {
 		}
 
 		if (!(node instanceof AbstractNode)) {
-			throw new IllegalStateException("all node types are expected to extend AbstractNode");
+			throw NOT_AN_ABSTRACT_NODE;
 		}
 
 		/*
