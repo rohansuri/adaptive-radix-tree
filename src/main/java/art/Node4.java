@@ -14,6 +14,9 @@ class Node4 extends AbstractNode {
 
 	@Override
 	public Node findChild(byte partialKey) {
+		// TODO: consider linear loop over search vs binary search?
+		// paper does simple loop over probably because it's a tiny array (size 4)
+
 		// binary search for key
 		// having the from and to gives us only a valid view into what are the
 		// valid array elements that actually have keys and are not ABSENT

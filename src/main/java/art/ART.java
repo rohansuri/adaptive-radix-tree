@@ -10,11 +10,12 @@ public class ART<V> {
 
 	private Node root;
 
-	public ART() {
-		root = new Node4();
-	}
-
 	public void put(byte[] key, V value) {
+		if(root == null){
+			// create leaf node and set root to that
+			root = new LeafNode<V>(key, value);
+			return;
+		}
 		put(root, key, value, 0, null);
 	}
 
@@ -23,6 +24,23 @@ public class ART<V> {
 	}
 
 	private void put(Node node, byte[] key, V value, int depth, Node prevDepth) {
+
+		if(node instanceof LeafNode){
+			Node pathCompressedNode = expandLazyLeafNode((LeafNode)node, key, value, depth);
+			// we gotta replace the prevDepth's child pointer to this new node
+			if(prevDepth == null){
+				// change the root
+				root = pathCompressedNode;
+			} else {
+				assert depth > 0;
+				prevDepth.replace(key[depth - 1], pathCompressedNode);
+			}
+		}
+
+		if(!(node instanceof AbstractNode)){
+			throw new IllegalStateException("all node types extend AbstractNode");
+		}
+
 		/*
 			before doing the find child, we gotta match the current node's prefix?
 			i.e. the compressed path it has?
@@ -39,6 +57,8 @@ public class ART<V> {
 			return;
 		}
 
+		// we're now at line 26 in paper
+
 		byte partialKey = key[depth];
 		Node child = node.findChild(partialKey);
 		if (child == null) {
@@ -54,13 +74,18 @@ public class ART<V> {
 				Or rather let's keep the entire key's reference?
 			*/
 			Node leaf = new LeafNode<V>(key, value);
+			// TODO: check isFull before calling addChild? to be consistent with paper?
 			if (!node.addChild(partialKey, leaf)) {
 				node = node.grow();
 				assert node.addChild(partialKey, leaf);
 			}
+		} else {
+			put(child, key, value, depth + 1, node);
 		}
-		else if (child instanceof LeafNode) {
-			/*
+	}
+
+	private Node expandLazyLeafNode(LeafNode leaf, byte[] key, V value, int depth){
+		/*
 			 	we reached a lazy expanded leaf node, we gotta expand it now.
 			 	but how much should we expand?
 			 	since we reached depth X, it means till now both leaf node and new node have same bytes.
@@ -69,19 +94,14 @@ public class ART<V> {
 			 	that's the part we can path compress.
 			 	what is left over for both leaf, new node can be stored lazy expanded.
 			  */
-			LeafNode leaf = (LeafNode) child;
-			int lcp = longestCommonPrefix(leaf, key, depth);
+		int lcp = longestCommonPrefix(leaf, key, depth);
 
-			// create path compressed node
-			// make this path compressed node take the place of "child" for current on going partialKey
-			// and add to it, two lazy expanded leaf nodes?
-			Node pathCompressedNode = pathCompressAfterExpandingLazyLeaf(leaf, lcp, key, depth, value);
-			node.replace(partialKey, pathCompressedNode);
-
-		}
-		else {
-			put(child, key, value, depth + 1, node);
-		}
+		// create path compressed node
+		// make this path compressed node take the place of "child" for current on going partialKey
+		// and add to it, two lazy expanded leaf nodes?
+		Node pathCompressedNode = pathCompressAfterExpandingLazyLeaf(leaf, lcp, key, depth, value);
+		return pathCompressedNode;
+		//node.replace(partialKey, pathCompressedNode);
 	}
 
 	// return new depth
@@ -94,7 +114,7 @@ public class ART<V> {
 			return depth;
 		}
 
-		final int initialDepth = depth;
+		final int initialDepth = depth; // replace usage by (depth - lcp)?
 
 		// match pessimistic compressed path
 		int lcp;
@@ -104,6 +124,11 @@ public class ART<V> {
 		// therefore we need to constraint with both when matching for pessimistic compressed path
 		for (lcp = 0; lcp < node.prefixLen && depth < key.length && lcp < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && key[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
+
+		// can lcp be 0? yes
+		// consider BAZ, BAR already inserted
+		// and we want to insert BOZ?
+		// so prefixLen is 1, but lcp is 0.
 
 		// 1) pessimistic path matched entirely, key has nothing left (can't happen, else they'd be prefixes)
 		// 2) pessimistic path matched entirely, key has bytes left, prefixLen <= 8, no need to switch to optimistic,
@@ -132,12 +157,13 @@ public class ART<V> {
 			// new node with updated prefix len, compressed path
 			Node4 branchOut = new Node4();
 			branchOut.prefixLen = lcp;
-			System.arraycopy(key, depth - lcp, branchOut.prefixKeys, 0, lcp);
+			// note: depth is the updated depth (initialDepth = depth - lcp)
+			System.arraycopy(key, initialDepth, branchOut.prefixKeys, 0, lcp);
 			branchOut.addChild(key[depth], leafNode);
 			branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 
-			// remove lcp'th prefix key from "this" node
-			removeArrayHead(node);
+			// remove lcp common prefix key from "this" node
+			updateCompressedPath(node, lcp);
 
 			// replace "this" node with newNode
 			// initialDepth should never be zero, because if it is, prefixLen would be zero too
@@ -148,12 +174,13 @@ public class ART<V> {
 		}
 	}
 
-	private void removeArrayHead(AbstractNode node) {
-		// shift all elements left by one
-		for (int i = 0; i < node.prefixLen - 1; i++) {
-			node.prefixKeys[i] = node.prefixKeys[i + 1];
+	private void updateCompressedPath(AbstractNode node, int lcp) {
+		// lcp th byte was the differing one, so we start shifting from lcp + 1
+		// from the lcp th + 1 index till whatever prefix key is left, shift that to left
+		for (int i = lcp + 1, j = 0; i < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && i < node.prefixLen; i++, j++) {
+			node.prefixKeys[j] = node.prefixKeys[i];
 		}
-		node.prefixLen--;
+		node.prefixLen = node.prefixLen - lcp - 1;
 	}
 
 
@@ -193,7 +220,9 @@ public class ART<V> {
 	private int longestCommonPrefix(LeafNode node, byte[] key, int depth) {
 		// both leaf node's key and new node's key should be compared from depth index
 		int lcp;
-		byte[] leafKey = node.getKey();
+		byte[] leafKey = node.getKey(); // loadKey in paper
+		// TODO:optimization: combine setting the prefixLen, prefixKey array of the pathCompressedNode in this loop itself?
+		// so that later no array copying is needed!
 		for (lcp = 0; depth < leafKey.length && depth < key.length && leafKey[depth] == key[depth]; depth++, lcp++) ;
 		log.debug("longest common prefix between new key {} and lazily stored leaf {} is {}", key, node.getKey(), lcp);
 		return lcp;
