@@ -2,7 +2,7 @@ package art;
 
 import java.util.Arrays;
 
-public class Node16 extends AbstractNode {
+class Node16 extends AbstractNode {
     private final Node[] child = new Node[16];
     private final byte[] keys = new byte[16];
 

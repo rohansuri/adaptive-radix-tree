@@ -6,7 +6,7 @@ import org.apache.commons.math3.analysis.function.Abs;
 
 public abstract class AbstractNode implements Node {
 
-	private static final int PESSIMISTIC_PATH_COMPRESSION_LIMIT = 8;
+	static final int PESSIMISTIC_PATH_COMPRESSION_LIMIT = 8;
 
 	// max limit of 8 bytes (Pessimistic)
 	final byte[] prefixKeys;

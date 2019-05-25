@@ -1,6 +1,6 @@
 package art;
 
-public class Node256 extends AbstractNode{
+class Node256 extends AbstractNode{
     private final Node child[] = new Node[256]; // 256 * 8 bytes
 
 	public Node256(Node48 node){
@@ -45,4 +45,5 @@ public class Node256 extends AbstractNode{
 	public Node grow() {
 		throw new IllegalStateException("Span of ART is 8 bits, so Node256 is the largest node type.");
 	}
+
 }

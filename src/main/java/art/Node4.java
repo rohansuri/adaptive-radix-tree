@@ -2,7 +2,7 @@ package art;
 
 import java.util.Arrays;
 
-public class Node4 extends AbstractNode {
+class Node4 extends AbstractNode {
     private final Node[] child = new Node[4];
 
     // each array element would contain the partial byte key to match

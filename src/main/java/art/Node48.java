@@ -2,7 +2,7 @@ package art;
 
 import java.util.Arrays;
 
-public class Node48 extends AbstractNode{
+class Node48 extends AbstractNode{
 	/*
 		48 * 8 (child pointers) + 256 = 640 bytes
 	 */
@@ -59,6 +59,7 @@ public class Node48 extends AbstractNode{
 		Node node = new Node256(this);
 		return node;
 	}
+
 
 	public byte[] getKeyIndex(){
     	return keyIndex;

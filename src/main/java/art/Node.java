@@ -1,6 +1,6 @@
 package art;
 
-public interface Node {
+interface Node {
 	/*
 		what are the operations to be done on a Node?
 		you can construct them
