@@ -16,14 +16,14 @@ public class ART<V> {
 	private Node root;
 
 	// TODO: make put replace the value if it exists and return old value
-	public void put(byte[] key, V value) {
+	public V put(byte[] key, V value) {
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<V>(key, value);
 			log.debug("Tree empty, creating leaf node for key {} and making it root", new String(key));
-			return;
+			return null;
 		}
-		put(root, key, value, 0, null);
+		return put(root, key, value, 0, null);
 	}
 
 	public V get(byte[] key) {
@@ -81,10 +81,20 @@ public class ART<V> {
 		return (lcp == upperLimitForPessimisticMatch);
 	}
 
-	private void put(Node node, byte[] key, V value, int depth, Node prevDepth) {
+	private V put(Node node, byte[] key, V value, int depth, Node prevDepth) {
 
 		if (node instanceof LeafNode) {
-			Node pathCompressedNode = expandLazyLeafNode((LeafNode) node, key, value, depth);
+			LeafNode<V> leaf = (LeafNode<V>)node;
+			Node pathCompressedNode = expandLazyLeafNode(leaf, key, value, depth);
+			if(pathCompressedNode == node){
+				// key already exists
+				log.debug("key already exists, replacing value");
+				V oldValue = leaf.getValue();
+				leaf.setValue(value);
+				return oldValue;
+			}
+
+
 			// we gotta replace the prevDepth's child pointer to this new node
 			if (prevDepth == null) {
 				// change the root
@@ -94,7 +104,7 @@ public class ART<V> {
 				assert depth > 0;
 				prevDepth.replace(key[depth - 1], pathCompressedNode);
 			}
-			return;
+			return null;
 		}
 
 		if (!(node instanceof AbstractNode)) {
@@ -115,7 +125,7 @@ public class ART<V> {
 		// compare with compressed path
 		depth = matchCompressedPath((AbstractNode) node, key, value, depth, prevDepth);
 		if (depth == -1) { // matchCompressedPath already inserted the leaf node for us
-			return;
+			return null;
 		}
 
 		// we're now at line 26 in paper
@@ -140,13 +150,14 @@ public class ART<V> {
 				node = node.grow();
 				assert node.addChild(partialKey, leaf);
 			}
+			return null;
 		}
 		else {
-			put(child, key, value, depth + 1, node);
+			return put(child, key, value, depth + 1, node);
 		}
 	}
 
-	private Node expandLazyLeafNode(LeafNode leaf, byte[] key, V value, int depth) {
+	private Node expandLazyLeafNode(LeafNode<V> leaf, byte[] key, V value, int depth) {
 		/*
 			 	we reached a lazy expanded leaf node, we gotta expand it now.
 			 	but how much should we expand?
@@ -157,6 +168,23 @@ public class ART<V> {
 			 	what is left over for both leaf, new node can be stored lazy expanded.
 			  */
 		int lcp = longestCommonPrefix(leaf, key, depth);
+		// why both conditions needed?
+		// think of BAR present as lazily stored and we inserting BARCA
+		// lcp = 3 and depth + lcp == leaf.getKey().length i.e 0 + 3 == len(BAR) = 3
+		// this only confirms that leaf is a prefix of the key to be inserted (which we forbid).
+		// similarly if BARCA exists and we insert BAR
+		// lcp = 3, depth + lcp != leaf.getKey().length, but depth + lcp = key.length
+		// so it means we're trying to insert a prefix this time (which we forbid).
+		// for exact key match (i.e. key already exists), both these conditions need to be true
+		if(depth + lcp == key.length && key.length == leaf.getKey().length){
+			// we're referring to a key that already exists, replace value
+			// and return current
+			return leaf;
+		}
+
+		// if these fail, that means:
+		assert depth + lcp != key.length; // prefix is being attempted to be inserted
+		assert depth + lcp != leaf.getKey().length; // current leaf will become prefix of to be inserted key
 
 		// create path compressed node
 		// make this path compressed node take the place of "child" for current on going partialKey
@@ -265,11 +293,11 @@ public class ART<V> {
 
 
 	private Node pathCompressAfterExpandingLazyLeaf(LeafNode leaf, int lcp, byte[] key, int depth, V value) {
+
 		Node4 pathCompressedNode = new Node4();
 		pathCompressedNode.setPrefix(lcp, key, depth);
 
 		// reuse current leaf node
-		assert leaf.getKey().length > depth + lcp; // if equal, that mean leaf is prefix of to-be-inserted key!
 		byte differ = leaf.getKey()[depth + lcp];
 		// TODO: can depth + lcp be greater than leaf.getKey()'s length?
 		// shouldn't be? else that'd mean one is a prefix of the other?

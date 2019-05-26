@@ -12,7 +12,7 @@ public class ARTTest {
 	public void testSingleInsert(){
 		ART<String> art = new ART<>();
 
-		art.put(BAR, "1");
+		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
 	}
 
@@ -23,8 +23,8 @@ public class ARTTest {
 	public void testSharedPrefixInsert(){
 		ART<String> art = new ART<>();
 
-		art.put(BAR, "1");
-		art.put(BAZ, "2");
+		Assert.assertNull(art.put(BAR, "1"));
+		Assert.assertNull(art.put(BAZ, "2"));
 		Assert.assertEquals("1", art.get(BAR));
 		Assert.assertEquals("2", art.get(BAZ));
 	}
@@ -33,9 +33,9 @@ public class ARTTest {
 	public void testBreakCompressedPath(){
 		ART<String> art = new ART<>();
 
-		art.put(BAR, "1");
-		art.put(BAZ, "2");
-		art.put(BOZ, "3"); // breaks compressed path of BAR, BAZ
+		Assert.assertNull(art.put(BAR, "1"));
+		Assert.assertNull(art.put(BAZ, "2"));
+		Assert.assertNull(art.put(BOZ, "3")); // breaks compressed path of BAR, BAZ
 		Assert.assertEquals("1", art.get(BAR));
 		Assert.assertEquals("2", art.get(BAZ));
 		Assert.assertEquals("3", art.get(BOZ));
@@ -45,10 +45,10 @@ public class ARTTest {
 	public void testReplace(){
 		ART<String> art = new ART<>();
 
-		art.put(BAR, "1");
+		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
 
-		art.put(BAR, "2");
+		Assert.assertEquals("1", art.put(BAR, "2"));
 		Assert.assertEquals("2", art.get(BAR));
 	}
 }
