@@ -37,6 +37,8 @@ class Node256 extends AbstractNode{
 		}
 		assert this.child[partialKey] == null;
 		this.child[partialKey] = child;
+		// TODO: write unit tests for each node types function, verifying invariants (like addChild should increase noOfChildren by 1)
+		noOfChildren++;
 		return true;
     }
 
