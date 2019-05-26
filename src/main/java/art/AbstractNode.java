@@ -37,8 +37,9 @@ public abstract class AbstractNode implements Node {
 	}
 
 	public byte[] validPrefixKey(){
-		byte[] valid = new byte[prefixLen];
-		System.arraycopy(prefixKeys, 0, valid, 0, prefixLen);
+		int limit = Math.min(PESSIMISTIC_PATH_COMPRESSION_LIMIT, prefixLen);
+		byte[] valid = new byte[limit];
+		System.arraycopy(prefixKeys, 0, valid, 0, limit);
 		return valid;
 	}
 }
