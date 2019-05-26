@@ -9,18 +9,18 @@ import org.slf4j.LoggerFactory;
 public class ART<V> {
 
 	// TODO: is it unusual for a data structure library to log?
+	// TODO: replace with java.util.logging so that we have no runtime dependencies?
 	private Logger log = LoggerFactory.getLogger(ART.class);
 
 	private static final String NOT_AN_ABSTRACT_NODE_EXCEPTION_MSG = "all node types are expected to extend from AbstractNode";
 
 	private Node root;
 
-	// TODO: make put replace the value if it exists and return old value
 	public V put(byte[] key, V value) {
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<V>(key, value);
-			log.debug("Tree empty, creating leaf node for key {} and making it root", new String(key));
+			log.debug("Tree empty, creating leaf node for key {} and making it root", Arrays.toString(key));
 			return null;
 		}
 		return put(root, key, value, 0, null);
@@ -84,9 +84,9 @@ public class ART<V> {
 	private V put(Node node, byte[] key, V value, int depth, Node prevDepth) {
 
 		if (node instanceof LeafNode) {
-			LeafNode<V> leaf = (LeafNode<V>)node;
+			LeafNode<V> leaf = (LeafNode<V>) node;
 			Node pathCompressedNode = expandLazyLeafNode(leaf, key, value, depth);
-			if(pathCompressedNode == node){
+			if (pathCompressedNode == node) {
 				// key already exists
 				log.debug("key already exists, replacing value");
 				V oldValue = leaf.getValue();
@@ -123,6 +123,9 @@ public class ART<V> {
 		 */
 
 		// compare with compressed path
+
+		final int initialDepth = depth;
+
 		depth = matchCompressedPath((AbstractNode) node, key, value, depth, prevDepth);
 		if (depth == -1) { // matchCompressedPath already inserted the leaf node for us
 			return null;
@@ -147,8 +150,20 @@ public class ART<V> {
 			Node leaf = new LeafNode<V>(key, value);
 			// TODO: check isFull before calling addChild? to be consistent with paper?
 			if (!node.addChild(partialKey, leaf)) {
+				log.debug("growing node");
 				node = node.grow();
 				assert node.addChild(partialKey, leaf);
+
+				// NOTE: depth != height of tree!
+				// depth is the depth/index in partialKey!!!
+				if (prevDepth == null) {
+					root = node;
+				}
+				else {
+					// TODO: is this replace correct?
+					// I don't think so! this should be initial depth
+					prevDepth.replace(key[initialDepth - 1], node);
+				}
 			}
 			return null;
 		}
@@ -176,7 +191,7 @@ public class ART<V> {
 		// lcp = 3, depth + lcp != leaf.getKey().length, but depth + lcp = key.length
 		// so it means we're trying to insert a prefix this time (which we forbid).
 		// for exact key match (i.e. key already exists), both these conditions need to be true
-		if(depth + lcp == key.length && key.length == leaf.getKey().length){
+		if (depth + lcp == key.length && key.length == leaf.getKey().length) {
 			// we're referring to a key that already exists, replace value
 			// and return current
 			return leaf;
@@ -216,10 +231,9 @@ public class ART<V> {
 			;
 
 		log.debug("LCP of key {} and compressed path {} is {}",
-				new String(key),
-				new String(node.prefixKeys)
-						.substring(0, Math.min(node.prefixLen, AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT)),
-				lcp);
+				Arrays.toString(key),
+
+				Arrays.toString(node.validPrefixKey()), lcp);
 		// can lcp be 0? yes
 		// consider BAZ, BAR already inserted
 		// and we want to insert BOZ?
@@ -232,15 +246,13 @@ public class ART<V> {
 		// 4) pessimistic path did not match, we have to split
 		// purpose of pessimistic prefixKeys match is to serve as safety net and early return.
 
-		if (lcp == node.prefixLen) {
-			if (node.prefixLen <= AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
-				// stay on pessimistic
-				return depth;
-			}
-			else {
-				// switch to optimistic
-				return depth + (node.prefixLen - AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
-			}
+		if (lcp <= AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && lcp == node.prefixLen) {
+			log.debug("pessimistic match");
+			return depth;
+		}
+		else if (lcp == AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
+			log.debug("optimistic match");
+			return depth + (node.prefixLen - AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		}
 		else { // pessimistic prefix doesn't match entirely, we have to branch
 			// BAR, BAZ inserted, now inserting BOZ
@@ -260,7 +272,8 @@ public class ART<V> {
 			branchOut.addChild(key[depth], leafNode);
 			branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 
-			log.debug("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut.validPrefixKey()));
+			log.debug("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
+					.validPrefixKey()));
 
 			// remove lcp common prefix key from "this" node
 			updateCompressedPath(node, lcp);
@@ -332,7 +345,8 @@ public class ART<V> {
 		// TODO:optimization: combine setting the prefixLen, prefixKey array of the pathCompressedNode in this loop itself?
 		// so that later no array copying is needed!
 		for (lcp = 0; depth < leafKey.length && depth < key.length && leafKey[depth] == key[depth]; depth++, lcp++) ;
-		log.debug("longest common prefix between new key {} and lazily stored leaf {} is {}", new String(key), new String(node
+		log.debug("longest common prefix between new key {} and lazily stored leaf {} is {}", Arrays
+				.toString(key), Arrays.toString(node
 				.getKey()), lcp);
 		return lcp;
 	}
