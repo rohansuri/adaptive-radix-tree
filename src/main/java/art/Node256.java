@@ -14,6 +14,7 @@ class Node256 extends AbstractNode{
 			if(index == Node48.ABSENT){
 				continue;
 			}
+			assert index >= 0 && index <= 47;
 			// index is byte, but gets type promoted
 			// https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#jls-10.4-120
 			this.child[i] = child[index];
@@ -35,8 +36,16 @@ class Node256 extends AbstractNode{
 		if(noOfChildren == 256){
 			throw new IllegalStateException("ART span is 8 bits, so node 256 is the largest possible number of children you can have.");
 		}
-		assert this.child[partialKey] == null;
-		this.child[partialKey] = child;
+		// byte in Java is signed
+		// but we want no interpretation of the partialKey
+		// we just want to treat it as raw binary bits
+		// but since byte is signed, numerically when we index using it
+		// it can be negative once it goes over 127, therefore we need to
+		// convert it to a bigger container type
+		// or can we do something better?
+		int index = Byte.toUnsignedInt(partialKey);
+		assert this.child[index] == null;
+		this.child[index] = child;
 		// TODO: write unit tests for each node types function, verifying invariants (like addChild should increase noOfChildren by 1)
 		noOfChildren++;
 		return true;

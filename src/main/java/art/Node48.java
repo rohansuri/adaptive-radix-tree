@@ -37,7 +37,7 @@ class Node48 extends AbstractNode{
 
 	@Override
 	public Node findChild(byte partialKey) {
-		byte index = keyIndex[partialKey];
+		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
 		if(index == ABSENT){
 			return null;
 		}
@@ -51,16 +51,17 @@ class Node48 extends AbstractNode{
     	if(noOfChildren == 48){
     		return false;
 		}
-		assert keyIndex[partialKey] == -1;
+		int index = Byte.toUnsignedInt(partialKey);
+		assert keyIndex[index] == -1;
     	this.child[noOfChildren] = child;
-    	keyIndex[partialKey] = (byte)noOfChildren;
+    	keyIndex[index] = (byte)noOfChildren;
 		noOfChildren++;
     	return true;
 	}
 
 	@Override
 	public void replace(byte partialKey, Node newChild) {
-		byte index = keyIndex[partialKey];
+		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
 		assert index >= 0 && index <= 47;
 		child[index] = newChild;
 	}
