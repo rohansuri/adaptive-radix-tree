@@ -7,7 +7,9 @@ class Node48 extends AbstractNode {
 		48 * 8 (child pointers) + 256 = 640 bytes
 	*/
 
-	private final Node child[] = new Node[48];
+	private static final int NODE_SIZE = 48;
+
+	private final Node child[] = new Node[NODE_SIZE];
 
 	// for partial keys of one byte size, you index directly into this array to find the
 	// array index of the child pointer array
@@ -31,9 +33,7 @@ class Node48 extends AbstractNode {
 			keyIndex[index] = (byte) i;
 			this.child[i] = child[i];
 		}
-
 	}
-
 
 	@Override
 	public Node findChild(byte partialKey) {
@@ -48,13 +48,19 @@ class Node48 extends AbstractNode {
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		if (noOfChildren == 48) {
+		if (noOfChildren == NODE_SIZE) {
 			return false;
 		}
 		int index = Byte.toUnsignedInt(partialKey);
 		assert keyIndex[index] == -1;
-		this.child[noOfChildren] = child;
-		keyIndex[index] = (byte) noOfChildren;
+
+		// find a null place, left fragmented by a removeChild or has always been null
+		byte insertPosition = 0;
+		for(;this.child[insertPosition] != null && insertPosition < NODE_SIZE; insertPosition++);
+		assert insertPosition < NODE_SIZE;
+
+		this.child[insertPosition] = child;
+		keyIndex[index] = insertPosition;
 		noOfChildren++;
 		return true;
 	}
@@ -64,6 +70,17 @@ class Node48 extends AbstractNode {
 		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
 		assert index >= 0 && index <= 47;
 		child[index] = newChild;
+	}
+
+	@Override
+	public void removeChild(byte partialKey) {
+		int index = Byte.toUnsignedInt(partialKey);
+		int pos = keyIndex[index];
+		assert pos != -1;
+
+		child[pos] = null; // fragment
+		keyIndex[index] = ABSENT;
+		noOfChildren--;
 	}
 
 	@Override

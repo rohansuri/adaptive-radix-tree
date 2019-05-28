@@ -27,6 +27,7 @@ class Node16 extends AbstractNode {
 		return child[index];
 	}
 
+	// TODO: unit test binary search insertion point edge cases (first, last)
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
 		if(noOfChildren == NODE_SIZE){
@@ -36,8 +37,8 @@ class Node16 extends AbstractNode {
 		assert index < 0; // the partialKey should not exist
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
-		assert insertionPoint < NODE_SIZE;
-		for(int i = NODE_SIZE - 1; i > insertionPoint ; i--){
+		assert insertionPoint < noOfChildren;
+		for(int i = noOfChildren - 1; i > insertionPoint ; i--){
 			keys[i] = keys[i-1];
 			this.child[i] = this.child[i-1];
 		}
@@ -56,6 +57,20 @@ class Node16 extends AbstractNode {
 			throw new IllegalStateException("replace must be called from in a state where you know partialKey entry surely exists");
 		}
 		child[index] = newChild;
+	}
+
+	@Override
+	public void removeChild(byte partialKey) {
+		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		// if this fails, the question is, how could you reach the leaf node?
+		// this node must've been your follow on pointer holding the partialKey
+		assert index >= 0;
+		for(int i = index; i < noOfChildren - 1; i++){
+			keys[i] = keys[i+1];
+			child[i] = child[i+1];
+		}
+		child[noOfChildren - 1] = null;
+		noOfChildren--;
 	}
 
 	@Override

@@ -21,12 +21,17 @@ class Node4 extends AbstractNode {
 		// having the from and to gives us only a valid view into what are the
 		// valid array elements that actually have keys and are not ABSENT
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		// FIXME: partialKeys greater than 127 would be wrongly stored in sorted order
+		// this hasn't been a problem yet because it's just simply follow ons
+		// but range scan/iteration would be erroneous!
 		if (index < 0) {
 			return null;
 		}
 		return child[index];
 	}
 
+	// TODO: unit test this binary search inserts into correct position
+	// along with edge cases (where partialKey is found to be first, last element in array)
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
 		if (noOfChildren == NODE_SIZE) {
@@ -36,8 +41,8 @@ class Node4 extends AbstractNode {
 		assert index < 0; // the partialKey should not exist
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
-		assert insertionPoint < NODE_SIZE;
-		for (int i = NODE_SIZE - 1; i > insertionPoint; i--) {
+		assert insertionPoint < noOfChildren;
+		for (int i = noOfChildren - 1; i > insertionPoint; i--) {
 			keys[i] = keys[i - 1];
 			this.child[i] = this.child[i - 1];
 		}
@@ -50,12 +55,23 @@ class Node4 extends AbstractNode {
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
-		if (index < 0) {
-			// TODO: better flow/API design?
-			// start with thinking what do we finally return/throw in such a state?
-			throw new IllegalStateException("replace must be called from in a state where you know partialKey entry surely exists");
-		}
+		// replace must be called from in a state where you know partialKey entry surely exists
+		assert index >= 0;
 		child[index] = newChild;
+	}
+
+	@Override
+	public void removeChild(byte partialKey) {
+		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		// if this fails, the question is, how could you reach the leaf node?
+		// this node must've been your follow on pointer holding the partialKey
+		assert index >= 0;
+		for(int i = index; i < noOfChildren - 1; i++){
+			keys[i] = keys[i+1];
+			child[i] = child[i+1];
+		}
+		child[noOfChildren - 1] = null;
+		noOfChildren--;
 	}
 
 	@Override

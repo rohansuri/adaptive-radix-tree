@@ -17,6 +17,8 @@ interface Node {
 
 	void replace(byte partialKey, Node newChild);
 
+	void removeChild(byte partialKey);
+
 	/**
 	 * copies all mappings from given node
 	 * @return a new node with the same mappings
