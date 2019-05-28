@@ -1,21 +1,25 @@
 package art;
 
 interface Node {
-	/*
-		what are the operations to be done on a Node?
-		you can construct them
-		search if a partial key exists in them or not, if it does then give back the next child pointer
-		...
+	/**
+	 *
+	 * @param partialKey search if this node has an entry for given partialKey
+	 * @return if it does, then return the following child pointer
 	 */
-
 	Node findChild(byte partialKey);
 
-	// returns false, if this node is full?
+	/**
+	 * @param partialKey partialKey to be mapped
+	 * @param child the child node to be added
+	 * @return true if add succeeded, false if node size full (call grow)
+	 */
 	boolean addChild(byte partialKey, Node child);
 
 	void replace(byte partialKey, Node newChild);
 
-	// copies all mappings from given node
-	// and returns a new node with the same mappings
-	Node grow();
+	/**
+	 * copies all mappings from given node
+	 * @return a new node with the same mappings
+	 */
+	Node grow(); // TODO: put grow inside addChild itself?
 }

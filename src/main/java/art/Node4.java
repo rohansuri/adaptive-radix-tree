@@ -6,11 +6,11 @@ class Node4 extends AbstractNode {
 
 	private static final int NODE_SIZE = 4;
 
-    private final Node[] child = new Node[NODE_SIZE];
+	private final Node[] child = new Node[NODE_SIZE];
 
-    // each array element would contain the partial byte key to match
+	// each array element would contain the partial byte key to match
 	// if key matches then take up the same index from the child pointer array
-    private final byte[] keys = new byte[NODE_SIZE];
+	private final byte[] keys = new byte[NODE_SIZE];
 
 	@Override
 	public Node findChild(byte partialKey) {
@@ -29,7 +29,7 @@ class Node4 extends AbstractNode {
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		if(noOfChildren == NODE_SIZE){
+		if (noOfChildren == NODE_SIZE) {
 			return false;
 		}
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
@@ -37,9 +37,9 @@ class Node4 extends AbstractNode {
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
 		assert insertionPoint < NODE_SIZE;
-		for(int i = NODE_SIZE - 1; i > insertionPoint ; i--){
-			keys[i] = keys[i-1];
-			this.child[i] = this.child[i-1];
+		for (int i = NODE_SIZE - 1; i > insertionPoint; i--) {
+			keys[i] = keys[i - 1];
+			this.child[i] = this.child[i - 1];
 		}
 		keys[insertionPoint] = partialKey;
 		this.child[insertionPoint] = child;
@@ -59,17 +59,17 @@ class Node4 extends AbstractNode {
 	}
 
 	@Override
-	public Node grow(){
+	public Node grow() {
 		// grow from Node4 to Node16
 		Node node = new Node16(this);
 		return node;
 	}
 
-	public byte[] getKeys(){
+	public byte[] getKeys() {
 		return keys;
 	}
 
-	public Node[] getChild(){
+	public Node[] getChild() {
 		return child;
 	}
 }

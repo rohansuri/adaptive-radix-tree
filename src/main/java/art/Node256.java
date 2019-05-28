@@ -1,17 +1,17 @@
 package art;
 
-class Node256 extends AbstractNode{
-    private final Node child[] = new Node[256]; // 256 * 8 bytes
+class Node256 extends AbstractNode {
+	private final Node child[] = new Node[256]; // 256 * 8 bytes
 
-	public Node256(Node48 node){
+	Node256(Node48 node) {
 		super(node);
 
 		byte[] keyIndex = node.getKeyIndex();
 		Node[] child = node.getChild();
 
-		for(int i = 0; i < 256; i++){
+		for (int i = 0; i < 256; i++) {
 			byte index = keyIndex[i];
-			if(index == Node48.ABSENT){
+			if (index == Node48.ABSENT) {
 				continue;
 			}
 			assert index >= 0 && index <= 47;
@@ -21,19 +21,19 @@ class Node256 extends AbstractNode{
 		}
 	}
 
-    @Override
-    public Node findChild(byte partialKey) {
-        // convert byte to 8 bit integer
+	@Override
+	public Node findChild(byte partialKey) {
+		// convert byte to 8 bit integer
 		// and then index into that array position
 		// I guess we should treat the 8 bits as unsigned int
 		// since we've got 256 slots, we need to go from 00000000 to 11111111
 		int index = Byte.toUnsignedInt(partialKey);
 		return child[index];
-    }
+	}
 
-    @Override
-    public boolean addChild(byte partialKey, Node child) {
-		if(noOfChildren == 256){
+	@Override
+	public boolean addChild(byte partialKey, Node child) {
+		if (noOfChildren == 256) {
 			throw new IllegalStateException("ART span is 8 bits, so node 256 is the largest possible number of children you can have.");
 		}
 		// byte in Java is signed
@@ -49,7 +49,7 @@ class Node256 extends AbstractNode{
 		// TODO: write unit tests for each node types function, verifying invariants (like addChild should increase noOfChildren by 1)
 		noOfChildren++;
 		return true;
-    }
+	}
 
 	@Override
 	public void replace(byte partialKey, Node newChild) {

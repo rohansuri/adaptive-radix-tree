@@ -64,11 +64,11 @@ class Node16 extends AbstractNode {
 		return node;
 	}
 
-	public byte[] getKeys(){
+	byte[] getKeys(){
     	return keys;
 	}
 
-	public Node[] getChild(){
+	Node[] getChild(){
     	return child;
 	}
 }

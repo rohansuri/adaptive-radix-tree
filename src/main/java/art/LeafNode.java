@@ -8,60 +8,58 @@ package art;
 
     currently the Single-value leaves
  */
-class LeafNode<V> implements Node{
-    private V value;
+class LeafNode<V> implements Node {
+	private V value;
 
-    // we have to save the key, because leaves are lazy expanded at times (most of the times)
-    // confirm this is just a reference?
-    private byte[] key;
+	private static final String EXCEPTION_MSG = "should not be called on LeafNode";
 
-    LeafNode(byte[] key, V value){
-        this.value = value;
-        this.key = key;
-    }
+	// we have to save the key, because leaves are lazy expanded at times (most of the times)
+	// confirm this is just a reference?
+	private byte[] key;
 
-    // we have setters, to make LeafNode instances reusable
-    // could we do something better?
-    // or is it okie to do this here?
-    // anyways LeafNode is internal pojo
-    // it's constraints are to be kept in check by internal
-    // developers
+	LeafNode(byte[] key, V value) {
+		this.value = value;
+		this.key = key;
+	}
 
-    public void setValue(V value){
-        this.value = value;
-    }
+	// we have setters, to make LeafNode instances reusable
+	// could we do something better?
+	// or is it okie to do this here?
+	// anyways LeafNode is internal pojo
+	// it's constraints are to be kept in check by internal
+	// developers
 
-    public void setKey(byte[] key){
-        this.key = key;
-    }
+	void setValue(V value) {
+		this.value = value;
+	}
 
-    public V getValue(){
-        return value;
-    }
+	V getValue() {
+		return value;
+	}
 
-    public byte[] getKey(){
-        return key;
-    }
+	byte[] getKey() {
+		return key;
+	}
 
-    @Override
-    public Node findChild(byte partialKey) {
-        throw new UnsupportedOperationException("should not be called on LeafNode");
-    }
+	@Override
+	public Node findChild(byte partialKey) {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
 
-    @Override
-    public boolean addChild(byte partialKey, Node child) {
-        throw new UnsupportedOperationException("should not be called on LeafNode");
-    }
+	@Override
+	public boolean addChild(byte partialKey, Node child) {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
 
-    @Override
-    public void replace(byte partialKey, Node newChild) {
-        throw new UnsupportedOperationException("should not be called on LeafNode");
-    }
+	@Override
+	public void replace(byte partialKey, Node newChild) {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
 
-    @Override
-    public Node grow() {
-        throw new UnsupportedOperationException("should not be called on LeafNode");
-    }
+	@Override
+	public Node grow() {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
 }
 
 

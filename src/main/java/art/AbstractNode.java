@@ -2,7 +2,7 @@ package art;
 
 // should be 16 bytes only
 
-public abstract class AbstractNode implements Node {
+abstract class AbstractNode implements Node {
 
 	static final int PESSIMISTIC_PATH_COMPRESSION_LIMIT = 8;
 
@@ -30,7 +30,7 @@ public abstract class AbstractNode implements Node {
 		this.prefixKeys = node.prefixKeys;
 	}
 
-	public byte[] validPrefixKey(){
+	public byte[] getValidPrefixKey(){
 		int limit = Math.min(PESSIMISTIC_PATH_COMPRESSION_LIMIT, prefixLen);
 		byte[] valid = new byte[limit];
 		System.arraycopy(prefixKeys, 0, valid, 0, limit);

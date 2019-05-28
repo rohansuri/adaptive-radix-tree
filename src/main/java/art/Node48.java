@@ -2,33 +2,33 @@ package art;
 
 import java.util.Arrays;
 
-class Node48 extends AbstractNode{
+class Node48 extends AbstractNode {
 	/*
 		48 * 8 (child pointers) + 256 = 640 bytes
-	 */
+	*/
 
-    private final Node child[] = new Node[48];
+	private final Node child[] = new Node[48];
 
-    // for partial keys of one byte size, you index directly into this array to find the
+	// for partial keys of one byte size, you index directly into this array to find the
 	// array index of the child pointer array
 	// the index value can only be between 0 to 47 (to index into the child pointer array)
-    private final byte[] keyIndex = new byte[256];
+	private final byte[] keyIndex = new byte[256];
 
-    // so that when you use the partial key to index into keyIndex
+	// so that when you use the partial key to index into keyIndex
 	// and you see a -1, you know there's no mapping for this key
 	static final byte ABSENT = -1;
 
-    public Node48(Node16 node){
+	Node48(Node16 node) {
 		super(node);
 		Arrays.fill(keyIndex, ABSENT);
 
 		byte[] keys = node.getKeys();
 		Node[] child = node.getChild();
 
-		for(int i = 0; i < 16; i++){
+		for (int i = 0; i < 16; i++) {
 			byte key = keys[i];
 			int index = Byte.toUnsignedInt(key);
-			keyIndex[index] = (byte)i;
+			keyIndex[index] = (byte) i;
 			this.child[i] = child[i];
 		}
 
@@ -38,7 +38,7 @@ class Node48 extends AbstractNode{
 	@Override
 	public Node findChild(byte partialKey) {
 		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
-		if(index == ABSENT){
+		if (index == ABSENT) {
 			return null;
 		}
 
@@ -48,15 +48,15 @@ class Node48 extends AbstractNode{
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-    	if(noOfChildren == 48){
-    		return false;
+		if (noOfChildren == 48) {
+			return false;
 		}
 		int index = Byte.toUnsignedInt(partialKey);
 		assert keyIndex[index] == -1;
-    	this.child[noOfChildren] = child;
-    	keyIndex[index] = (byte)noOfChildren;
+		this.child[noOfChildren] = child;
+		keyIndex[index] = (byte) noOfChildren;
 		noOfChildren++;
-    	return true;
+		return true;
 	}
 
 	@Override
@@ -73,12 +73,12 @@ class Node48 extends AbstractNode{
 	}
 
 
-	public byte[] getKeyIndex(){
-    	return keyIndex;
+	byte[] getKeyIndex() {
+		return keyIndex;
 	}
 
-	public Node[] getChild(){
-    	return child;
+	Node[] getChild() {
+		return child;
 	}
 }
 
