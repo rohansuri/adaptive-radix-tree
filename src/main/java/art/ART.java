@@ -81,33 +81,31 @@ public class ART<V> {
 		return (lcp == upperLimitForPessimisticMatch);
 	}
 
+	private void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
+		if (prevDepth == null) {
+			root = replaceWith;
+		}
+		else {
+			assert depth > 0;
+			prevDepth.replace(key[depth - 1], replaceWith);
+		}
+	}
+
 	private V put(Node node, byte[] key, V value, int depth, Node prevDepth) {
 
 		if (node instanceof LeafNode) {
 			LeafNode<V> leaf = (LeafNode<V>) node;
-			Node pathCompressedNode = expandLazyLeafNode(leaf, key, value, depth);
+			Node pathCompressedNode = createPathCompressedNodeAfterExpandLazyLeaf(leaf, key, value, depth);
 			if (pathCompressedNode == node) {
 				// key already exists
-				log.debug("key already exists, replacing value");
+				log.trace("key already exists, replacing value");
 				V oldValue = leaf.getValue();
 				leaf.setValue(value);
 				return oldValue;
 			}
 			// we gotta replace the prevDepth's child pointer to this new node
-			else if (prevDepth == null) {
-				// change the root
-				root = pathCompressedNode;
-			}
-			else {
-				assert depth > 0;
-				prevDepth.replace(key[depth - 1], pathCompressedNode);
-			}
+			replace(depth, key, prevDepth, pathCompressedNode);
 			return null;
-		}
-
-		if (!(node instanceof AbstractNode)) {
-			throw new IllegalStateException(String
-					.format(NOT_AN_ABSTRACT_NODE_EXCEPTION_MSG + ", %s does not", node.getClass()));
 		}
 
 		/*
@@ -118,55 +116,51 @@ public class ART<V> {
 			so that means, when doing this we change our depths and jump to lower levels in the search tree.
 			again compressed paths can totally match --- easy then
 			differ at a point -- we do the same splitting and update the compressed path.
+			TODO: analyze if code be shared for this split?
 		 */
 
 		// compare with compressed path
-
-		final int initialDepth = depth;
-
-		depth = matchCompressedPath((AbstractNode) node, key, value, depth, prevDepth);
-		if (depth == -1) { // matchCompressedPath already inserted the leaf node for us
+		int newDepth = matchCompressedPath((AbstractNode) node, key, value, depth, prevDepth);
+		if (newDepth == -1) { // matchCompressedPath already inserted the leaf node for us
 			return null;
 		}
 
 		// we're now at line 26 in paper
 
-		byte partialKey = key[depth];
+		byte partialKey = key[newDepth];
 		Node child = node.findChild(partialKey);
 		if (child == null) {
-			/* create leaf node and add it lazy expanded?
-				why do we say add it lazy expanded?
-				because even if we're left with X partial keys (each of 1 byte),
-				we're not going to branch down and create X new levels down the road.
-				Nope. We reduce the height of the tree by lazy expanding.
-				TODO: By keeping the left over part of the key in the leaf?
-				We could use byte buffer to do this (for index manipulation).
-				The paper suggests storing complete key.
-				Let's see, we'll refactor if we face trouble later.
-				Or rather let's keep the entire key's reference?
-			*/
-			Node leaf = new LeafNode<V>(key, value);
-			// TODO: check isFull before calling addChild? to be consistent with paper?
-			if (!node.addChild(partialKey, leaf)) {
-				log.debug("growing node");
-				node = node.grow();
-				assert node.addChild(partialKey, leaf);
-
-				// NOTE: depth != height of tree!
-				// depth is the depth/index in partialKey!!!
-				if (prevDepth == null) {
-					root = node;
-				}
-				else {
-					// TODO: is this replace correct?
-					// I don't think so! this should be initial depth
-					prevDepth.replace(key[initialDepth - 1], node);
-				}
-			}
+			addChild(node, partialKey, key, value, depth, prevDepth);
 			return null;
 		}
 		else {
-			return put(child, key, value, depth + 1, node);
+			return put(child, key, value, newDepth + 1, node);
+		}
+	}
+
+	/*
+		create leaf node and add it lazy expanded?
+		why do we say add it lazy expanded?
+		because even if we're left with X partial keys (each of 1 byte),
+		we're not going to branch down and create X new levels down the road.
+		Nope. We reduce the height of the tree by lazy expanding.
+		TODO: By keeping the left over part of the key in the leaf?
+		We could use byte buffer to do this (for index manipulation).
+		The paper suggests storing complete key.
+		Let's see, we'll refactor if we face trouble later.
+		Or rather let's keep the entire key's reference?
+	*/
+	private void addChild(Node node, byte partialKey, byte[] key, V value, int depth, Node prevDepth) {
+		Node leaf = new LeafNode<V>(key, value);
+		// TODO: check isFull before calling addChild? to be consistent with paper?
+		if (!node.addChild(partialKey, leaf)) {
+			log.trace("growing node");
+			node = node.grow();
+			assert node.addChild(partialKey, leaf);
+
+			// Important NOTE: depth != height of tree
+			// depth is the depth/index in partialKey
+			replace(depth, key, prevDepth, node);
 		}
 	}
 
@@ -179,7 +173,7 @@ public class ART<V> {
 		that's the part we can path compress.
 		what is left over for both leaf, new node can be stored lazy expanded.
 	*/
-	private Node expandLazyLeafNode(LeafNode<V> leaf, byte[] key, V value, int depth) {
+	private Node createPathCompressedNodeAfterExpandLazyLeaf(LeafNode<V> leaf, byte[] key, V value, int depth) {
 		// we refactored creation of path compressed node before knowing if it's the same key or not
 		// so that early copying of path compressed node can be done.
 		// but what if it is the same key?
@@ -234,10 +228,9 @@ public class ART<V> {
 		for (lcp = 0; lcp < node.prefixLen && depth < key.length && lcp < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && key[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
 
-		log.debug("LCP of key {} and compressed path {} is {}",
+		log.trace("LCP of key {} and compressed path {} is {}",
 				Arrays.toString(key),
-
-				Arrays.toString(node.validPrefixKey()), lcp);
+				Arrays.toString(node.getValidPrefixKey()), lcp);
 		// can lcp be 0? yes
 		// consider BAZ, BAR already inserted
 		// and we want to insert BOZ?
@@ -251,11 +244,11 @@ public class ART<V> {
 		// purpose of pessimistic prefixKeys match is to serve as safety net and early return.
 
 		if (lcp <= AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && lcp == node.prefixLen) {
-			log.debug("pessimistic match");
+			log.trace("pessimistic match");
 			return depth;
 		}
 		else if (lcp == AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
-			log.debug("optimistic match");
+			log.trace("optimistic match");
 			return depth + (node.prefixLen - AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		}
 		else { // pessimistic prefix doesn't match entirely, we have to branch
@@ -265,7 +258,7 @@ public class ART<V> {
 			// TODO: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
 			LeafNode leafNode = new LeafNode<V>(key, value);
 
-			log.debug("Entire compressed path didn't match, branching out on partialKey {} and {}",
+			log.trace("Entire compressed path didn't match, branching out on partialKey {} and {}",
 					new String(new byte[] {key[depth]}), new String(new byte[] {node.prefixKeys[depth]}));
 
 			// new node with updated prefix len, compressed path
@@ -276,8 +269,8 @@ public class ART<V> {
 			branchOut.addChild(key[depth], leafNode);
 			branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 
-			log.debug("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
-					.validPrefixKey()));
+			log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
+					.getValidPrefixKey()));
 
 			// remove lcp common prefix key from "this" node
 			updateCompressedPath(node, lcp);
@@ -286,15 +279,7 @@ public class ART<V> {
 			// initialDepth can be zero even if prefixLen is not zero.
 			// the root node could have a prefix too, for example after insertions of
 			// BAR, BAZ? prefix would be BA kept in the root node itself
-			if (initialDepth == 0) {
-				assert prevDepth == null;
-				log.debug("replacing branched out node root");
-				root = branchOut; // no follow on pointer, since it's the root
-			}
-			else {
-				// prev level needs to have a follow on pointer to this child
-				prevDepth.replace(key[initialDepth - 1], branchOut);
-			}
+			replace(initialDepth, key, prevDepth, branchOut);
 			return -1; // we've already inserted the leaf node, caller needs to do nothing more
 		}
 	}
@@ -342,12 +327,14 @@ public class ART<V> {
 		int lcp = 0;
 		byte[] leafKey = node.getKey(); // loadKey in paper
 		for (; depth < leafKey.length && depth < key.length && leafKey[depth] == key[depth]; depth++, lcp++) {
+			// this should be nicely branch predicated since PESSIMISTIC_PATH_COMPRESSION_LIMIT
+			// is a constant
 			if (lcp < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
 				pathCompressedNode.prefixKeys[lcp] = key[depth];
 			}
 		}
 		pathCompressedNode.prefixLen = lcp;
-		log.debug("longest common prefix between new key {} and lazily stored leaf {} is {}", Arrays
+		log.trace("longest common prefix between new key {} and lazily stored leaf {} is {}", Arrays
 				.toString(key), Arrays.toString(node
 				.getKey()), lcp);
 		return lcp;
