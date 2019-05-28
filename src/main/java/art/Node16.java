@@ -37,7 +37,7 @@ class Node16 extends AbstractNode {
 		assert index < 0; // the partialKey should not exist
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
-		assert insertionPoint < noOfChildren;
+		assert insertionPoint <= noOfChildren;
 		for(int i = noOfChildren - 1; i > insertionPoint ; i--){
 			keys[i] = keys[i-1];
 			this.child[i] = this.child[i-1];

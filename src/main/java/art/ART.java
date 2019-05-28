@@ -11,8 +11,6 @@ public class ART<V> {
 	// TODO: replace with java.util.logging so that we have no runtime dependencies?
 	private Logger log = LoggerFactory.getLogger(ART.class);
 
-	private static final String NOT_AN_ABSTRACT_NODE_EXCEPTION_MSG = "all node types are expected to extend from AbstractNode";
-
 	private Node root;
 
 	public V put(byte[] key, V value) {
@@ -33,6 +31,54 @@ public class ART<V> {
 		return get(root, key, 0);
 	}
 
+	public V remove(byte[] key) {
+		if (root == null) {
+			return null;
+		}
+		return remove(root, key, 0, null);
+	}
+
+	private V remove(Node node, byte[] key, int depth, AbstractNode prevDepth) {
+		if (node instanceof LeafNode) {
+			LeafNode<V> leaf = (LeafNode) node;
+			// check if same key
+			// if same then remove
+			// if not same, but we reached a leaf, then return null
+			if (!Arrays.equals(leaf.getKey(), key)) {
+				return null; // we don't have a mapping for this key
+			}
+
+			// same key
+			// so we remove this leaf node entry from the prevDepth
+			// the follow on child pointer needs to be deleted
+			if (prevDepth == null) {
+				root = null; // this means, this is the only leaf node stored lazily
+			}
+			else {
+				// remove this leaf node's follow on pointer from the prevDepth
+				assert depth > 0;
+				prevDepth.removeChild(key[depth - 1]);
+
+				// TODO: shrink
+
+				if (prevDepth.noOfChildren == 1) {
+					// from imagination it seems like we'll be recursing up and removing a lot of paths
+				}
+			}
+			return leaf.getValue();
+		}
+
+		if(!matchesCompressedPathCompletely((AbstractNode)node, key, depth)){
+			return null;
+		}
+		depth = depth + ((AbstractNode) node).prefixLen;
+		Node nextNode = node.findChild(key[depth]);
+		if (nextNode == null) {
+			return null;
+		}
+		return remove(nextNode, key, depth + 1, (AbstractNode)node);
+	}
+
 	private V get(Node node, byte[] key, int depth) {
 		if (node instanceof LeafNode) {
 			// match key to leaf
@@ -48,11 +94,6 @@ public class ART<V> {
 			}
 			return null;
 		}
-
-		if (!(node instanceof AbstractNode)) {
-			throw new IllegalStateException(NOT_AN_ABSTRACT_NODE_EXCEPTION_MSG);
-		}
-
 		// match compressed path, if match completely
 		// then skip over those many prefixLen bytes from key
 		// and do findChild and continue search over that child.

@@ -57,6 +57,11 @@ class LeafNode<V> implements Node {
 	}
 
 	@Override
+	public void removeChild(byte partialKey) {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
+
+	@Override
 	public Node grow() {
 		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}
