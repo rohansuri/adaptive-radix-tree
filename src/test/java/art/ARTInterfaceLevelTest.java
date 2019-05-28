@@ -3,6 +3,7 @@ package art;
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ARTInterfaceLevelTest {
@@ -69,6 +70,17 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals("2", art.get(barca));
 	}
 
+
+	/*
+		should result in a tree with
+		256 size root having 256 child pointers
+		representing the higher 8bits in the 16bit integer.
+		and each of those 256 child pointers in turn pointing to a 256 node type,
+		representing all possible combinations of lower 8 bits of the 16bit integer.
+				  256
+			   /  |    |    \ ... 256 such child paths
+			256	  256  256  256  .. lower 8 bit combinations
+	 */
 	@Test
 	public void testInsertingAllInt16BitIntegers() {
 		ART<String> art = new ART<>();
@@ -93,6 +105,28 @@ public class ARTInterfaceLevelTest {
 		}
 	}
 
+	@Test
+	@Ignore // heavy test (in terms of?). Disable logging
+	public void testInsertingAllInt32BitIntegers() {
+		ART<String> art = new ART<>();
+
+		// insert all
+
+		for (int i = 0; i < Integer.MAX_VALUE; i++) {
+			byte[] key = ByteBuffer.allocate(Integer.BYTES).putInt(i).array();
+			String value = String.valueOf(i);
+			Assert.assertNull(art.put(key, value));
+			Assert.assertEquals(value, art.get(key));
+		}
+
+		// get all after inserting everything
+
+		for(int i = 0; i < Integer.MAX_VALUE; i++){
+			byte[] key = ByteBuffer.allocate(Integer.BYTES).putInt(i).array();
+			String value = String.valueOf(i);
+			Assert.assertEquals(value, art.get(key));
+		}
+	}
 
 	private byte[] nullTerminated(byte[] key) {
 		// is this the best way?
