@@ -207,7 +207,15 @@ public class ART<V> {
 		return pathCompressedNode;
 	}
 
-	// return new depth
+	private void updateCompressedPath(AbstractNode node, int lcp) {
+		// lcp th byte was the differing one, so we start shifting from lcp + 1
+		// from the lcp th + 1 index till whatever prefix key is left, shift that to left
+		for (int i = lcp + 1, j = 0; i < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && i < node.prefixLen; i++, j++) {
+			node.prefixKeys[j] = node.prefixKeys[i];
+		}
+		node.prefixLen = node.prefixLen - lcp - 1;
+	}
+
 	private int matchCompressedPath(AbstractNode node, byte[] key, V value, int depth, Node prevDepth) {
 		// what if prefixLen is 0?
 		// could that be the case?
@@ -217,15 +225,13 @@ public class ART<V> {
 			return depth;
 		}
 
-		final int initialDepth = depth; // replace usage by (depth - lcp)?
-
 		// match pessimistic compressed path
-		int lcp;
+		int lcp = 0;
 		// it is important to have both prefixLen and prefixKeys.Length checks
 		// the first one would incorporate the optimistic prefixLen as well
 		// where it is more than 8 (prefixKeys size)
 		// therefore we need to constraint with both when matching for pessimistic compressed path
-		for (lcp = 0; lcp < node.prefixLen && depth < key.length && lcp < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && key[depth] == node.prefixKeys[lcp]; lcp++, depth++)
+		for (; lcp < node.prefixLen && depth < key.length && lcp < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && key[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
 
 		log.trace("LCP of key {} and compressed path {} is {}",
@@ -251,46 +257,45 @@ public class ART<V> {
 			log.trace("optimistic match");
 			return depth + (node.prefixLen - AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		}
-		else { // pessimistic prefix doesn't match entirely, we have to branch
-			// BAR, BAZ inserted, now inserting BOZ
-
-			// create new lazy leaf node for unmatched key?
-			// TODO: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
-			LeafNode leafNode = new LeafNode<V>(key, value);
-
-			log.trace("Entire compressed path didn't match, branching out on partialKey {} and {}",
-					new String(new byte[] {key[depth]}), new String(new byte[] {node.prefixKeys[depth]}));
-
-			// new node with updated prefix len, compressed path
-			Node4 branchOut = new Node4();
-			branchOut.prefixLen = lcp;
-			// note: depth is the updated depth (initialDepth = depth - lcp)
-			System.arraycopy(key, initialDepth, branchOut.prefixKeys, 0, lcp);
-			branchOut.addChild(key[depth], leafNode);
-			branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
-
-			log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
-					.getValidPrefixKey()));
-
-			// remove lcp common prefix key from "this" node
-			updateCompressedPath(node, lcp);
-
-			// replace "this" node with newNode
-			// initialDepth can be zero even if prefixLen is not zero.
-			// the root node could have a prefix too, for example after insertions of
-			// BAR, BAZ? prefix would be BA kept in the root node itself
-			replace(initialDepth, key, prevDepth, branchOut);
+		else {
+			branchOut(node, key, value, lcp, depth, prevDepth);
 			return -1; // we've already inserted the leaf node, caller needs to do nothing more
 		}
 	}
 
-	private void updateCompressedPath(AbstractNode node, int lcp) {
-		// lcp th byte was the differing one, so we start shifting from lcp + 1
-		// from the lcp th + 1 index till whatever prefix key is left, shift that to left
-		for (int i = lcp + 1, j = 0; i < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && i < node.prefixLen; i++, j++) {
-			node.prefixKeys[j] = node.prefixKeys[i];
-		}
-		node.prefixLen = node.prefixLen - lcp - 1;
+	// TODO: write a unit test to assert on before and after node structures (after branching out)
+	private void branchOut(AbstractNode node, byte[] key, V value, int lcp, int depth, Node prevDepth) {
+		// pessimistic prefix doesn't match entirely, we have to branch
+		// BAR, BAZ inserted, now inserting BOZ
+
+		int initialDepth = depth - lcp;
+
+		// create new lazy leaf node for unmatched key?
+		// TODO: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
+		LeafNode leafNode = new LeafNode<V>(key, value);
+
+		log.trace("Entire compressed path didn't match, branching out on partialKey {} and {}",
+				new String(new byte[] {key[depth]}), new String(new byte[] {node.prefixKeys[depth]}));
+
+		// new node with updated prefix len, compressed path
+		Node4 branchOut = new Node4();
+		branchOut.prefixLen = lcp;
+		// note: depth is the updated depth (initialDepth = depth - lcp)
+		System.arraycopy(key, initialDepth, branchOut.prefixKeys, 0, lcp);
+		branchOut.addChild(key[depth], leafNode);
+		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
+
+		log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
+				.getValidPrefixKey()));
+
+		// remove lcp common prefix key from "this" node
+		updateCompressedPath(node, lcp);
+
+		// replace "this" node with newNode
+		// initialDepth can be zero even if prefixLen is not zero.
+		// the root node could have a prefix too, for example after insertions of
+		// BAR, BAZ? prefix would be BA kept in the root node itself
+		replace(initialDepth, key, prevDepth, branchOut);
 	}
 
 
