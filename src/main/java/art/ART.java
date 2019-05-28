@@ -2,7 +2,6 @@ package art;
 
 import java.util.Arrays;
 
-import org.apache.commons.math3.analysis.function.Abs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,8 @@ public class ART<V> {
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<V>(key, value);
-			log.debug("Tree empty, creating leaf node for key {} and making it root", Arrays.toString(key));
+			log.debug("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays
+					.toString(key));
 			return null;
 		}
 		return put(root, key, value, 0, null);
@@ -93,10 +93,8 @@ public class ART<V> {
 				leaf.setValue(value);
 				return oldValue;
 			}
-
-
 			// we gotta replace the prevDepth's child pointer to this new node
-			if (prevDepth == null) {
+			else if (prevDepth == null) {
 				// change the root
 				root = pathCompressedNode;
 			}
@@ -172,17 +170,24 @@ public class ART<V> {
 		}
 	}
 
+	/*
+		we reached a lazy expanded leaf node, we gotta expand it now.
+		but how much should we expand?
+		since we reached depth X, it means till now both leaf node and new node have same bytes.
+		now what has been stored lazily is leaf node's key(depth, end).
+		that's the part over which we need to compute longest common prefix.
+		that's the part we can path compress.
+		what is left over for both leaf, new node can be stored lazy expanded.
+	*/
 	private Node expandLazyLeafNode(LeafNode<V> leaf, byte[] key, V value, int depth) {
-		/*
-			 	we reached a lazy expanded leaf node, we gotta expand it now.
-			 	but how much should we expand?
-			 	since we reached depth X, it means till now both leaf node and new node have same bytes.
-			 	now what has been stored lazily is leaf node's key(depth, end).
-			 	that's the part over which we need to compute longest common prefix.
-			 	that's the part we can path compress.
-			 	what is left over for both leaf, new node can be stored lazy expanded.
-			  */
-		int lcp = longestCommonPrefix(leaf, key, depth);
+		// we refactored creation of path compressed node before knowing if it's the same key or not
+		// so that early copying of path compressed node can be done.
+		// but what if it is the same key?
+		// then we unnecessarily have created this node.
+		// what is worse? having to copy the path compressed before and later discarding it
+		// or having to recopy the common prefix?
+		Node4 pathCompressedNode = new Node4();
+		int lcp = longestCommonPrefix(leaf, key, pathCompressedNode, depth);
 		// why both conditions needed?
 		// think of BAR present as lazily stored and we inserting BARCA
 		// lcp = 3 and depth + lcp == leaf.getKey().length i.e 0 + 3 == len(BAR) = 3
@@ -204,9 +209,8 @@ public class ART<V> {
 		// create path compressed node
 		// make this path compressed node take the place of "child" for current on going partialKey
 		// and add to it, two lazy expanded leaf nodes?
-		Node pathCompressedNode = pathCompressAfterExpandingLazyLeaf(leaf, lcp, key, depth, value);
+		addTwoLazyLeavesToPathCompressedNode(leaf, lcp, key, pathCompressedNode, depth, value);
 		return pathCompressedNode;
-		//node.replace(partialKey, pathCompressedNode);
 	}
 
 	// return new depth
@@ -305,11 +309,7 @@ public class ART<V> {
 	}
 
 
-	private Node pathCompressAfterExpandingLazyLeaf(LeafNode leaf, int lcp, byte[] key, int depth, V value) {
-
-		Node4 pathCompressedNode = new Node4();
-		pathCompressedNode.setPrefix(lcp, key, depth);
-
+	private void addTwoLazyLeavesToPathCompressedNode(LeafNode leaf, int lcp, byte[] key, Node4 pathCompressedNode, int depth, V value) {
 		// reuse current leaf node
 		byte differ = leaf.getKey()[depth + lcp];
 		// TODO: can depth + lcp be greater than leaf.getKey()'s length?
@@ -332,19 +332,21 @@ public class ART<V> {
 
 		// create new leaf node for this new key
 		LeafNode newLeaf = new LeafNode<V>(key, value);
-		assert key.length > depth + lcp;
+		assert key.length > depth + lcp; // if false, would mean to-be-inserted key is a complete prefix of an already inserted key
 		differ = key[depth + lcp];
 		pathCompressedNode.addChild(differ, newLeaf);
-		return pathCompressedNode;
 	}
 
-	private int longestCommonPrefix(LeafNode node, byte[] key, int depth) {
+	private int longestCommonPrefix(LeafNode node, byte[] key, Node4 pathCompressedNode, int depth) {
 		// both leaf node's key and new node's key should be compared from depth index
-		int lcp;
+		int lcp = 0;
 		byte[] leafKey = node.getKey(); // loadKey in paper
-		// TODO:optimization: combine setting the prefixLen, prefixKey array of the pathCompressedNode in this loop itself?
-		// so that later no array copying is needed!
-		for (lcp = 0; depth < leafKey.length && depth < key.length && leafKey[depth] == key[depth]; depth++, lcp++) ;
+		for (; depth < leafKey.length && depth < key.length && leafKey[depth] == key[depth]; depth++, lcp++) {
+			if (lcp < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
+				pathCompressedNode.prefixKeys[lcp] = key[depth];
+			}
+		}
+		pathCompressedNode.prefixLen = lcp;
 		log.debug("longest common prefix between new key {} and lazily stored leaf {} is {}", Arrays
 				.toString(key), Arrays.toString(node
 				.getKey()), lcp);

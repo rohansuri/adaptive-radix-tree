@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ARTTest {
+public class ARTInterfaceLevelTest {
 	private static final byte[] BAR = "BAR".getBytes();
 	private static final byte[] BAZ = "BAZ".getBytes();
 	private static final byte[] BOZ = "BOZ".getBytes();

@@ -18,14 +18,8 @@ public abstract class AbstractNode implements Node {
 	// using it specifically on an AbstractNode level? (are we?)
 	int noOfChildren; // 4 bytes
 
-	void setPrefix(int prefixLen, byte[] key, int depth) {
-		this.prefixLen = prefixLen;
-		System.arraycopy(key, depth, this.prefixKeys, 0, Math.min(PESSIMISTIC_PATH_COMPRESSION_LIMIT, prefixLen));
-	}
-
 	public AbstractNode() {
 		prefixKeys = new byte[PESSIMISTIC_PATH_COMPRESSION_LIMIT];
-
 	}
 
 	// copy ctor. called when growing
