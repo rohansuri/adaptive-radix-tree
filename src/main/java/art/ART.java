@@ -14,10 +14,11 @@ public class ART<V> {
 	private Node root;
 
 	public V put(byte[] key, V value) {
+		log.trace("putting {}", Arrays.toString(key));
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<V>(key, value);
-			log.debug("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays
+			log.trace("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays
 					.toString(key));
 			return null;
 		}
@@ -25,6 +26,7 @@ public class ART<V> {
 	}
 
 	public V get(byte[] key) {
+		log.trace("getting {}", Arrays.toString(key));
 		if (root == null) { // empty tree
 			return null;
 		}
@@ -99,13 +101,17 @@ public class ART<V> {
 		// and do findChild and continue search over that child.
 		// if incomplete match, then we return null.
 		if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
+			log.trace("compressed path {} and key {} didn't match entirely", ((AbstractNode) node).getValidPrefixKey(), key);
 			return null;
 		}
 
+		log.trace("compressed path {} and key {} matched entirely", ((AbstractNode) node).getValidPrefixKey(), key);
 		// complete match, continue search
 		depth = depth + ((AbstractNode) node).prefixLen;
 		Node nextNode = node.findChild(key[depth]);
 		if (nextNode == null) {
+			System.out.println(Arrays.toString(((Node4)node).getKeys()));
+			log.trace("no follow on child pointer for partialKey {}", key[depth]);
 			return null;
 		}
 		return get(nextNode, key, depth + 1);
@@ -124,6 +130,7 @@ public class ART<V> {
 
 	private void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
+			log.trace("replacing root");
 			root = replaceWith;
 		}
 		else {
@@ -255,6 +262,7 @@ public class ART<V> {
 			node.prefixKeys[j] = node.prefixKeys[i];
 		}
 		node.prefixLen = node.prefixLen - lcp - 1;
+		log.trace("updated compressed path {}", node.getValidPrefixKey());
 	}
 
 	private int matchCompressedPath(AbstractNode node, byte[] key, V value, int depth, Node prevDepth) {
@@ -266,6 +274,7 @@ public class ART<V> {
 			return depth;
 		}
 
+		log.trace("depth before lcp {}", depth);
 		// match pessimistic compressed path
 		int lcp = 0;
 		// it is important to have both prefixLen and prefixKeys.Length checks
@@ -310,6 +319,7 @@ public class ART<V> {
 		// BAR, BAZ inserted, now inserting BOZ
 
 		int initialDepth = depth - lcp;
+		log.trace("initial depth calculated {}", initialDepth);
 
 		// create new lazy leaf node for unmatched key?
 		// TODO: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
@@ -325,6 +335,9 @@ public class ART<V> {
 		System.arraycopy(key, initialDepth, branchOut.prefixKeys, 0, lcp);
 		branchOut.addChild(key[depth], leafNode);
 		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
+		log.trace("added follow on pointer for partialKey {}", key[depth]);
+		log.trace("added follow on pointer for partialKey {}", node.prefixKeys[lcp]);
+		log.trace("new node contains following keys {}", Arrays.toString(branchOut.getKeys()));
 
 		log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
 				.getValidPrefixKey()));
