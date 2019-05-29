@@ -2,7 +2,12 @@ package art;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class Node4 extends AbstractNode {
+
+	private static final Logger log = LoggerFactory.getLogger(Node4.class);
 
 	private static final int NODE_SIZE = 4;
 
@@ -42,12 +47,13 @@ class Node4 extends AbstractNode {
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
 		assert insertionPoint <= noOfChildren;
-		for (int i = noOfChildren - 1; i > insertionPoint; i--) {
+		for (int i = noOfChildren; i > insertionPoint; i--) {
 			keys[i] = keys[i - 1];
 			this.child[i] = this.child[i - 1];
 		}
 		keys[insertionPoint] = partialKey;
 		this.child[insertionPoint] = child;
+		log.trace("partialKey {} added at {}", partialKey, insertionPoint);
 		noOfChildren++;
 		return true;
 	}
