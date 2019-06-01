@@ -11,8 +11,8 @@ class Node16 extends AbstractNode {
     	super(node);
 		byte[] keys = node.getKeys();
 		Node[] child = node.getChild();
-		System.arraycopy(keys, 0, this.keys, 0, keys.length);
-		System.arraycopy(child, 0, this.child, 0, child.length);
+		System.arraycopy(keys, 0, this.keys, 0, node.noOfChildren);
+		System.arraycopy(child, 0, this.child, 0, node.noOfChildren);
 	}
 
 	@Override

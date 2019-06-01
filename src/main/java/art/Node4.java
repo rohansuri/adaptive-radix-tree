@@ -35,15 +35,16 @@ class Node4 extends AbstractNode {
 		return child[index];
 	}
 
-	// TODO: unit test this binary search inserts into correct position
-	// along with edge cases (where partialKey is found to be first, last element in array)
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
 		if (noOfChildren == NODE_SIZE) {
 			return false;
 		}
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
-		assert index < 0; // the partialKey should not exist
+		if(index >= 0){ // the partialKey should not exist
+			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node."
+					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
+		}
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
 		assert insertionPoint <= noOfChildren;
@@ -62,7 +63,9 @@ class Node4 extends AbstractNode {
 	public void replace(byte partialKey, Node newChild) {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// replace must be called from in a state where you know partialKey entry surely exists
-		assert index >= 0;
+		if(index < 0) {
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+		}
 		child[index] = newChild;
 	}
 
@@ -71,7 +74,9 @@ class Node4 extends AbstractNode {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
-		assert index >= 0;
+		if(index < 0){
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+		}
 		for(int i = index; i < noOfChildren - 1; i++){
 			keys[i] = keys[i+1];
 			child[i] = child[i+1];
@@ -82,16 +87,19 @@ class Node4 extends AbstractNode {
 
 	@Override
 	public Node grow() {
+		if(noOfChildren != NODE_SIZE){
+			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
+		}
 		// grow from Node4 to Node16
 		Node node = new Node16(this);
 		return node;
 	}
 
-	public byte[] getKeys() {
+	byte[] getKeys() {
 		return keys;
 	}
 
-	public Node[] getChild() {
+	Node[] getChild() {
 		return child;
 	}
 }
