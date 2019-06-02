@@ -3,12 +3,15 @@ package art;
 import java.util.Arrays;
 
 class Node16 extends AbstractNode {
-	private static final int NODE_SIZE = 16;
+	static final int NODE_SIZE = 16;
     private final Node[] child = new Node[NODE_SIZE];
     private final byte[] keys = new byte[NODE_SIZE];
 
     Node16(Node4 node){
-    	super(node);
+		super(node);
+    	if(node.noOfChildren != Node4.NODE_SIZE){
+    		throw new IllegalArgumentException("Given Node4 still has capacity, cannot grow into Node16.");
+		}
 		byte[] keys = node.getKeys();
 		Node[] child = node.getChild();
 		System.arraycopy(keys, 0, this.keys, 0, node.noOfChildren);
@@ -34,7 +37,11 @@ class Node16 extends AbstractNode {
 			return false;
 		}
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
-		assert index < 0; // the partialKey should not exist
+		// the partialKey should not exist
+		if(index >= 0){
+			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node."
+					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
+		}
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
 		assert insertionPoint <= noOfChildren;
@@ -51,10 +58,8 @@ class Node16 extends AbstractNode {
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
-		if (index < 0) {
-			// TODO: better flow/API design?
-			// start with thinking what do we finally return/throw in such a state?
-			throw new IllegalStateException("replace must be called from in a state where you know partialKey entry surely exists");
+		if(index < 0) {
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
 		child[index] = newChild;
 	}
@@ -64,7 +69,9 @@ class Node16 extends AbstractNode {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
-		assert index >= 0;
+		if(index < 0){
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+		}
 		for(int i = index; i < noOfChildren - 1; i++){
 			keys[i] = keys[i+1];
 			child[i] = child[i+1];
@@ -75,6 +82,9 @@ class Node16 extends AbstractNode {
 
 	@Override
 	public Node grow() {
+		if(noOfChildren != NODE_SIZE){
+			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
+		}
 		Node node = new Node48(this);
 		return node;
 	}

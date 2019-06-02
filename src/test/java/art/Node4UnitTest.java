@@ -62,30 +62,30 @@ public class Node4UnitTest {
 	@Test
 	public void testGrow(){
 		Node4 node4 = new Node4();
-		Node child1 = Mockito.mock(Node.class);
-		Node child2 = Mockito.mock(Node.class);
-
-		Assert.assertTrue(node4.addChild((byte)1, child1));
-		Assert.assertTrue(node4.addChild((byte)2, child2));
+		Node children[] = new Node[Node4.NODE_SIZE];
+		for(int i = 0; i < Node4.NODE_SIZE; i++){
+			Node child = Mockito.mock(Node.class);
+			node4.addChild((byte)(i+1), child);
+			children[i] = child;
+		}
 
 		Node node = node4.grow();
 		// assert we grow into next larger node type 16
 		Assert.assertTrue(node instanceof Node16);
 		Node16 node16 = (Node16)node;
 
-		// assert both partial key mappings exist
-		Assert.assertEquals(2, node16.noOfChildren);
-		Assert.assertEquals(child1, node16.findChild((byte)1));
-		Assert.assertEquals(child2, node16.findChild((byte)2));
-
+		// assert all partial key mappings exist
 		// and in the same sorted order
-		Assert.assertEquals(1, node16.getKeys()[0]);
-		Assert.assertEquals(child1, node16.getChild()[0]);
-		Assert.assertEquals(2, node16.getKeys()[1]);
-		Assert.assertEquals(child2, node16.getChild()[1]);
-		// we test Node16's order here, since the ctor of Node16 is a copy of Node4's keys, children
-		// it's not noOfChildren times addChild
-	}
+		Assert.assertEquals(Node4.NODE_SIZE, node16.noOfChildren);
+		for(int i = 0; i < Node4.NODE_SIZE; i++){
+			Assert.assertEquals(children[i], node16.findChild((byte)(i+1)));
+			Assert.assertEquals(children[i], node16.getChild()[i]);
+
+			// we test Node16's order here, since the ctor of Node16 is a copy of Node4's keys, children
+			// it's not noOfChildren times addChild
+			Assert.assertEquals(i+1, node16.getKeys()[i]);
+		}
+ 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testGrowBeforeFull(){

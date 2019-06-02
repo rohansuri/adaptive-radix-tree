@@ -9,7 +9,7 @@ class Node4 extends AbstractNode {
 
 	private static final Logger log = LoggerFactory.getLogger(Node4.class);
 
-	private static final int NODE_SIZE = 4;
+	static final int NODE_SIZE = 4;
 
 	private final Node[] child = new Node[NODE_SIZE];
 

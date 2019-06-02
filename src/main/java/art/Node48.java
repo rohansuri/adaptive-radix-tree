@@ -20,6 +20,8 @@ class Node48 extends AbstractNode {
 	// and you see a -1, you know there's no mapping for this key
 	static final byte ABSENT = -1;
 
+	// TODO: test negative partial keys (byte value more than +127)
+	// TODO: assert keyIndex -1 for absent keys
 	Node48(Node16 node) {
 		super(node);
 		Arrays.fill(keyIndex, ABSENT);
@@ -27,7 +29,7 @@ class Node48 extends AbstractNode {
 		byte[] keys = node.getKeys();
 		Node[] child = node.getChild();
 
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i < Node16.NODE_SIZE; i++) {
 			byte key = keys[i];
 			int index = Byte.toUnsignedInt(key);
 			keyIndex[index] = (byte) i;
