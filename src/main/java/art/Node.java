@@ -14,6 +14,9 @@ package art;
  	There needs to be proper sequencing of the right calls, or you already must make the calls when
  	you're sure you meet the condition.
  	(This may change?)
+
+ 	These exceptions are for the programmer (who is working on this code) to know that the APIs are not being used correctly.
+ 	All of them indicate programmer errors.
  */
 
 interface Node {
@@ -52,4 +55,8 @@ interface Node {
 	 * @throws IllegalStateException if current node hasn't reached it's size yet
 	 */
 	Node grow(); // TODO: put grow inside addChild itself?
+
+	boolean shouldShrink();
+
+	Node shrink();
 }

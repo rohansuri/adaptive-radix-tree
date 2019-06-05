@@ -1,7 +1,8 @@
 package art;
 
 class Node256 extends AbstractNode {
-	private final Node child[] = new Node[256]; // 256 * 8 bytes
+	static final int NODE_SIZE = 256;
+	private final Node child[] = new Node[NODE_SIZE]; // 256 * 8 bytes
 
 	Node256(Node48 node) {
 		super(node);
@@ -68,6 +69,24 @@ class Node256 extends AbstractNode {
 	@Override
 	public Node grow() {
 		throw new IllegalStateException("Span of ART is 8 bits, so Node256 is the largest node type.");
+	}
+
+	@Override
+	public boolean shouldShrink() {
+		return noOfChildren == Node48.NODE_SIZE;
+	}
+
+	@Override
+	public Node shrink() {
+		if(!shouldShrink()){
+			throw new IllegalStateException("Haven't crossed shrinking threshold yet");
+		}
+		Node48 node48 = new Node48(this);
+		return node48;
+	}
+
+	Node[] getChild() {
+		return child;
 	}
 
 }

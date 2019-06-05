@@ -37,48 +37,68 @@ public class ART<V> {
 		if (root == null) {
 			return null;
 		}
+		else if (root instanceof LeafNode) {
+			LeafNode<V> leaf = (LeafNode) root;
+			if (!Arrays.equals(leaf.getKey(), key)) {
+				return null; // we don't have a mapping for this key
+			}
+			root = null;
+			return leaf.getValue();
+		}
 		return remove(root, key, 0, null);
 	}
 
 	private V remove(Node node, byte[] key, int depth, AbstractNode prevDepth) {
-		if (node instanceof LeafNode) {
-			LeafNode<V> leaf = (LeafNode) node;
-			// check if same key
-			// if same then remove
-			// if not same, but we reached a leaf, then return null
-			if (!Arrays.equals(leaf.getKey(), key)) {
-				return null; // we don't have a mapping for this key
-			}
-
-			// same key
-			// so we remove this leaf node entry from the prevDepth
-			// the follow on child pointer needs to be deleted
-			if (prevDepth == null) {
-				root = null; // this means, this is the only leaf node stored lazily
-			}
-			else {
-				// remove this leaf node's follow on pointer from the prevDepth
-				assert depth > 0;
-				prevDepth.removeChild(key[depth - 1]);
-
-				// TODO: shrink
-
-				if (prevDepth.noOfChildren == 1) {
-					// from imagination it seems like we'll be recursing up and removing a lot of paths
-				}
-			}
-			return leaf.getValue();
-		}
-
-		if(!matchesCompressedPathCompletely((AbstractNode)node, key, depth)){
+		if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
 			return null;
 		}
+		final int initialDepth = depth;
 		depth = depth + ((AbstractNode) node).prefixLen;
 		Node nextNode = node.findChild(key[depth]);
 		if (nextNode == null) {
 			return null;
 		}
-		return remove(nextNode, key, depth + 1, (AbstractNode)node);
+		if (nextNode instanceof LeafNode) {
+			LeafNode<V> leaf = (LeafNode) nextNode;
+			if (!Arrays.equals(leaf.getKey(), key)) {
+				return null; // we don't have a mapping for this key
+			}
+			node.removeChild(key[depth]);
+			if (node.shouldShrink()) {
+				log.trace("shrinking {}", node.getClass());
+				node = node.shrink();
+				replace(initialDepth, key, prevDepth, node);
+			} else if (((AbstractNode) node).noOfChildren == 1) {
+				pathCompress((Node4) node, prevDepth, key, initialDepth);
+			}
+			return leaf.getValue();
+		}
+		return remove(nextNode, key, depth + 1, (AbstractNode) node);
+	}
+
+	private void pathCompress(Node4 toCompress, Node prevDepth, byte[] key, int initialDepth) {
+		Node onlyChild = toCompress.getChild()[0];
+		assert onlyChild != null;
+		if (!(onlyChild instanceof LeafNode)) {
+			byte partialKeyToOnlyChild = toCompress.getKeys()[0]; // R
+			AbstractNode oc = (AbstractNode) onlyChild;
+			// update nextNode's compressed path with toCompress'
+			int toCopy = Math.min(AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, toCompress.prefixLen + 1);
+			int leftForMe = AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT - toCopy;
+			int iHave = Math.min(AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, oc.prefixLen);
+
+			// make space
+			System.arraycopy(oc.prefixKeys, 0, oc.prefixKeys, toCopy, Math.min(leftForMe, iHave));
+
+			int toCopyFromToCompress = Math.min(AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, toCompress.prefixLen);
+			System.arraycopy(toCompress.prefixKeys, 0, oc.prefixKeys, 0, toCopyFromToCompress);
+			if (toCopyFromToCompress < AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
+				// we got space left for the partialKey to only child
+				oc.prefixKeys[toCopyFromToCompress] = partialKeyToOnlyChild;
+			}
+			oc.prefixLen += toCompress.prefixLen + 1;
+		}
+		replace(initialDepth, key, prevDepth, onlyChild);
 	}
 
 	private V get(Node node, byte[] key, int depth) {
@@ -101,7 +121,8 @@ public class ART<V> {
 		// and do findChild and continue search over that child.
 		// if incomplete match, then we return null.
 		if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
-			log.trace("compressed path {} and key {} didn't match entirely", ((AbstractNode) node).getValidPrefixKey(), key);
+			log.trace("compressed path {} and key {} didn't match entirely", ((AbstractNode) node)
+					.getValidPrefixKey(), key);
 			return null;
 		}
 
@@ -110,7 +131,6 @@ public class ART<V> {
 		depth = depth + ((AbstractNode) node).prefixLen;
 		Node nextNode = node.findChild(key[depth]);
 		if (nextNode == null) {
-			System.out.println(Arrays.toString(((Node4)node).getKeys()));
 			log.trace("no follow on child pointer for partialKey {}", key[depth]);
 			return null;
 		}

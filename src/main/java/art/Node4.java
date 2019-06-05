@@ -17,6 +17,19 @@ class Node4 extends AbstractNode {
 	// if key matches then take up the same index from the child pointer array
 	private final byte[] keys = new byte[NODE_SIZE];
 
+	Node4(){}
+
+	Node4(Node16 node16){
+		super(node16);
+		if(!node16.shouldShrink()){
+			throw new IllegalArgumentException("Given Node16 hasn't crossed shrinking threshold yet");
+		}
+		byte[] keys = node16.getKeys();
+		Node[] child = node16.getChild();
+		System.arraycopy(keys, 0, this.keys, 0, node16.noOfChildren);
+		System.arraycopy(child, 0, this.child, 0, node16.noOfChildren);
+	}
+
 	@Override
 	public Node findChild(byte partialKey) {
 		// TODO: consider linear loop over search vs binary search?
@@ -93,6 +106,16 @@ class Node4 extends AbstractNode {
 		// grow from Node4 to Node16
 		Node node = new Node16(this);
 		return node;
+	}
+
+	@Override
+	public boolean shouldShrink() {
+		return false; // can't shrink less than node4
+	}
+
+	@Override
+	public Node shrink() {
+		throw new IllegalStateException("Node4 is smallest node type, can't shrink further");
 	}
 
 	byte[] getKeys() {

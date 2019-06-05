@@ -65,6 +65,16 @@ class LeafNode<V> implements Node {
 	public Node grow() {
 		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}
+
+	@Override
+	public boolean shouldShrink() {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
+
+	@Override
+	public Node shrink() {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
 }
 
 
