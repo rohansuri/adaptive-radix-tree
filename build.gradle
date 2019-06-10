@@ -14,8 +14,12 @@ plugins {
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
+	
+	// for research, comparing performance, etc
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
 
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+
+	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:23.0'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
 
