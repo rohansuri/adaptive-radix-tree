@@ -1,22 +1,19 @@
 package art;
 
-import java.nio.ByteBuffer;
-import java.util.stream.IntStream;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class ARTInterfaceLevelTest {
-	private static final byte[] BAR = "BAR".getBytes();
-	private static final byte[] BAZ = "BAZ".getBytes();
-	private static final byte[] BOZ = "BOZ".getBytes();
-	private static final byte[] BARCA = "BARCA".getBytes();
-	private static final byte[] BARK = "BARK".getBytes();
+	private static final String BAR = "BAR";
+	private static final String BAZ = "BAZ";
+	private static final String BOZ = "BOZ";
+	private static final String BARCA = "BARCA";
+	private static final String BARK = "BARK";
 
 	@Test
 	public void testSingleRemove() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
@@ -26,7 +23,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildLeaf() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -47,7 +44,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildInnerNode() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
 		Assert.assertNull(art.put(BARCA, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -92,7 +89,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testSingleInsert() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
@@ -103,7 +100,7 @@ public class ARTInterfaceLevelTest {
 	 */
 	@Test
 	public void testSharedPrefixInsert() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -113,7 +110,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testBreakCompressedPath() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -125,7 +122,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testReplace() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
@@ -137,16 +134,13 @@ public class ARTInterfaceLevelTest {
 	// we'll have to provide nice Serdes that can take care of strings this way
 	@Test
 	public void testPrefixesInsert() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.ASCII);
 
-		byte[] bar = nullTerminated(BAR);
-		Assert.assertNull(art.put(bar, "1"));
-		Assert.assertEquals("1", art.get(bar));
-		Assert.assertNull(art.get(BAR));
+		Assert.assertNull(art.put(BAR, "1"));
+		Assert.assertEquals("1", art.get(BAR));
 
-		byte[] barca = nullTerminated("BARCA".getBytes());
-		Assert.assertNull(art.put(barca, "2"));
-		Assert.assertEquals("2", art.get(barca));
+		Assert.assertNull(art.put(BARCA, "2"));
+		Assert.assertEquals("2", art.get(BARCA));
 	}
 
 
@@ -162,125 +156,112 @@ public class ARTInterfaceLevelTest {
 	 */
 	@Test
 	public void testInsertingAllInt16BitIntegers() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparable.SHORT);
 
-		// insert all
-
-		for (short i = 0; i < Short.MAX_VALUE; i++) {
-			byte[] key = ByteBuffer.allocate(Short.BYTES).putShort(i).array();
+		short i = Short.MIN_VALUE;
+		do {
 			String value = String.valueOf(i);
-			// System.out.println("value to be added = " + value);
-			// System.out.println(Arrays.toString(key));
-			Assert.assertNull(art.put(key, value));
-			Assert.assertEquals(value, art.get(key));
+			Assert.assertNull(art.put(i, value));
+			Assert.assertEquals(value, art.get(i));
+			i++;
 		}
+		while (i != Short.MIN_VALUE);
 
-		// get all after inserting everything
-
-		for (short i = 0; i < Short.MAX_VALUE; i++) {
-			byte[] key = ByteBuffer.allocate(Short.BYTES).putShort(i).array();
+		i = Short.MIN_VALUE;
+		do {
 			String value = String.valueOf(i);
-			Assert.assertEquals(value, art.get(key));
+			Assert.assertEquals(value, art.get(i));
+			i++;
 		}
+		while (i != Short.MIN_VALUE);
+
 	}
 
 	@Test
 	public void testInsertingAndDeletingAllInt8BitIntegers() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
 
 		// insert all
+		byte i = Byte.MIN_VALUE;
 
-		for (int i = 0; i < 256; i++) {
-			byte[] key = new byte[] {(byte) i};
+		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(key, value));
-			Assert.assertEquals(value, art.get(key));
+			Assert.assertNull(art.put(i, value));
+			Assert.assertEquals(value, art.get(i));
+			i++;
 		}
+		while (i != Byte.MIN_VALUE);
 
 		// remove one by one and check if others exist
-		for (int i = 0; i < 256; i++) {
-			byte[] key = new byte[] {(byte) i};
+		i = Byte.MIN_VALUE;
+		do {
 			String value = String.valueOf(i);
-			Assert.assertEquals(value, art.remove(key));
-			Assert.assertNull(art.get(key));
+			Assert.assertEquals(value, art.remove(i));
+			Assert.assertNull(art.get(i));
 
 			// others should exist
-			if (i < 255) {
-				IntStream.range(i + 1, 256).parallel()
-						.forEach(x -> {
-							byte[] _key = new byte[] {(byte) x};
-							String _value = String.valueOf(x);
-							Assert.assertEquals(_value, art.get(_key));
-						});
+			for(byte j = ++i; j != Byte.MIN_VALUE; j++){
+				value = String.valueOf(j);
+				Assert.assertEquals(value, art.get(j));
 			}
 		}
+		while (i != Byte.MIN_VALUE);
 	}
 
 	@Test
 	@Ignore // takes too long (1m 20secs locally)
 	public void testInsertingAndDeletingAllInt16BitIntegers() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparable.SHORT);
 
 		// insert all
+		short i = Short.MIN_VALUE;
 
-		for (short i = 0; i < Short.MAX_VALUE; i++) {
-			byte[] key = ByteBuffer.allocate(Short.BYTES).putShort(i).array();
+		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(key, value));
-			Assert.assertEquals(value, art.get(key));
+			Assert.assertNull(art.put(i, value));
+			Assert.assertEquals(value, art.get(i));
+			i++;
 		}
+		while (i != Short.MIN_VALUE);
 
 		// remove one by one and check if others exist
-		for (short i = 0; i < Short.MAX_VALUE; i++) {
-			byte[] key = ByteBuffer.allocate(Short.BYTES).putShort(i).array();
+		i = Short.MIN_VALUE;
+		do {
 			String value = String.valueOf(i);
-			Assert.assertEquals(value, art.remove(key));
-			Assert.assertNull(art.get(key));
+			Assert.assertEquals(value, art.remove(i));
+			Assert.assertNull(art.get(i));
 
 			// others should exist
-			if (i < Short.MAX_VALUE - 1) {
-				IntStream.range(i + 1, Short.MAX_VALUE).parallel()
-						.forEach(x -> {
-							short j = (short) x;
-							byte[] _key = ByteBuffer.allocate(Short.BYTES).putShort(j).array();
-							String _value = String.valueOf(j);
-							Assert.assertEquals(_value, art.get(_key));
-						});
+			for(short j = ++i; j != Short.MIN_VALUE; j++){
+				value = String.valueOf(j);
+				Assert.assertEquals(value, art.get(j));
 			}
+
 		}
+		while (i != Short.MIN_VALUE);
 	}
 
 	@Test
 	@Ignore // heavy test (in terms of?). Disable logging
 	public void testInsertingAllInt32BitIntegers() {
-		ART<String> art = new ART<>();
+		AdaptiveRadixTree<Integer, String> art = new AdaptiveRadixTree<>(BinaryComparable.INTEGER);
 
-		// insert all
-
-		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			byte[] key = ByteBuffer.allocate(Integer.BYTES).putInt(i).array();
+		int i = Integer.MIN_VALUE;
+		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(key, value));
-			Assert.assertEquals(value, art.get(key));
+			Assert.assertNull(art.put(i, value));
+			Assert.assertEquals(value, art.get(i));
+			i++;
 		}
+		while (i != Integer.MIN_VALUE);
 
-		// get all after inserting everything
-
-		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			byte[] key = ByteBuffer.allocate(Integer.BYTES).putInt(i).array();
+		i = Integer.MIN_VALUE;
+		do {
 			String value = String.valueOf(i);
-			Assert.assertEquals(value, art.get(key));
+			Assert.assertEquals(value, art.get(i));
+			i++;
 		}
+		while (i != Integer.MIN_VALUE);
 	}
 
-	private byte[] nullTerminated(byte[] key) {
-		// is this the best way?
-		byte[] keyBytes = new byte[key.length + 1];
-		System.arraycopy(key, 0, keyBytes, 0, key.length);
-		return keyBytes;
-	}
-
-	private byte[] nullTerminated(String key) {
-		return nullTerminated(key.getBytes());
-	}
 }

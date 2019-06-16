@@ -34,7 +34,7 @@ class Node16 extends AbstractNode {
 		for (byte i = Byte.MIN_VALUE; i < 0; i++) {
 			int index = Byte.toUnsignedInt(i);
 			if (keyIndex[index] != Node48.ABSENT) {
-				keys[j] = i;
+				keys[j] = BinaryComparableUtils.unsigned(i);
 				child[j] = children[keyIndex[index]];
 				j++;
 			}
@@ -43,7 +43,7 @@ class Node16 extends AbstractNode {
 		// i goes upto Byte.MAX_VALUE 127 and then becomes -128, where the loop will break
 		for (byte i = 0; i >= 0; i++) {
 			if (keyIndex[i] != Node48.ABSENT) {
-				keys[j] = i;
+				keys[j] = BinaryComparableUtils.unsigned(i);
 				child[j] = children[keyIndex[i]];
 				j++;
 			}
@@ -54,6 +54,7 @@ class Node16 extends AbstractNode {
 
 	@Override
 	public Node findChild(byte partialKey) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		// binary search for key
 		// having the from and to gives us only a valid view into what are the
 		// valid array elements that actually have keys and are not ABSENT
@@ -70,6 +71,8 @@ class Node16 extends AbstractNode {
 		if (noOfChildren == NODE_SIZE) {
 			return false;
 		}
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// the partialKey should not exist
 		if (index >= 0) {
@@ -91,6 +94,7 @@ class Node16 extends AbstractNode {
 
 	@Override
 	public void replace(byte partialKey, Node newChild) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		if (index < 0) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
@@ -100,6 +104,7 @@ class Node16 extends AbstractNode {
 
 	@Override
 	public void removeChild(byte partialKey) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey

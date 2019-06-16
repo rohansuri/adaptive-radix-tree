@@ -38,7 +38,7 @@ public class Node16UnitTest {
 		Node16 node16 = new Node16(node4);
 		Assert.assertEquals(Node4.NODE_SIZE, node16.noOfChildren);
 		for(int i = 0; i < Node4.NODE_SIZE; i++){
-			Assert.assertEquals((byte)i, node16.getKeys()[i]);
+			Assert.assertEquals(BinaryComparableUtils.unsigned((byte)i), node16.getKeys()[i]);
 			Assert.assertEquals(children[i], node16.getChild()[i]);
 		}
 	}
@@ -52,7 +52,7 @@ public class Node16UnitTest {
 		Assert.assertEquals(child, node16.findChild((byte)0));
 
 		// assert inserted at correct position
-		Assert.assertEquals(0, node16.getKeys()[0]);
+		Assert.assertEquals(BinaryComparableUtils.unsigned((byte)0), node16.getKeys()[0]);
 		Assert.assertEquals(child, node16.getChild()[0]);
 	}
 
@@ -165,7 +165,7 @@ public class Node16UnitTest {
 	private Map<Integer, Node> addNode4sChildrenToMap(Node16 node16){
 		Map<Integer, Node> map = new HashMap<>();
 		for(int i = 0; i < Node4.NODE_SIZE; i++){
-			map.put((int)node16.getKeys()[i], node16.getChild()[i]);
+			map.put((int)BinaryComparableUtils.signed(node16.getKeys()[i]), node16.getChild()[i]);
 		}
 		return map;
 	}
@@ -189,7 +189,7 @@ public class Node16UnitTest {
 			map.put(i+1, child);
 
 			for(int j = 0, k = i; j < node16.noOfChildren; j++, k++){
-				Assert.assertEquals((byte)(k+1), node16.getKeys()[j]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)(k+1)), node16.getKeys()[j]);
 				Assert.assertEquals(map.get(k+1), node16.getChild()[j]);
 			}
 		}
@@ -214,7 +214,7 @@ public class Node16UnitTest {
 			map.put(i+1, child);
 
 			for(int j = 0; j < node16.noOfChildren; j++){
-				Assert.assertEquals((byte)(j+1), node16.getKeys()[j]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)(j+1)), node16.getKeys()[j]);
 				Assert.assertEquals(map.get(j+1), node16.getChild()[j]);
 			}
 		}
@@ -247,12 +247,12 @@ public class Node16UnitTest {
 			// assert odd-even already added
 			int j = 1;
 			for(;j <= i; j++){
-				Assert.assertEquals(j, node16.getKeys()[j-1]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)j), node16.getKeys()[j-1]);
 				Assert.assertEquals(map.get(j), node16.getChild()[j-1]);
 			}
 			// assert even
 			for(int k = j; k <= node16.noOfChildren; j+=2, k++){
-				Assert.assertEquals(j, node16.getKeys()[k-1]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)j), node16.getKeys()[k-1]);
 				Assert.assertEquals(map.get(j), node16.getChild()[k-1]);
 			}
 		}
@@ -284,7 +284,7 @@ public class Node16UnitTest {
 		fillNode16(node16);
 		Map<Integer, Node> map = new HashMap<>();
 		for(int i = 0; i < Node16.NODE_SIZE; i++){
-			map.put((int)node16.getKeys()[i], node16.getChild()[i]);
+			map.put((int)BinaryComparableUtils.signed(node16.getKeys()[i]), node16.getChild()[i]);
 		}
 
 		// remove odds
@@ -294,13 +294,13 @@ public class Node16UnitTest {
 			// assert only evens
 			int j = 0, k = 2;
 			for(; k <= (i+1); j++, k+=2){
-				Assert.assertEquals(k, node16.getKeys()[j]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)k), node16.getKeys()[j]);
 				Assert.assertEquals(map.get(k), node16.getChild()[j]);
 			}
 
 			// assert even-odd alternate
 			for(k-- ; j < node16.noOfChildren; j++, k++){
-				Assert.assertEquals(k, node16.getKeys()[j]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)k), node16.getKeys()[j]);
 				Assert.assertEquals(map.get(k), node16.getChild()[j]);
 			}
 		}
@@ -326,7 +326,7 @@ public class Node16UnitTest {
 			node16.removeChild((byte)(i+1));
 
 			for(int j = 0, k = i+2; j < node16.noOfChildren; j++, k++){
-				Assert.assertEquals((byte)(k), node16.getKeys()[j]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)(k)), node16.getKeys()[j]);
 				Assert.assertEquals(map.get(k), node16.getChild()[j]);
 			}
 		}
@@ -351,7 +351,7 @@ public class Node16UnitTest {
 			node16.removeChild((byte)i);
 
 			for(int j = 0; j < node16.noOfChildren; j++){
-				Assert.assertEquals((byte)(j+1), node16.getKeys()[j]);
+				Assert.assertEquals(BinaryComparableUtils.unsigned((byte)(j+1)), node16.getKeys()[j]);
 				Assert.assertEquals(map.get(j+1), node16.getChild()[j]);
 			}
 		}

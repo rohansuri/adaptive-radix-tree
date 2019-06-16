@@ -17,6 +17,8 @@ dependencies {
 	
 	// for research, comparing performance, etc
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
+	compile group: 'com.ibm.icu', name: 'icu4j', version: '64.2'
+
 
 
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.

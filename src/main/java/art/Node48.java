@@ -34,7 +34,7 @@ class Node48 extends AbstractNode {
 		Node[] child = node.getChild();
 
 		for (int i = 0; i < Node16.NODE_SIZE; i++) {
-			byte key = keys[i];
+			byte key = BinaryComparableUtils.signed(keys[i]);
 			int index = Byte.toUnsignedInt(key);
 			keyIndex[index] = (byte) i;
 			this.child[i] = child[i];

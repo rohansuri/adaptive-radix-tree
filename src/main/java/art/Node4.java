@@ -32,6 +32,7 @@ class Node4 extends AbstractNode {
 
 	@Override
 	public Node findChild(byte partialKey) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		// TODO: consider linear loop over search vs binary search?
 		// paper does simple loop over probably because it's a tiny array (size 4)
 
@@ -53,6 +54,8 @@ class Node4 extends AbstractNode {
 		if (noOfChildren == NODE_SIZE) {
 			return false;
 		}
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		if(index >= 0){ // the partialKey should not exist
 			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node."
@@ -74,6 +77,8 @@ class Node4 extends AbstractNode {
 
 	@Override
 	public void replace(byte partialKey, Node newChild) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// replace must be called from in a state where you know partialKey entry surely exists
 		if(index < 0) {
@@ -84,6 +89,8 @@ class Node4 extends AbstractNode {
 
 	@Override
 	public void removeChild(byte partialKey) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
@@ -124,6 +131,13 @@ class Node4 extends AbstractNode {
 
 	Node[] getChild() {
 		return child;
+	}
+
+	byte getOnlyChild() {
+		if(noOfChildren != 1){
+			throw new IllegalStateException("more than one children");
+		}
+		return BinaryComparableUtils.signed(keys[0]);
 	}
 }
 

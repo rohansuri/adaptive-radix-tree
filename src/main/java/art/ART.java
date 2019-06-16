@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ART<V> {
+class ART<V> {
 
 	// TODO: is it unusual for a data structure library to log?
 	// TODO: replace with java.util.logging so that we have no runtime dependencies?
@@ -14,7 +14,6 @@ public class ART<V> {
 	private Node root;
 
 	public V put(byte[] key, V value) {
-		log.trace("putting {}", Arrays.toString(key));
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<V>(key, value);
@@ -80,7 +79,7 @@ public class ART<V> {
 		Node onlyChild = toCompress.getChild()[0];
 		assert onlyChild != null;
 		if (!(onlyChild instanceof LeafNode)) {
-			byte partialKeyToOnlyChild = toCompress.getKeys()[0]; // R
+			byte partialKeyToOnlyChild = toCompress.getOnlyChild();// toCompress.getKeys()[0]; // R
 			AbstractNode oc = (AbstractNode) onlyChild;
 			// update nextNode's compressed path with toCompress'
 			int toCopy = Math.min(AbstractNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, toCompress.prefixLen + 1);
@@ -357,7 +356,7 @@ public class ART<V> {
 		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 		log.trace("added follow on pointer for partialKey {}", key[depth]);
 		log.trace("added follow on pointer for partialKey {}", node.prefixKeys[lcp]);
-		log.trace("new node contains following keys {}", Arrays.toString(branchOut.getKeys()));
+		// log.trace("new node contains following keys {}", Arrays.toString(branchOut.getKeys()));
 
 		log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
 				.getValidPrefixKey()));

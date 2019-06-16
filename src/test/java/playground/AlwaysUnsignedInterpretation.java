@@ -5,12 +5,17 @@ import org.junit.Test;
 
 public class AlwaysUnsignedInterpretation {
 	/*
-	can we interpret given bits totally as unsigned for node4 and node48 types?
-	Yes!
-	Doing a flip and then storing in node4, will keep it in sorted order (lexico bitwise)
-	(even though it'll be stored as signed byte, the order would be maintained)
+	byte span in paper is unsigned.
+	so how can we interpret given bits totally as unsigned for node4 and node48 types?
+
+	Doing a flip (of each byte in key) and then storing in node4, will keep it in sorted order
+	(lexicographically bitwise)
+	even though it'll be stored as signed byte, the order would be maintained.
 
 	For node48, since we index into array as an integer, we only have to interpret the byte as unsigned.
+
+	Then for storing signed integers, we do key transformations as stated in paper and then
+	they're ready to be stored in the trie.
 	 */
 
 	// 2^7 = 128
@@ -33,7 +38,7 @@ public class AlwaysUnsignedInterpretation {
 		System.out.println("smallestLexicoWise after flip = " + y);
 	}
 
-	public static byte storeAsUnsignedInNode4(byte b){
+	static byte storeAsUnsignedInNode4(byte b){
 		return (byte)(b ^ BYTE_SHIFT);
 	}
 
@@ -53,7 +58,7 @@ public class AlwaysUnsignedInterpretation {
 		System.out.println("smallestLexicoWise after flip = " + y); // 0
 	}
 
-	public static int storeAsUnsignedInNode48(byte b){
+	static int storeAsUnsignedInNode48(byte b){
 		return Byte.toUnsignedInt(b);
 	}
 }
