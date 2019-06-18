@@ -77,6 +77,11 @@ class Node48 extends AbstractNode {
 			return false;
 		}
 		int index = Byte.toUnsignedInt(partialKey);
+		if(keyIndex[index] != ABSENT){
+			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node."
+					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
+
+		}
 		assert keyIndex[index] == -1;
 
 		// find a null place, left fragmented by a removeChild or has always been null

@@ -76,7 +76,7 @@ class Node16 extends AbstractNode {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// the partialKey should not exist
 		if (index >= 0) {
-			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node."
+			throw new IllegalArgumentException("Cannot insert partial key " + BinaryComparableUtils.signed(partialKey) + " that already exists in Node."
 					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
 		}
 		int insertionPoint = -(index + 1);
