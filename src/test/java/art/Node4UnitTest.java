@@ -292,14 +292,11 @@ public class Node4UnitTest {
 			node4.removeChild(partialKeys[i]);
 
 			// assert order (1, 2, -2, -1)(2, -2, -1) (-2, -1) (-1)
-			List<Byte> reversedStoredKeys = Lists
-					.newArrayList((Bytes.asList(storedKeys).subList(i + 1, Node4.NODE_SIZE)));
-			List<Node> reversedChildren = Lists.newArrayList((Arrays.asList(children).subList(i + 1, Node4.NODE_SIZE)));
 			for (int j = 0; j < node4.noOfChildren; j++) {
 				byte key = node4.getKeys()[j];
 				Node child = node4.getChild()[j];
-				Assert.assertEquals((byte) reversedStoredKeys.get(j), key);
-				Assert.assertEquals(reversedChildren.get(j), child);
+				Assert.assertEquals(storedKeys[j+i+1], key);
+				Assert.assertEquals(children[j+i+1], child);
 			}
 		}
 

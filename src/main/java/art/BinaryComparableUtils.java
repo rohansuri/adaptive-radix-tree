@@ -21,11 +21,13 @@ class BinaryComparableUtils {
 		return key;
 	}
 
-	// For Node4, Node16
+	// For Node4, Node16 to interpret every byte as unsigned
 	static byte unsigned(byte b) {
 		return (byte) (b ^ BYTE_SHIFT);
 	}
 
+	// passed b must have been interpreted as unsigned already
+	// this is the reverse of unsigned
 	static byte signed(byte b) {
 		return unsigned(b);
 	}
