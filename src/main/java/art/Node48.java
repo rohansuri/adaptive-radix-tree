@@ -21,7 +21,6 @@ class Node48 extends AbstractNode {
 	// and you see a -1, you know there's no mapping for this key
 	static final byte ABSENT = -1;
 
-	// TODO: test negative partial keys (byte value more than +127)
 	Node48(Node16 node) {
 		super(node);
 		if (node.noOfChildren != Node16.NODE_SIZE) {
@@ -82,8 +81,6 @@ class Node48 extends AbstractNode {
 					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
 
 		}
-		assert keyIndex[index] == -1;
-
 		// find a null place, left fragmented by a removeChild or has always been null
 		byte insertPosition = 0;
 		for (; this.child[insertPosition] != null && insertPosition < NODE_SIZE; insertPosition++) ;
@@ -98,7 +95,9 @@ class Node48 extends AbstractNode {
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
-		assert index >= 0 && index <= 47;
+		if (!(index >= 0 && index <= 47)) {
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+		}
 		child[index] = newChild;
 	}
 
@@ -106,8 +105,9 @@ class Node48 extends AbstractNode {
 	public void removeChild(byte partialKey) {
 		int index = Byte.toUnsignedInt(partialKey);
 		int pos = keyIndex[index];
-		assert pos != -1;
-
+		if (pos == -1) {
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+		}
 		child[pos] = null; // fragment
 		keyIndex[index] = ABSENT;
 		noOfChildren--;
@@ -115,6 +115,9 @@ class Node48 extends AbstractNode {
 
 	@Override
 	public Node grow() {
+		if (noOfChildren != NODE_SIZE) {
+			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
+		}
 		Node node = new Node256(this);
 		return node;
 	}
@@ -142,15 +145,3 @@ class Node48 extends AbstractNode {
 		return child;
 	}
 }
-
-/*
-    other nodes:
-    key = [a, b, c, d]
-    I'd look up by binary searching for them
-
-    but with 48 my key size has grown, so rather than binary searching
-    (log 48 base 2 = 5.58.. about 6 comparisons)
-    I index into an array which will tell me the position in the child pointer array
-    since as my child pointers grow (tree becomes fat) I don't want to spend time in searching
-    for the right "next-child" pointer
- */

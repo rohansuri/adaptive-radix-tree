@@ -2,7 +2,6 @@ package art;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 public class Node48UnitTest {
@@ -55,7 +54,7 @@ public class Node48UnitTest {
 		}
 	}
 
-	Node48 createNode48(){
+	private Node48 createNode48(){
 		Node4 node4 = new Node4();
 
 		// partialKeys in lexicographic ascending order
@@ -93,11 +92,21 @@ public class Node48UnitTest {
 		Assert.assertEquals(17, node48.noOfChildren);
 		Assert.assertEquals(child, node48.findChild(partialKey));
 
+		// assert correct internal structure
+		int keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)];
+		Assert.assertNotEquals(Node48.ABSENT, keyIndex);
+		Assert.assertEquals(child, node48.getChild()[keyIndex]);
+
 		partialKey = -9;
 		child = Mockito.mock(Node.class);
 		Assert.assertTrue(node48.addChild(partialKey, child));
 		Assert.assertEquals(18, node48.noOfChildren);
 		Assert.assertEquals(child, node48.findChild(partialKey));
+
+		// assert correct internal structure even for negative bytes
+		keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)];
+		Assert.assertNotEquals(Node48.ABSENT, keyIndex);
+		Assert.assertEquals(child, node48.getChild()[keyIndex]);
 	}
 
 	@Test
@@ -141,6 +150,120 @@ public class Node48UnitTest {
 		// noOfChildren 48 reached, now adds will fail
 		Assert.assertFalse(node48.addChild((byte) 25, child));
 		Assert.assertFalse(node48.addChild((byte) -25, child));
+	}
+
+	@Test
+	public void testGrow(){
+		Node48 node48 = createNode48();
+		// add till capacity
+		for (int i = Node16.NODE_SIZE / 2 + 1; i <= Node48.NODE_SIZE / 2; i++) {
+			Node child = Mockito.mock(Node.class);
+			Assert.assertTrue(node48.addChild((byte) i, child));
+			Assert.assertTrue(node48.addChild((byte) -i, child));
+		}
+
+		Node node = node48.grow();
+
+		Assert.assertTrue(node instanceof Node256);
+
+		Node256 node256 = (Node256)node;
+		Assert.assertEquals(Node48.NODE_SIZE, node256.noOfChildren);
+
+		// both node 48 and node 256 have keyIndex
+		// of size 256
+		// so they must be exactly equal
+		for(int i = 0; i < Node48.KEY_INDEX_SIZE; i++){
+			int keyIndex = node48.getKeyIndex()[i];
+			if(keyIndex == Node48.ABSENT){
+				Assert.assertNull(node256.getChild()[i]);
+			} else {
+				Assert.assertNotNull(node256.getChild()[i]);
+				Assert.assertEquals(node48.getChild()[keyIndex], node256.getChild()[i]);
+			}
+		}
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testGrowBeforeFull() {
+		Node48 node48 = createNode48();
+		node48.grow();
+	}
+
+	@Test
+	public void testReplace() {
+		Node48 node48 = createNode48();
+		byte partialKey = 1;
+		Node newChild = Mockito.mock(Node.class);
+		// assert the same child index position is updated with new child
+		int keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)];
+		node48.replace(partialKey, newChild);
+		Assert.assertEquals(newChild, node48.findChild(partialKey));
+		Assert.assertEquals(keyIndex, node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)]);
+
+		partialKey = -1;
+		newChild = Mockito.mock(Node.class);
+		keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)];
+		node48.replace(partialKey, newChild);
+		Assert.assertEquals(newChild, node48.findChild(partialKey));
+		Assert.assertEquals(keyIndex, node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)]);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testReplaceForNonExistentPartialKey() {
+		Node48 node48 = createNode48();
+		Node child = Mockito.mock(Node.class);
+		node48.replace((byte) 25, child);
+	}
+
+	@Test
+	public void testRemove() {
+		Node48 node48 = createNode48();
+		Node child1 = Mockito.mock(Node.class);
+		Node child2 = Mockito.mock(Node.class);
+
+		byte partialKey1 = 9;
+		byte partialKey2 = -9;
+		node48.addChild(partialKey1, child1);
+		node48.addChild(partialKey2, child2);
+
+		Assert.assertEquals(18, node48.noOfChildren);
+		Assert.assertEquals(child1, node48.findChild(partialKey1));
+		int keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey1)];
+		node48.removeChild(partialKey1);
+		Assert.assertNull(node48.findChild(partialKey1));
+		Assert.assertEquals(17, node48.noOfChildren);
+		// assert internal structure
+		Assert.assertEquals(Node48.ABSENT, node48.getKeyIndex()[Byte.toUnsignedInt(partialKey1)]);
+		Assert.assertNull(node48.getChild()[keyIndex]);
+
+		Assert.assertEquals(child2, node48.findChild(partialKey2));
+		keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey2)];
+		node48.removeChild(partialKey2);
+		Assert.assertNull(node48.findChild(partialKey2));
+		Assert.assertEquals(16, node48.noOfChildren);
+
+		// assert internal structure
+		Assert.assertEquals(Node48.ABSENT, node48.getKeyIndex()[Byte.toUnsignedInt(partialKey2)]);
+		Assert.assertNull(node48.getChild()[keyIndex]);
+	}
+
+	@Test
+	public void testRemoveForNonExistentPartialKey() {
+		Node48 node48 = createNode48();
+		byte partialKey = 25;
+		try {
+			node48.removeChild(partialKey);
+			Assert.fail();
+		}
+		catch (IllegalArgumentException e) {
+		}
+		partialKey = -25;
+		try {
+			node48.removeChild(partialKey);
+			Assert.fail();
+		}
+		catch (IllegalArgumentException e) {
+		}
 	}
 
 }
