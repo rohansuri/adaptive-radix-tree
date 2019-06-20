@@ -36,3 +36,9 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
 	mavenCentral()
 }
+
+test {
+	testLogging {
+		events "passed", "skipped", "failed", "standardOut", "standardError"
+	}
+}

@@ -13,11 +13,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class Node16UnitTest {
-	private Node16 createNode16() {
+	static Node16 createNode16() {
 		return new Node16(createNode4());
 	}
 
-	private Node4 createNode4() {
+	static private Node4 createNode4() {
 		Node4 node4 = new Node4();
 		node4.addChild((byte) 1, Mockito.mock(Node.class));
 		node4.addChild((byte) 2, Mockito.mock(Node.class));

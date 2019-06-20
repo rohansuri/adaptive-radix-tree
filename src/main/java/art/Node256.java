@@ -6,6 +6,9 @@ class Node256 extends AbstractNode {
 
 	Node256(Node48 node) {
 		super(node);
+		if (node.noOfChildren != Node48.NODE_SIZE) {
+			throw new IllegalArgumentException("Given Node48 still has capacity, cannot grow into Node256.");
+		}
 
 		byte[] keyIndex = node.getKeyIndex();
 		Node[] child = node.getChild();
@@ -26,7 +29,7 @@ class Node256 extends AbstractNode {
 	public Node findChild(byte partialKey) {
 		// convert byte to 8 bit integer
 		// and then index into that array position
-		// I guess we should treat the 8 bits as unsigned int
+		// We should treat the 8 bits as unsigned int
 		// since we've got 256 slots, we need to go from 00000000 to 11111111
 		int index = Byte.toUnsignedInt(partialKey);
 		return child[index];
@@ -35,7 +38,7 @@ class Node256 extends AbstractNode {
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
 		if (noOfChildren == 256) {
-			throw new IllegalStateException("ART span is 8 bits, so node 256 is the largest possible number of children you can have.");
+			return false;
 		}
 		// byte in Java is signed
 		// but we want no interpretation of the partialKey
@@ -45,9 +48,12 @@ class Node256 extends AbstractNode {
 		// convert it to a bigger container type
 		// or can we do something better?
 		int index = Byte.toUnsignedInt(partialKey);
-		assert this.child[index] == null;
+		if(this.child[index] != null) {
+			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node. "
+					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
+
+		}
 		this.child[index] = child;
-		// TODO: write unit tests for each node types function, verifying invariants (like addChild should increase noOfChildren by 1)
 		noOfChildren++;
 		return true;
 	}
@@ -55,13 +61,18 @@ class Node256 extends AbstractNode {
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		int index = Byte.toUnsignedInt(partialKey);
+		if(child[index] == null) {
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+		}
 		child[index] = newChild;
 	}
 
 	@Override
 	public void removeChild(byte partialKey) {
 		int index = Byte.toUnsignedInt(partialKey);
-		assert child[index] != null;
+		if(child[index] == null){
+			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+		}
 		child[index] = null;
 		noOfChildren--;
 	}

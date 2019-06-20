@@ -8,8 +8,7 @@ public class Node48UnitTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testUnderCapacityCreation(){
-		Node4 node4 = new Node4();
-		Node16 node16 = new Node16(node4);
+		Node16 node16 = Node16UnitTest.createNode16();
 		Node48 node48 = new Node48(node16);
 	}
 
@@ -54,7 +53,7 @@ public class Node48UnitTest {
 		}
 	}
 
-	private Node48 createNode48(){
+	static Node48 createNode48(){
 		Node4 node4 = new Node4();
 
 		// partialKeys in lexicographic ascending order
