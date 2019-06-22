@@ -2,23 +2,30 @@ package art;
 
 // TODO: better design to avoid LeafNode not having those UnsupportedExceptions?
 
+import java.util.Map;
+
 /*
     avoid this LeafNode extra hop? rather use child pointers as Object? (read notes below)
     i.e using the same pointer for both pointing to child Nodes as well as value
 
-    currently the Single-value leaves
+    currently we use what the paper mentions as "Single-value" leaves
  */
-class LeafNode<V> implements Node {
+class LeafNode<K, V> implements Node, Map.Entry<K, V> {
 	private V value;
 
 	private static final String EXCEPTION_MSG = "should not be called on LeafNode";
 
-	// we have to save the key, because leaves are lazy expanded at times (most of the times)
+	// we have to save the keyBytes, because leaves are lazy expanded at times (most of the times)
 	// confirm this is just a reference?
-	private byte[] key;
+	private byte[] keyBytes;
+	// TODO: is it a good idea to use the BinaryComparable when needed to convert key to keyBytes?
+	// I don't think so, memory is cheap, we could keep it stored.
 
-	LeafNode(byte[] key, V value) {
+	private K key;
+
+	LeafNode(byte[] keyBytes, K key, V value) {
 		this.value = value;
+		this.keyBytes = keyBytes;
 		this.key = key;
 	}
 
@@ -29,15 +36,21 @@ class LeafNode<V> implements Node {
 	// it's constraints are to be kept in check by internal
 	// developers
 
-	void setValue(V value) {
+	public V setValue(V value) {
+		V oldValue = this.value;
 		this.value = value;
+		return oldValue;
 	}
 
-	V getValue() {
+	public V getValue() {
 		return value;
 	}
 
-	byte[] getKey() {
+	byte[] getKeyBytes() {
+		return keyBytes;
+	}
+
+	public K getKey(){
 		return key;
 	}
 
@@ -112,19 +125,19 @@ class LeafNode<V> implements Node {
 
         resume:
         we're thinking of cases where the prefixKeys array could be expanded
-        why would that happen? when a new key is added with the same prefix?
+        why would that happen? when a new keyBytes is added with the same prefix?
         no that would mean two different leaves
 
-        when a new key is added with a character different from the prefix?
+        when a new keyBytes is added with a character different from the prefix?
         again that would be a different branch entirely
-        it's like adding FOO then adding FOS having prefix key middle "O" common
+        it's like adding FOO then adding FOS having prefix keyBytes middle "O" common
 
         I think lets execute and see if we'd require a growing array
 
 
      */
     /*
-        should we store pointer to key? rather than prefixKeys only?
+        should we store pointer to keyBytes? rather than prefixKeys only?
         does the paper specifically take/suggest a side?
      */
 
@@ -145,8 +158,8 @@ class LeafNode<V> implements Node {
     when working with child pointers
 
     question though:
-    if we directly point to value, lets say FOO is our search key
-    we're in the node for the last O and our key ends, so we find the next pointer
+    if we directly point to value, lets say FOO is our search keyBytes
+    we're in the node for the last O and our keyBytes ends, so we find the next pointer
     which is a Leaf? or is not instanceof Node?
     that'd be bad/slow
 
@@ -172,9 +185,9 @@ class LeafNode<V> implements Node {
 
     how about if we modify the keyset by making sure they are never prefixes or each other?
 
-    we do this by ending key sets by a character that is non existent in it's entire set
+    we do this by ending keyBytes sets by a character that is non existent in it's entire set
 
-    null byte is one such character (for the string key set space)
+    null byte is one such character (for the string keyBytes set space)
 
     so that means while inserting we need strings to be null byte appended?
 
@@ -191,7 +204,7 @@ class LeafNode<V> implements Node {
 
     which means, we can internally handle this null byte
     we can internally create a null next child pointer when inserting strings
-    no need for the user to explicitly add a null byte when he is inserting a key
+    no need for the user to explicitly add a null byte when he is inserting a keyBytes
 
     I wonder how we'd handle this in a compositekey case?
     how'd we know if when converting the Object into bytes (ObjectInputStream)
