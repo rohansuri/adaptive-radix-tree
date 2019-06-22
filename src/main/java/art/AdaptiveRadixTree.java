@@ -224,23 +224,23 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	private V put(Node node, byte[] key, V value, int depth, Node prevDepth) {
-
-		if (node instanceof LeafNode) {
-			@SuppressWarnings("unchecked")
-			LeafNode<V> leaf = (LeafNode<V>) node;
-			Node pathCompressedNode = createPathCompressedNodeAfterExpandLazyLeaf(leaf, key, value, depth);
-			if (pathCompressedNode == node) {
-				// key already exists
-				log.trace("key already exists, replacing value");
-				V oldValue = leaf.getValue();
-				leaf.setValue(value);
-				return oldValue;
+		while (true) {
+			if (node instanceof LeafNode) {
+				@SuppressWarnings("unchecked")
+				LeafNode<V> leaf = (LeafNode<V>) node;
+				Node pathCompressedNode = createPathCompressedNodeAfterExpandLazyLeaf(leaf, key, value, depth);
+				if (pathCompressedNode == node) {
+					// key already exists
+					log.trace("key already exists, replacing value");
+					V oldValue = leaf.getValue();
+					leaf.setValue(value);
+					return oldValue;
+				}
+				// we gotta replace the prevDepth's child pointer to this new node
+				replace(depth, key, prevDepth, pathCompressedNode);
+				size++;
+				return null;
 			}
-			// we gotta replace the prevDepth's child pointer to this new node
-			replace(depth, key, prevDepth, pathCompressedNode);
-			size++;
-			return null;
-		}
 
 		/*
 			before doing the find child, we gotta match the current node's prefix?
@@ -253,22 +253,24 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			TODO: analyze if code be shared for this split?
 		 */
 
-		// compare with compressed path
-		int newDepth = matchCompressedPath((AbstractNode) node, key, value, depth, prevDepth);
-		if (newDepth == -1) { // matchCompressedPath already inserted the leaf node for us
-			return null;
-		}
+			// compare with compressed path
+			int newDepth = matchCompressedPath((AbstractNode) node, key, value, depth, prevDepth);
+			if (newDepth == -1) { // matchCompressedPath already inserted the leaf node for us
+				return null;
+			}
 
-		// we're now at line 26 in paper
+			// we're now at line 26 in paper
 
-		byte partialKey = key[newDepth];
-		Node child = node.findChild(partialKey);
-		if (child == null) {
-			addChild(node, partialKey, key, value, depth, prevDepth);
-			return null;
-		}
-		else {
-			return put(child, key, value, newDepth + 1, node);
+			byte partialKey = key[newDepth];
+			Node child = node.findChild(partialKey);
+			if (child == null) {
+				addChild(node, partialKey, key, value, depth, prevDepth);
+				return null;
+			}
+			// set fields for next iteration
+			prevDepth = node;
+			depth = newDepth + 1;
+			node = child;
 		}
 	}
 
