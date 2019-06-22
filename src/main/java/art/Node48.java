@@ -49,8 +49,8 @@ class Node48 extends AbstractNode {
 
 		Node[] children = node256.getChild();
 		byte j = 0;
-		for(int i = 0; i < Node256.NODE_SIZE; i++){
-			if(children[i] != null){
+		for (int i = 0; i < Node256.NODE_SIZE; i++) {
+			if (children[i] != null) {
 				keyIndex[i] = j;
 				child[j] = children[i];
 				j++;
@@ -76,7 +76,7 @@ class Node48 extends AbstractNode {
 			return false;
 		}
 		int index = Byte.toUnsignedInt(partialKey);
-		if(keyIndex[index] != ABSENT){
+		if (keyIndex[index] != ABSENT) {
 			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node. "
 					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
 
@@ -134,6 +134,20 @@ class Node48 extends AbstractNode {
 		}
 		Node16 node16 = new Node16(this);
 		return node16;
+	}
+
+	@Override
+	public Node first() {
+		if (noOfChildren == 0) {
+			return null;
+		}
+		for (int i = 0; i < NODE_SIZE; i++) {
+			byte index = keyIndex[i];
+			if (index != ABSENT) {
+				return child[index];
+			}
+		}
+		return null;
 	}
 
 

@@ -489,15 +489,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return lcp;
 	}
 
+	/*
+		Returns null if the ART is empty
+	 */
 	@SuppressWarnings("unchecked")
-	Entry<K, V> getFirstEntry(){
-		if(root == null){
+	private Entry<K, V> getFirstEntry() {
+		if (isEmpty()) {
 			return null;
 		}
-		else if(root instanceof LeafNode){
-			return (LeafNode<K, V>)root;
+		Node node = root;
+		Node next = node.first();
+		while (next != null) {
+			node = next;
+			next = node.first();
 		}
-		return null; // coming to it
+		return (Entry<K, V>) node;
 	}
 
 	@Override
@@ -542,7 +548,20 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> firstEntry() {
-		return null;
+		// we need a snapshot (i.e. immutable entry) as per NavigableMap's docs
+		// also see Doug Lea's reply:
+		// http://jsr166-concurrency.10961.n7.nabble.com/Immutable-Entry-objects-in-j-u-TreeMap-td3384.html
+		// but why do we need a snapshot?
+		return exportEntry(getFirstEntry());
+	}
+
+	/**
+	 * Return SimpleImmutableEntry for entry, or null if null <br>
+	 * Note: taken from TreeMap
+	 */
+	private static <K, V> Map.Entry<K, V> exportEntry(Entry<K, V> e) {
+		return (e == null) ? null :
+				new AbstractMap.SimpleImmutableEntry<>(e);
 	}
 
 	@Override
@@ -648,7 +667,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		private Entry<K, V> next;
 
 		LeafNodeIterator() {
-			next = firstEntry();
+			next = getFirstEntry();
 		}
 
 		@Override

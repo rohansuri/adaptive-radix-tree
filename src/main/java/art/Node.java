@@ -59,4 +59,10 @@ interface Node {
 	boolean shouldShrink();
 
 	Node shrink();
+
+	/**
+	 * @return child pointer for the smallest partialKey stored in this Node.
+	 * 			Returns null if this node has no children.
+	 */
+	Node first();
 }

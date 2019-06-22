@@ -125,6 +125,11 @@ class Node4 extends AbstractNode {
 		throw new IllegalStateException("Node4 is smallest node type, can't shrink further");
 	}
 
+	@Override
+	public Node first() {
+		return child[0];
+	}
+
 	byte[] getKeys() {
 		return keys;
 	}

@@ -1,5 +1,7 @@
 package art;
 
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,6 +33,10 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals("1", art.get(BAR));
 		Assert.assertEquals("2", art.get(BAZ));
 		Assert.assertEquals("3", art.get(BOZ));
+
+		Map.Entry<String, String> firstEntry = art.firstEntry();
+		Assert.assertEquals(BAR, firstEntry.getKey());
+		Assert.assertEquals("1", firstEntry.getValue());
 
 		// remove BAR that shares prefix A with BAZ
 		Assert.assertEquals("1", art.remove(BAR));
@@ -193,6 +199,10 @@ public class ARTInterfaceLevelTest {
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
+
+		Map.Entry<Byte, String> firstEntry = art.firstEntry();
+		Assert.assertEquals(String.valueOf(Byte.MIN_VALUE), firstEntry.getValue());
+		Assert.assertEquals((Byte)Byte.MIN_VALUE, firstEntry.getKey());
 
 		// remove one by one and check if others exist
 		i = Byte.MIN_VALUE;

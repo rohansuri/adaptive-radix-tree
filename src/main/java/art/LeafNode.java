@@ -88,6 +88,11 @@ class LeafNode<K, V> implements Node, Map.Entry<K, V> {
 	public Node shrink() {
 		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}
+
+	@Override
+	public Node first() {
+		return null;
+	}
 }
 
 
