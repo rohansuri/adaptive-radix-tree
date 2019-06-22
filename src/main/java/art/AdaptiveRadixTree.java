@@ -100,7 +100,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	private V remove(Node node, byte[] key, int depth, AbstractNode prevDepth) {
-		while(true){
+		while (true) {
 			if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
 				return null;
 			}
@@ -161,40 +161,44 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	private V get(Node node, byte[] key, int depth) {
-		if (node instanceof LeafNode) {
-			// match key to leaf
-			// TODO: this is where the complete matching can be optimized
-			// if we keep track of what parts of key have already matched
-			// because of optimistic path compression, it may not be necessary
-			// that at depth D, first D bytes of key and this leaf node totally match.
-			// but we could skip matching the pessimistic parts of the key
-			// also the parts of the key that were directly taken traversed over (findChild)
-			@SuppressWarnings("unchecked")
-			LeafNode<V> leaf = (LeafNode<V>) node;
-			if (Arrays.equals(leaf.getKey(), key)) {
-				return leaf.getValue();
+		while (true) {
+			if (node instanceof LeafNode) {
+				// match key to leaf
+				// TODO: this is where the complete matching can be optimized
+				// if we keep track of what parts of key have already matched
+				// because of optimistic path compression, it may not be necessary
+				// that at depth D, first D bytes of key and this leaf node totally match.
+				// but we could skip matching the pessimistic parts of the key
+				// also the parts of the key that were directly taken traversed over (findChild)
+				@SuppressWarnings("unchecked")
+				LeafNode<V> leaf = (LeafNode<V>) node;
+				if (Arrays.equals(leaf.getKey(), key)) {
+					return leaf.getValue();
+				}
+				return null;
 			}
-			return null;
-		}
-		// match compressed path, if match completely
-		// then skip over those many prefixLen bytes from key
-		// and do findChild and continue search over that child.
-		// if incomplete match, then we return null.
-		if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
-			log.trace("compressed path {} and key {} didn't match entirely", ((AbstractNode) node)
-					.getValidPrefixKey(), key);
-			return null;
-		}
+			// match compressed path, if match completely
+			// then skip over those many prefixLen bytes from key
+			// and do findChild and continue search over that child.
+			// if incomplete match, then we return null.
+			if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
+				log.trace("compressed path {} and key {} didn't match entirely", ((AbstractNode) node)
+						.getValidPrefixKey(), key);
+				return null;
+			}
 
-		log.trace("compressed path {} and key {} matched entirely", ((AbstractNode) node).getValidPrefixKey(), key);
-		// complete match, continue search
-		depth = depth + ((AbstractNode) node).prefixLen;
-		Node nextNode = node.findChild(key[depth]);
-		if (nextNode == null) {
-			log.trace("no follow on child pointer for partialKey {}", key[depth]);
-			return null;
+			log.trace("compressed path {} and key {} matched entirely", ((AbstractNode) node).getValidPrefixKey(), key);
+			// complete match, continue search
+			depth = depth + ((AbstractNode) node).prefixLen;
+			Node nextNode = node.findChild(key[depth]);
+			if (nextNode == null) {
+				log.trace("no follow on child pointer for partialKey {}", key[depth]);
+				return null;
+			}
+			// set fields for next iteration
+			depth++;
+			node = nextNode;
 		}
-		return get(nextNode, key, depth + 1);
 	}
 
 	private boolean matchesCompressedPathCompletely(AbstractNode node, byte[] key, int depth) {
@@ -607,7 +611,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@Override
-	public int size(){
+	public int size() {
 		return size;
 	}
 
@@ -630,7 +634,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		private Entry<K, V> lastReturned;
 		private Entry<K, V> next;
 
-		LeafNodeIterator(){
+		LeafNodeIterator() {
 			next = firstEntry();
 		}
 
