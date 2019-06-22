@@ -16,7 +16,7 @@ abstract class AbstractNode implements Node {
 	// TODO: we could save space by making this a short for Node256 and byte for other node types?
 	// since noOfChildren will never be more than 256 and we don't seem to be
 	// using it specifically on an AbstractNode level? (are we?)
-	int noOfChildren; // 4 bytes
+	short noOfChildren; // 2 bytes
 
 	AbstractNode() {
 		prefixKeys = new byte[PESSIMISTIC_PATH_COMPRESSION_LIMIT];
