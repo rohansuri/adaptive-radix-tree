@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Node4 extends AbstractNode {
+class Node4 extends InnerNode {
 
 	private static final Logger log = LoggerFactory.getLogger(Node4.class);
 

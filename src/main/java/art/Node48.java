@@ -2,7 +2,7 @@ package art;
 
 import java.util.Arrays;
 
-class Node48 extends AbstractNode {
+class Node48 extends InnerNode {
 	/*
 		48 * 8 (child pointers) + 256 = 640 bytes
 	*/

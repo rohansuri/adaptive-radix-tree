@@ -10,7 +10,7 @@ import java.util.Map;
 
     currently we use what the paper mentions as "Single-value" leaves
  */
-class LeafNode<K, V> implements Node, Map.Entry<K, V> {
+class LeafNode<K, V> extends AbstractNode implements Map.Entry<K, V> {
 	private V value;
 
 	private static final String EXCEPTION_MSG = "should not be called on LeafNode";
@@ -50,7 +50,7 @@ class LeafNode<K, V> implements Node, Map.Entry<K, V> {
 		return keyBytes;
 	}
 
-	public K getKey(){
+	public K getKey() {
 		return key;
 	}
 

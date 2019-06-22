@@ -1,6 +1,6 @@
 package art;
 
-class Node256 extends AbstractNode {
+class Node256 extends InnerNode {
 	static final int NODE_SIZE = 256;
 	private final Node child[] = new Node[NODE_SIZE]; // 256 * 8 bytes
 
