@@ -109,6 +109,19 @@ class Node256 extends AbstractNode {
 		return null;
 	}
 
+	@Override
+	public Node last() {
+		if(noOfChildren == 0){
+			return null;
+		}
+		for(int i = NODE_SIZE - 1; i >= 0; i--){
+			if(child[i] != null){
+				return child[i];
+			}
+		}
+		return null;
+	}
+
 	Node[] getChild() {
 		return child;
 	}

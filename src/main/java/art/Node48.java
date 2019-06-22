@@ -141,7 +141,21 @@ class Node48 extends AbstractNode {
 		if (noOfChildren == 0) {
 			return null;
 		}
-		for (int i = 0; i < NODE_SIZE; i++) {
+		for (int i = 0; i < KEY_INDEX_SIZE; i++) {
+			byte index = keyIndex[i];
+			if (index != ABSENT) {
+				return child[index];
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Node last() {
+		if (noOfChildren == 0) {
+			return null;
+		}
+		for (int i = KEY_INDEX_SIZE - 1; i >= 0; i--) {
 			byte index = keyIndex[i];
 			if (index != ABSENT) {
 				return child[index];

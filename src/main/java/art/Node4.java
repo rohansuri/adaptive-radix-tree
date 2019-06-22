@@ -17,11 +17,12 @@ class Node4 extends AbstractNode {
 	// if key matches then take up the same index from the child pointer array
 	private final byte[] keys = new byte[NODE_SIZE];
 
-	Node4(){}
+	Node4() {
+	}
 
-	Node4(Node16 node16){
+	Node4(Node16 node16) {
 		super(node16);
-		if(!node16.shouldShrink()){
+		if (!node16.shouldShrink()) {
 			throw new IllegalArgumentException("Given Node16 hasn't crossed shrinking threshold yet");
 		}
 		byte[] keys = node16.getKeys();
@@ -57,8 +58,9 @@ class Node4 extends AbstractNode {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
-		if(index >= 0){ // the partialKey should not exist
-			throw new IllegalArgumentException("Cannot insert partial key " + BinaryComparableUtils.signed(partialKey) + " that already exists in Node. "
+		if (index >= 0) { // the partialKey should not exist
+			throw new IllegalArgumentException("Cannot insert partial key " + BinaryComparableUtils
+					.signed(partialKey) + " that already exists in Node. "
 					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
 		}
 		int insertionPoint = -(index + 1);
@@ -81,7 +83,7 @@ class Node4 extends AbstractNode {
 
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// replace must be called from in a state where you know partialKey entry surely exists
-		if(index < 0) {
+		if (index < 0) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
 		child[index] = newChild;
@@ -94,12 +96,12 @@ class Node4 extends AbstractNode {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
-		if(index < 0){
+		if (index < 0) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
-		for(int i = index; i < noOfChildren - 1; i++){
-			keys[i] = keys[i+1];
-			child[i] = child[i+1];
+		for (int i = index; i < noOfChildren - 1; i++) {
+			keys[i] = keys[i + 1];
+			child[i] = child[i + 1];
 		}
 		child[noOfChildren - 1] = null;
 		noOfChildren--;
@@ -107,7 +109,7 @@ class Node4 extends AbstractNode {
 
 	@Override
 	public Node grow() {
-		if(noOfChildren != NODE_SIZE){
+		if (noOfChildren != NODE_SIZE) {
 			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
 		}
 		// grow from Node4 to Node16
@@ -130,6 +132,14 @@ class Node4 extends AbstractNode {
 		return child[0];
 	}
 
+	@Override
+	public Node last() {
+		if(noOfChildren == 0){
+			return null;
+		}
+		return child[noOfChildren - 1];
+	}
+
 	byte[] getKeys() {
 		return keys;
 	}
@@ -139,7 +149,7 @@ class Node4 extends AbstractNode {
 	}
 
 	byte getOnlyChild() {
-		if(noOfChildren != 1){
+		if (noOfChildren != 1) {
 			throw new IllegalStateException("more than one children");
 		}
 		return BinaryComparableUtils.signed(keys[0]);

@@ -147,6 +147,14 @@ class Node16 extends AbstractNode {
 		return child[0];
 	}
 
+	@Override
+	public Node last() {
+		if(noOfChildren == 0){
+			return null;
+		}
+		return child[noOfChildren - 1];
+	}
+
 	byte[] getKeys() {
 		return keys;
 	}

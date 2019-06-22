@@ -65,4 +65,10 @@ interface Node {
 	 * 			Returns null if this node has no children.
 	 */
 	Node first();
+
+	/**
+	 * @return child pointer for the largest partialKey stored in this Node.
+	 * 			Returns null if this node has no children.
+	 */
+	Node last();
 }

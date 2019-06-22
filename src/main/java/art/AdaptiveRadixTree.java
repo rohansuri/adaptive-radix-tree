@@ -507,6 +507,23 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return (Entry<K, V>) node;
 	}
 
+	/*
+		Returns null if the ART is empty
+	 */
+	@SuppressWarnings("unchecked")
+	private Entry<K, V> getLastEntry() {
+		if (isEmpty()) {
+			return null;
+		}
+		Node node = root;
+		Node next = node.last();
+		while (next != null) {
+			node = next;
+			next = node.last();
+		}
+		return (Entry<K, V>) node;
+	}
+
 	@Override
 	public Entry<K, V> lowerEntry(K key) {
 		return null;
@@ -567,7 +584,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> lastEntry() {
-		return null;
+		return exportEntry(getLastEntry());
 	}
 
 	@Override
@@ -651,7 +668,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public K lastKey() {
-		return null;
+		return key(getLastEntry());
 	}
 
 	@Override

@@ -93,6 +93,11 @@ class LeafNode<K, V> implements Node, Map.Entry<K, V> {
 	public Node first() {
 		return null;
 	}
+
+	@Override
+	public Node last() {
+		return null;
+	}
 }
 
 

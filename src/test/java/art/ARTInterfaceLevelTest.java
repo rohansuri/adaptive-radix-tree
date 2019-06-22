@@ -39,6 +39,11 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals(BAR, art.firstKey());
 		Assert.assertEquals("1", firstEntry.getValue());
 
+		Map.Entry<String, String> lastEntry = art.lastEntry();
+		Assert.assertEquals(BOZ, lastEntry.getKey());
+		Assert.assertEquals(BOZ, art.lastKey());
+		Assert.assertEquals("3", lastEntry.getValue());
+
 		// remove BAR that shares prefix A with BAZ
 		Assert.assertEquals("1", art.remove(BAR));
 
@@ -205,6 +210,11 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals(String.valueOf(Byte.MIN_VALUE), firstEntry.getValue());
 		Assert.assertEquals((Byte)Byte.MIN_VALUE, firstEntry.getKey());
 		Assert.assertEquals((Byte)Byte.MIN_VALUE, art.firstKey());
+
+		Map.Entry<Byte, String> lastEntry = art.lastEntry();
+		Assert.assertEquals(String.valueOf(Byte.MAX_VALUE), lastEntry.getValue());
+		Assert.assertEquals((Byte)Byte.MAX_VALUE, lastEntry.getKey());
+		Assert.assertEquals((Byte)Byte.MAX_VALUE, art.lastKey());
 
 		// remove one by one and check if others exist
 		i = Byte.MIN_VALUE;
