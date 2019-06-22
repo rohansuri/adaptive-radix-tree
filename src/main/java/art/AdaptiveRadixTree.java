@@ -100,34 +100,39 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	private V remove(Node node, byte[] key, int depth, AbstractNode prevDepth) {
-		if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
-			return null;
-		}
-		final int initialDepth = depth;
-		depth = depth + ((AbstractNode) node).prefixLen;
-		Node nextNode = node.findChild(key[depth]);
-		if (nextNode == null) {
-			return null;
-		}
-		if (nextNode instanceof LeafNode) {
-			@SuppressWarnings("unchecked")
-			LeafNode<V> leaf = (LeafNode) nextNode;
-			if (!Arrays.equals(leaf.getKey(), key)) {
-				return null; // we don't have a mapping for this key
+		while(true){
+			if (!matchesCompressedPathCompletely((AbstractNode) node, key, depth)) {
+				return null;
 			}
-			node.removeChild(key[depth]);
-			size--;
-			if (node.shouldShrink()) {
-				log.trace("shrinking {}", node.getClass());
-				node = node.shrink();
-				replace(initialDepth, key, prevDepth, node);
+			final int initialDepth = depth;
+			depth = depth + ((AbstractNode) node).prefixLen;
+			Node nextNode = node.findChild(key[depth]);
+			if (nextNode == null) {
+				return null;
 			}
-			else if (((AbstractNode) node).noOfChildren == 1) {
-				pathCompress((Node4) node, prevDepth, key, initialDepth);
+			if (nextNode instanceof LeafNode) {
+				@SuppressWarnings("unchecked")
+				LeafNode<V> leaf = (LeafNode) nextNode;
+				if (!Arrays.equals(leaf.getKey(), key)) {
+					return null; // we don't have a mapping for this key
+				}
+				node.removeChild(key[depth]);
+				size--;
+				if (node.shouldShrink()) {
+					log.trace("shrinking {}", node.getClass());
+					node = node.shrink();
+					replace(initialDepth, key, prevDepth, node);
+				}
+				else if (((AbstractNode) node).noOfChildren == 1) {
+					pathCompress((Node4) node, prevDepth, key, initialDepth);
+				}
+				return leaf.getValue();
 			}
-			return leaf.getValue();
+			// set fields for next iteration
+			prevDepth = (AbstractNode) node;
+			node = nextNode;
+			depth++;
 		}
-		return remove(nextNode, key, depth + 1, (AbstractNode) node);
 	}
 
 	private void pathCompress(Node4 toCompress, Node prevDepth, byte[] key, int initialDepth) {
