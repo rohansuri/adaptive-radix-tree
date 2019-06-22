@@ -41,4 +41,6 @@ test {
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
 	}
+
+	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }
