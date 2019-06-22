@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
@@ -634,7 +635,18 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public K firstKey() {
-		return null;
+		return key(getFirstEntry());
+	}
+
+	/**
+	 * Returns the key corresponding to the specified Entry.
+	 * @throws NoSuchElementException if the Entry is null
+	 * Note: taken from TreeMap
+	 */
+	static <K> K key(Entry<K, ?> e) {
+		if (e == null)
+			throw new NoSuchElementException();
+		return e.getKey();
 	}
 
 	@Override
