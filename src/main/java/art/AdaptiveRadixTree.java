@@ -1,14 +1,31 @@
 package art;
 
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedMap;
+
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AdaptiveRadixTree<K, V>  {
+public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements NavigableMap<K, V> {
 	private final BinaryComparable<K> binaryComparable;
+	private transient AdaptiveRadixTree.EntrySet entrySet;
+	private transient int size = 0;
 
-	public AdaptiveRadixTree(BinaryComparable<K> binaryComparable){
+	public AdaptiveRadixTree(BinaryComparable<K> binaryComparable) {
 		// TODO: null check for this, then key should implement bytes() method
+		Objects.requireNonNull(binaryComparable, "Specifying a BinaryComparable is necessary. Support for having keys themselves"
+				+ " being BinaryComparable i.e. sporting a bytes() method will come soon.");
 		this.binaryComparable = binaryComparable;
 	}
 
@@ -18,9 +35,15 @@ public class AdaptiveRadixTree<K, V>  {
 
 	private Node root;
 
-	public V put(K key, V value){
+	public V put(K key, V value) {
 		byte[] bytes = binaryComparable.get(key);
 		return put(bytes, value);
+	}
+
+	@Override
+	public Set<Entry<K, V>> entrySet() {
+		EntrySet es = entrySet;
+		return (es != null) ? es : (entrySet = new EntrySet());
 	}
 
 	private V put(byte[] key, V value) {
@@ -29,13 +52,17 @@ public class AdaptiveRadixTree<K, V>  {
 			root = new LeafNode<V>(key, value);
 			log.trace("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays
 					.toString(key));
+			size = 1;
 			return null;
 		}
 		return put(root, key, value, 0, null);
 	}
 
-	public V get(K key){
-		byte[] bytes = binaryComparable.get(key);
+	@Override
+	public V get(Object key) {
+		@SuppressWarnings("unchecked")
+		K k = (K) key;
+		byte[] bytes = binaryComparable.get(k);
 		return get(bytes);
 	}
 
@@ -47,8 +74,11 @@ public class AdaptiveRadixTree<K, V>  {
 		return get(root, key, 0);
 	}
 
-	public V remove(K key){
-		byte[] bytes = binaryComparable.get(key);
+	@Override
+	public V remove(Object key) {
+		@SuppressWarnings("unchecked")
+		K k = (K) key;
+		byte[] bytes = binaryComparable.get(k);
 		return remove(bytes);
 	}
 
@@ -57,11 +87,13 @@ public class AdaptiveRadixTree<K, V>  {
 			return null;
 		}
 		else if (root instanceof LeafNode) {
-			LeafNode<V> leaf = (LeafNode) root;
+			@SuppressWarnings("unchecked")
+			LeafNode<V> leaf = (LeafNode<V>) root;
 			if (!Arrays.equals(leaf.getKey(), key)) {
 				return null; // we don't have a mapping for this key
 			}
 			root = null;
+			size = 0;
 			return leaf.getValue();
 		}
 		return remove(root, key, 0, null);
@@ -78,16 +110,19 @@ public class AdaptiveRadixTree<K, V>  {
 			return null;
 		}
 		if (nextNode instanceof LeafNode) {
+			@SuppressWarnings("unchecked")
 			LeafNode<V> leaf = (LeafNode) nextNode;
 			if (!Arrays.equals(leaf.getKey(), key)) {
 				return null; // we don't have a mapping for this key
 			}
 			node.removeChild(key[depth]);
+			size--;
 			if (node.shouldShrink()) {
 				log.trace("shrinking {}", node.getClass());
 				node = node.shrink();
 				replace(initialDepth, key, prevDepth, node);
-			} else if (((AbstractNode) node).noOfChildren == 1) {
+			}
+			else if (((AbstractNode) node).noOfChildren == 1) {
 				pathCompress((Node4) node, prevDepth, key, initialDepth);
 			}
 			return leaf.getValue();
@@ -129,6 +164,7 @@ public class AdaptiveRadixTree<K, V>  {
 			// that at depth D, first D bytes of key and this leaf node totally match.
 			// but we could skip matching the pessimistic parts of the key
 			// also the parts of the key that were directly taken traversed over (findChild)
+			@SuppressWarnings("unchecked")
 			LeafNode<V> leaf = (LeafNode<V>) node;
 			if (Arrays.equals(leaf.getKey(), key)) {
 				return leaf.getValue();
@@ -181,6 +217,7 @@ public class AdaptiveRadixTree<K, V>  {
 	private V put(Node node, byte[] key, V value, int depth, Node prevDepth) {
 
 		if (node instanceof LeafNode) {
+			@SuppressWarnings("unchecked")
 			LeafNode<V> leaf = (LeafNode<V>) node;
 			Node pathCompressedNode = createPathCompressedNodeAfterExpandLazyLeaf(leaf, key, value, depth);
 			if (pathCompressedNode == node) {
@@ -192,6 +229,7 @@ public class AdaptiveRadixTree<K, V>  {
 			}
 			// we gotta replace the prevDepth's child pointer to this new node
 			replace(depth, key, prevDepth, pathCompressedNode);
+			size++;
 			return null;
 		}
 
@@ -249,6 +287,7 @@ public class AdaptiveRadixTree<K, V>  {
 			// depth is the depth/index in partialKey
 			replace(depth, key, prevDepth, node);
 		}
+		size++;
 	}
 
 	/*
@@ -348,6 +387,7 @@ public class AdaptiveRadixTree<K, V>  {
 		}
 		else {
 			branchOut(node, key, value, lcp, depth, prevDepth);
+			size++;
 			return -1; // we've already inserted the leaf node, caller needs to do nothing more
 		}
 	}
@@ -436,5 +476,167 @@ public class AdaptiveRadixTree<K, V>  {
 				.toString(key), Arrays.toString(node
 				.getKey()), lcp);
 		return lcp;
+	}
+
+	@Override
+	public Entry<K, V> lowerEntry(K key) {
+		return null;
+	}
+
+	@Override
+	public K lowerKey(K key) {
+		return null;
+	}
+
+	@Override
+	public Entry<K, V> floorEntry(K key) {
+		return null;
+	}
+
+	@Override
+	public K floorKey(K key) {
+		return null;
+	}
+
+	@Override
+	public Entry<K, V> ceilingEntry(K key) {
+		return null;
+	}
+
+	@Override
+	public K ceilingKey(K key) {
+		return null;
+	}
+
+	@Override
+	public Entry<K, V> higherEntry(K key) {
+		return null;
+	}
+
+	@Override
+	public K higherKey(K key) {
+		return null;
+	}
+
+	@Override
+	public Entry<K, V> firstEntry() {
+		return null;
+	}
+
+	@Override
+	public Entry<K, V> lastEntry() {
+		return null;
+	}
+
+	@Override
+	public Entry<K, V> pollFirstEntry() {
+		return null;
+	}
+
+	@Override
+	public Entry<K, V> pollLastEntry() {
+		return null;
+	}
+
+	@Override
+	public NavigableMap<K, V> descendingMap() {
+		return null;
+	}
+
+	@Override
+	public NavigableSet<K> navigableKeySet() {
+		return null;
+	}
+
+	@Override
+	public NavigableSet<K> descendingKeySet() {
+		return null;
+	}
+
+	@Override
+	public NavigableMap<K, V> subMap(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+		return null;
+	}
+
+	@Override
+	public NavigableMap<K, V> headMap(K toKey, boolean inclusive) {
+		return null;
+	}
+
+	@Override
+	public NavigableMap<K, V> tailMap(K fromKey, boolean inclusive) {
+		return null;
+	}
+
+	@Override
+	public Comparator<? super K> comparator() {
+		return null;
+	}
+
+	@Override
+	@Nonnull
+	public SortedMap<K, V> subMap(K fromKey, K toKey) {
+		return null;
+	}
+
+	@Override
+	@Nonnull
+	public SortedMap<K, V> headMap(K toKey) {
+		return null;
+	}
+
+	@Override
+	@Nonnull
+	public SortedMap<K, V> tailMap(K fromKey) {
+		return null;
+	}
+
+	@Override
+	public K firstKey() {
+		return null;
+	}
+
+	@Override
+	public K lastKey() {
+		return null;
+	}
+
+	@Override
+	public int size(){
+		return size;
+	}
+
+	private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
+
+		@Override
+		@Nonnull
+		public Iterator<Entry<K, V>> iterator() {
+			return new LeafNodeIterator();
+		}
+
+		@Override
+		public int size() {
+			return AdaptiveRadixTree.this.size();
+		}
+	}
+
+	private class LeafNodeIterator implements Iterator<Entry<K, V>> {
+
+		private Entry<K, V> lastReturned;
+		private Entry<K, V> next;
+
+		LeafNodeIterator(){
+			next = firstEntry();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public Entry<K, V> next() {
+			return null;
+		}
 	}
 }

@@ -183,11 +183,13 @@ public class ARTInterfaceLevelTest {
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
-
+		int expectedSize = 0;
 		do {
 			String value = String.valueOf(i);
 			Assert.assertNull(art.put(i, value));
+			expectedSize++;
 			Assert.assertEquals(value, art.get(i));
+			Assert.assertEquals(expectedSize, art.size());
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
@@ -197,10 +199,12 @@ public class ARTInterfaceLevelTest {
 		do {
 			String value = String.valueOf(i);
 			Assert.assertEquals(value, art.remove(i));
+			expectedSize--;
 			Assert.assertNull(art.get(i));
+			Assert.assertEquals(expectedSize, art.size());
 
 			// others should exist
-			for(byte j = ++i; j != Byte.MIN_VALUE; j++){
+			for (byte j = ++i; j != Byte.MIN_VALUE; j++) {
 				value = String.valueOf(j);
 				Assert.assertEquals(value, art.get(j));
 			}
@@ -232,7 +236,7 @@ public class ARTInterfaceLevelTest {
 			Assert.assertNull(art.get(i));
 
 			// others should exist
-			for(short j = ++i; j != Short.MIN_VALUE; j++){
+			for (short j = ++i; j != Short.MIN_VALUE; j++) {
 				value = String.valueOf(j);
 				Assert.assertEquals(value, art.get(j));
 			}
