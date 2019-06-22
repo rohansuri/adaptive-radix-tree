@@ -23,7 +23,7 @@ class Node48 extends InnerNode {
 
 	Node48(Node16 node) {
 		super(node);
-		if (node.noOfChildren != Node16.NODE_SIZE) {
+		if (!node.isFull()) {
 			throw new IllegalArgumentException("Given Node16 still has capacity, cannot grow into Node48.");
 		}
 
@@ -72,7 +72,7 @@ class Node48 extends InnerNode {
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		if (noOfChildren == NODE_SIZE) {
+		if (isFull()) {
 			return false;
 		}
 		int index = Byte.toUnsignedInt(partialKey);
@@ -115,7 +115,7 @@ class Node48 extends InnerNode {
 
 	@Override
 	public Node grow() {
-		if (noOfChildren != NODE_SIZE) {
+		if (!isFull()) {
 			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
 		}
 		Node node = new Node256(this);
@@ -162,6 +162,11 @@ class Node48 extends InnerNode {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isFull() {
+		return noOfChildren == NODE_SIZE;
 	}
 
 

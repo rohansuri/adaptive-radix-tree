@@ -9,7 +9,7 @@ class Node16 extends InnerNode {
 
 	Node16(Node4 node) {
 		super(node);
-		if (node.noOfChildren != Node4.NODE_SIZE) {
+		if (!node.isFull()) {
 			throw new IllegalArgumentException("Given Node4 still has capacity, cannot grow into Node16.");
 		}
 		byte[] keys = node.getKeys();
@@ -68,7 +68,7 @@ class Node16 extends InnerNode {
 	// TODO: unit test binary search insertion point edge cases (first, last)
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		if (noOfChildren == NODE_SIZE) {
+		if (isFull()) {
 			return false;
 		}
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
@@ -121,7 +121,7 @@ class Node16 extends InnerNode {
 
 	@Override
 	public Node grow() {
-		if (noOfChildren != NODE_SIZE) {
+		if (!isFull()) {
 			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
 		}
 		Node node = new Node48(this);
@@ -153,6 +153,11 @@ class Node16 extends InnerNode {
 			return null;
 		}
 		return child[noOfChildren - 1];
+	}
+
+	@Override
+	public boolean isFull() {
+		return noOfChildren == NODE_SIZE;
 	}
 
 	byte[] getKeys() {

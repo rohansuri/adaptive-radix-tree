@@ -98,6 +98,11 @@ class LeafNode<K, V> extends AbstractNode implements Map.Entry<K, V> {
 	public Node last() {
 		return null;
 	}
+
+	@Override
+	public boolean isFull() {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
 }
 
 

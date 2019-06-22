@@ -52,7 +52,7 @@ class Node4 extends InnerNode {
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		if (noOfChildren == NODE_SIZE) {
+		if (isFull()) {
 			return false;
 		}
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
@@ -109,7 +109,7 @@ class Node4 extends InnerNode {
 
 	@Override
 	public Node grow() {
-		if (noOfChildren != NODE_SIZE) {
+		if (!isFull()) {
 			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
 		}
 		// grow from Node4 to Node16
@@ -138,6 +138,11 @@ class Node4 extends InnerNode {
 			return null;
 		}
 		return child[noOfChildren - 1];
+	}
+
+	@Override
+	public boolean isFull() {
+		return noOfChildren == NODE_SIZE;
 	}
 
 	byte[] getKeys() {

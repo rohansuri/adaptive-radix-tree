@@ -6,7 +6,7 @@ class Node256 extends InnerNode {
 
 	Node256(Node48 node) {
 		super(node);
-		if (node.noOfChildren != Node48.NODE_SIZE) {
+		if (!node.isFull()) {
 			throw new IllegalArgumentException("Given Node48 still has capacity, cannot grow into Node256.");
 		}
 
@@ -37,7 +37,7 @@ class Node256 extends InnerNode {
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		if (noOfChildren == 256) {
+		if (isFull()) {
 			return false;
 		}
 		// byte in Java is signed
@@ -120,6 +120,11 @@ class Node256 extends InnerNode {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isFull() {
+		return noOfChildren == NODE_SIZE;
 	}
 
 	Node[] getChild() {

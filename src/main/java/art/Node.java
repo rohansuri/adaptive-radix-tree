@@ -31,7 +31,7 @@ interface Node {
 	/**
 	 * @param partialKey partialKey to be mapped
 	 * @param child the child node to be added
-	 * @return true if add succeeded, false if node size full (in the even of which you call grow)
+	 * @return true if add succeeded, false if node size full (in the event of which you call grow)
 	 * @throws IllegalArgumentException if you try to add a partialKey which already exists
 	 */
 	boolean addChild(byte partialKey, Node child);
@@ -71,4 +71,9 @@ interface Node {
 	 * 			Returns null if this node has no children.
 	 */
 	Node last();
+
+	/**
+	 * @return true if Node has reached it's capacity
+	 */
+	boolean isFull();
 }
