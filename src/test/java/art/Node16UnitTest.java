@@ -19,10 +19,10 @@ public class Node16UnitTest {
 
 	static private Node4 createNode4() {
 		Node4 node4 = new Node4();
-		node4.addChild((byte) 1, Mockito.mock(Node.class));
-		node4.addChild((byte) 2, Mockito.mock(Node.class));
-		node4.addChild((byte) -2, Mockito.mock(Node.class));
-		node4.addChild((byte) -1, Mockito.mock(Node.class));
+		node4.addChild((byte) 1, Mockito.mock(AbstractNode.class));
+		node4.addChild((byte) 2, Mockito.mock(AbstractNode.class));
+		node4.addChild((byte) -2, Mockito.mock(AbstractNode.class));
+		node4.addChild((byte) -1, Mockito.mock(AbstractNode.class));
 		return node4;
 	}
 
@@ -40,7 +40,7 @@ public class Node16UnitTest {
 		Node4 node4 = new Node4();
 		Node children[] = new Node[Node4.NODE_SIZE];
 		for (int i = 0; i < Node4.NODE_SIZE; i++) {
-			children[i] = Mockito.mock(Node.class);
+			children[i] = Mockito.mock(AbstractNode.class);
 			node4.addChild(partialKeys[i], children[i]);
 			storedKeys[i] = BinaryComparableUtils.unsigned(partialKeys[i]);
 		}
@@ -59,10 +59,14 @@ public class Node16UnitTest {
 		byte storedKey = BinaryComparableUtils.unsigned(partialKey);
 
 		Node16 node16 = createNode16();
-		Node child = Mockito.mock(Node.class);
+		AbstractNode child = Mockito.mock(AbstractNode.class);
 		Assert.assertTrue(node16.addChild(partialKey, child));
 		Assert.assertEquals(5, node16.noOfChildren);
 		Assert.assertEquals(child, node16.findChild(partialKey));
+
+		// assert up links
+		Assert.assertEquals(node16, child.parent);
+		Assert.assertEquals(partialKey, child.partialKey);
 
 		// assert inserted at correct position
 		Assert.assertEquals(storedKey, node16.getKeys()[2]);
@@ -79,7 +83,7 @@ public class Node16UnitTest {
 	@Test
 	public void testAddingTheSamePartialKeyAgain() {
 		Node16 node16 = createNode16();
-		Node child = Mockito.mock(Node.class);
+		Node child = Mockito.mock(AbstractNode.class);
 		try {
 			node16.addChild((byte) 1, child);
 			Assert.fail();
@@ -98,7 +102,7 @@ public class Node16UnitTest {
 	@Test
 	public void testAddTillCapacity() {
 		Node16 node16 = createNode16();
-		Node child = Mockito.mock(Node.class);
+		Node child = Mockito.mock(AbstractNode.class);
 
 		// add till capacity
 		for (int i = Node4.NODE_SIZE / 2 + 1; i <= Node16.NODE_SIZE / 2; i++) {
@@ -128,11 +132,11 @@ public class Node16UnitTest {
 		// add children upto remaining capacity
 		// 3 to 8
 		for (byte i = Node4.NODE_SIZE / 2 + 1; i <= Node16.NODE_SIZE / 2; i++) {
-			Node child = Mockito.mock(Node.class);
+			Node child = Mockito.mock(AbstractNode.class);
 			children.put(i, child);
 			Assert.assertTrue(node16.addChild(i, child));
 
-			child = Mockito.mock(Node.class);
+			child = Mockito.mock(AbstractNode.class);
 			children.put((byte) -i, child);
 			Assert.assertTrue(node16.addChild((byte) -i, child));
 		}
@@ -178,21 +182,33 @@ public class Node16UnitTest {
 	@Test
 	public void testReplace() {
 		Node16 node16 = createNode16();
+
 		byte partialKey = 1;
-		Node newChild = Mockito.mock(Node.class);
+		AbstractNode oldChild = (AbstractNode) node16.findChild(partialKey);
+		AbstractNode newChild = Mockito.mock(AbstractNode.class);
 		node16.replace(partialKey, newChild);
 		Assert.assertEquals(newChild, node16.findChild(partialKey));
 
+		// assert up links
+		Assert.assertEquals(node16, newChild.parent);
+		Assert.assertEquals(partialKey, newChild.partialKey);
+		Assert.assertNull(oldChild.parent);
+
 		partialKey = -1;
-		newChild = Mockito.mock(Node.class);
+		oldChild = (AbstractNode) node16.findChild(partialKey);
+		newChild = Mockito.mock(AbstractNode.class);
 		node16.replace(partialKey, newChild);
 		Assert.assertEquals(newChild, node16.findChild(partialKey));
+
+		Assert.assertEquals(node16, newChild.parent);
+		Assert.assertEquals(partialKey, newChild.partialKey);
+		Assert.assertNull(oldChild.parent);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testReplaceForNonExistentPartialKey() {
 		Node16 node16 = createNode16();
-		Node child5 = Mockito.mock(Node.class);
+		Node child5 = Mockito.mock(AbstractNode.class);
 		node16.replace((byte) 5, child5);
 	}
 
@@ -209,7 +225,7 @@ public class Node16UnitTest {
 		for (int i = 1; i <= Node16.NODE_SIZE / 2; i++) {
 			partialKeys[i - 1] = (byte) -i;
 			storedKeys[i - 1] = BinaryComparableUtils.unsigned(partialKeys[i - 1]);
-			children[i - 1] = Mockito.mock(Node.class);
+			children[i - 1] = Mockito.mock(AbstractNode.class);
 			// insert first 4 in lexicographic order (-1, -2, -3, -4)
 			if (i <= 4) {
 				node4.addChild(partialKeys[i - 1], children[i - 1]);
@@ -217,7 +233,7 @@ public class Node16UnitTest {
 
 			partialKeys[i + 7] = (byte) (9 - i);
 			storedKeys[i + 7] = BinaryComparableUtils.unsigned(partialKeys[i + 7]);
-			children[i + 7] = Mockito.mock(Node.class);
+			children[i + 7] = Mockito.mock(AbstractNode.class);
 		}
 
 		Node16 node16 = new Node16(node4);
@@ -253,7 +269,7 @@ public class Node16UnitTest {
 		for (int i = 1; i <= Node16.NODE_SIZE / 2; i++) {
 			partialKeys[i - 1] = (byte) i;
 			storedKeys[i - 1] = BinaryComparableUtils.unsigned(partialKeys[i - 1]);
-			children[i - 1] = Mockito.mock(Node.class);
+			children[i - 1] = Mockito.mock(AbstractNode.class);
 			// insert first 4 in lexicographic order (-1, -2, -3, -4)
 			if (i <= 4) {
 				node4.addChild(partialKeys[i - 1], children[i - 1]);
@@ -261,7 +277,7 @@ public class Node16UnitTest {
 
 			partialKeys[i + 7] = (byte) -(9 - i);
 			storedKeys[i + 7] = BinaryComparableUtils.unsigned(partialKeys[i + 7]);
-			children[i + 7] = Mockito.mock(Node.class);
+			children[i + 7] = Mockito.mock(AbstractNode.class);
 		}
 
 		Node16 node16 = new Node16(node4);
@@ -283,8 +299,8 @@ public class Node16UnitTest {
 	@Test
 	public void testRemove() {
 		Node16 node16 = createNode16();
-		Node child1 = Mockito.mock(Node.class);
-		Node child2 = Mockito.mock(Node.class);
+		AbstractNode child1 = Mockito.mock(AbstractNode.class);
+		AbstractNode child2 = Mockito.mock(AbstractNode.class);
 
 		byte partialKey1 = 3;
 		byte partialKey2 = -3;
@@ -301,6 +317,9 @@ public class Node16UnitTest {
 		node16.removeChild(partialKey2);
 		Assert.assertNull(node16.findChild(partialKey2));
 		Assert.assertEquals(4, node16.noOfChildren);
+
+		Assert.assertNull(child1.parent);
+		Assert.assertNull(child2.parent);
 	}
 
 	@Test
@@ -335,7 +354,7 @@ public class Node16UnitTest {
 		for (int i = 1; i <= Node16.NODE_SIZE / 2; i++) {
 			partialKeys[i - 1] = (byte) i;
 			storedKeys[i - 1] = BinaryComparableUtils.unsigned(partialKeys[i - 1]);
-			children[i - 1] = Mockito.mock(Node.class);
+			children[i - 1] = Mockito.mock(AbstractNode.class);
 			// insert first 4 in lexicographic order (-1, -2, -3, -4)
 			if (i <= 4) {
 				node4.addChild(partialKeys[i - 1], children[i - 1]);
@@ -343,7 +362,7 @@ public class Node16UnitTest {
 
 			partialKeys[i + 7] = (byte) -(9 - i);
 			storedKeys[i + 7] = BinaryComparableUtils.unsigned(partialKeys[i + 7]);
-			children[i + 7] = Mockito.mock(Node.class);
+			children[i + 7] = Mockito.mock(AbstractNode.class);
 		}
 
 		Node16 node16 = new Node16(node4);
@@ -362,8 +381,8 @@ public class Node16UnitTest {
 			for (int j = 0; j < node16.noOfChildren; j++) {
 				byte key = node16.getKeys()[j];
 				Node child = node16.getChild()[j];
-				Assert.assertEquals(storedKeys[j+i+1], key);
-				Assert.assertEquals(children[j+i+1], child);
+				Assert.assertEquals(storedKeys[j + i + 1], key);
+				Assert.assertEquals(children[j + i + 1], child);
 			}
 		}
 
@@ -381,7 +400,7 @@ public class Node16UnitTest {
 		for (int i = 1; i <= Node16.NODE_SIZE / 2; i++) {
 			partialKeys[i - 1] = (byte) -i;
 			storedKeys[i - 1] = BinaryComparableUtils.unsigned(partialKeys[i - 1]);
-			children[i - 1] = Mockito.mock(Node.class);
+			children[i - 1] = Mockito.mock(AbstractNode.class);
 			// insert first 4 in lexicographic order (-1, -2, -3, -4)
 			if (i <= 4) {
 				node4.addChild(partialKeys[i - 1], children[i - 1]);
@@ -389,7 +408,7 @@ public class Node16UnitTest {
 
 			partialKeys[i + 7] = (byte) (9 - i);
 			storedKeys[i + 7] = BinaryComparableUtils.unsigned(partialKeys[i + 7]);
-			children[i + 7] = Mockito.mock(Node.class);
+			children[i + 7] = Mockito.mock(AbstractNode.class);
 		}
 
 		Node16 node16 = new Node16(node4);
@@ -408,7 +427,8 @@ public class Node16UnitTest {
 			List<Byte> reversedStoredKeys = Lists
 					.newArrayList((Bytes.asList(storedKeys).subList(i + 1, Node16.NODE_SIZE)));
 			Collections.reverse(reversedStoredKeys);
-			List<Node> reversedChildren = Lists.newArrayList((Arrays.asList(children).subList(i + 1, Node16.NODE_SIZE)));
+			List<Node> reversedChildren = Lists
+					.newArrayList((Arrays.asList(children).subList(i + 1, Node16.NODE_SIZE)));
 			Collections.reverse(reversedChildren);
 			for (int j = 0; j < node16.noOfChildren; j++) {
 				byte key = node16.getKeys()[j];

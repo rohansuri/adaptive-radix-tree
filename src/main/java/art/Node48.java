@@ -89,6 +89,7 @@ class Node48 extends InnerNode {
 		this.child[insertPosition] = child;
 		keyIndex[index] = insertPosition;
 		noOfChildren++;
+		createUplink(this, child, partialKey);
 		return true;
 	}
 
@@ -98,7 +99,9 @@ class Node48 extends InnerNode {
 		if (!(index >= 0 && index <= 47)) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
+		removeUplink(child[index]);
 		child[index] = newChild;
+		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
@@ -108,6 +111,7 @@ class Node48 extends InnerNode {
 		if (pos == -1) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
+		removeUplink(child[pos]);
 		child[pos] = null; // fragment
 		keyIndex[index] = ABSENT;
 		noOfChildren--;

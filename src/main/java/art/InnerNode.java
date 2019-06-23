@@ -22,8 +22,9 @@ abstract class InnerNode extends AbstractNode {
 		prefixKeys = new byte[PESSIMISTIC_PATH_COMPRESSION_LIMIT];
 	}
 
-	// copy ctor. called when growing
+	// copy ctor. called when growing/shrinking
 	InnerNode(InnerNode node) {
+		super(node);
 		// copy header
 		this.noOfChildren = node.noOfChildren;
 		this.prefixLen = node.prefixLen;

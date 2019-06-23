@@ -55,12 +55,12 @@ class Node4 extends InnerNode {
 		if (isFull()) {
 			return false;
 		}
-		partialKey = BinaryComparableUtils.unsigned(partialKey);
+		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
 
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
 		if (index >= 0) { // the partialKey should not exist
 			throw new IllegalArgumentException("Cannot insert partial key " + BinaryComparableUtils
-					.signed(partialKey) + " that already exists in Node. "
+					.signed(unsignedPartialKey) + " that already exists in Node. "
 					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
 		}
 		int insertionPoint = -(index + 1);
@@ -70,23 +70,26 @@ class Node4 extends InnerNode {
 			keys[i] = keys[i - 1];
 			this.child[i] = this.child[i - 1];
 		}
-		keys[insertionPoint] = partialKey;
+		keys[insertionPoint] = unsignedPartialKey;
 		this.child[insertionPoint] = child;
-		log.trace("partialKey {} added at {}", partialKey, insertionPoint);
+		log.trace("partialKey {} added at {}", unsignedPartialKey, insertionPoint);
 		noOfChildren++;
+		createUplink(this, child, partialKey);
 		return true;
 	}
 
 	@Override
 	public void replace(byte partialKey, Node newChild) {
-		partialKey = BinaryComparableUtils.unsigned(partialKey);
+		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
 
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
 		// replace must be called from in a state where you know partialKey entry surely exists
 		if (index < 0) {
-			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
+			throw new IllegalArgumentException("Partial key " + unsignedPartialKey + " does not exist in this Node.");
 		}
+		removeUplink(child[index]);
 		child[index] = newChild;
+		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
@@ -99,6 +102,7 @@ class Node4 extends InnerNode {
 		if (index < 0) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
+		removeUplink(child[index]);
 		for (int i = index; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
 			child[i] = child[i + 1];
@@ -134,7 +138,7 @@ class Node4 extends InnerNode {
 
 	@Override
 	public Node last() {
-		if(noOfChildren == 0){
+		if (noOfChildren == 0) {
 			return null;
 		}
 		return child[noOfChildren - 1];

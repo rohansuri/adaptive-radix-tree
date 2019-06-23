@@ -64,12 +64,14 @@ interface Node {
 	 * @return child pointer for the smallest partialKey stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
+	// TODO: add node level tests
 	Node first();
 
 	/**
 	 * @return child pointer for the largest partialKey stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
+	// TODO: add node level tests
 	Node last();
 
 	/**

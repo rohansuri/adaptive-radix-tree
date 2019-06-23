@@ -53,6 +53,7 @@ class Node256 extends InnerNode {
 					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
 
 		}
+		createUplink(this, child, partialKey);
 		this.child[index] = child;
 		noOfChildren++;
 		return true;
@@ -64,7 +65,9 @@ class Node256 extends InnerNode {
 		if(child[index] == null) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
+		removeUplink(child[index]);
 		child[index] = newChild;
+		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
@@ -73,6 +76,7 @@ class Node256 extends InnerNode {
 		if(child[index] == null){
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
+		removeUplink(child[index]);
 		child[index] = null;
 		noOfChildren--;
 	}
