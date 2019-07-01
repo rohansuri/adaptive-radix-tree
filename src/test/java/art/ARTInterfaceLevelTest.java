@@ -1,5 +1,6 @@
 package art;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -190,7 +191,7 @@ public class ARTInterfaceLevelTest {
 	}
 
 	@Test
-	public void testInsertingAndDeletingAllInt8BitIntegers() {
+	public void testInsertingAndDeletingAllInt8BitIntegers() throws ReflectiveOperationException {
 		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
 
 		// insert all
@@ -208,13 +209,18 @@ public class ARTInterfaceLevelTest {
 
 		Map.Entry<Byte, String> firstEntry = art.firstEntry();
 		Assert.assertEquals(String.valueOf(Byte.MIN_VALUE), firstEntry.getValue());
-		Assert.assertEquals((Byte)Byte.MIN_VALUE, firstEntry.getKey());
-		Assert.assertEquals((Byte)Byte.MIN_VALUE, art.firstKey());
+		Assert.assertEquals((Byte) Byte.MIN_VALUE, firstEntry.getKey());
+		Assert.assertEquals((Byte) Byte.MIN_VALUE, art.firstKey());
 
 		Map.Entry<Byte, String> lastEntry = art.lastEntry();
 		Assert.assertEquals(String.valueOf(Byte.MAX_VALUE), lastEntry.getValue());
-		Assert.assertEquals((Byte)Byte.MAX_VALUE, lastEntry.getKey());
-		Assert.assertEquals((Byte)Byte.MAX_VALUE, art.lastKey());
+		Assert.assertEquals((Byte) Byte.MAX_VALUE, lastEntry.getKey());
+		Assert.assertEquals((Byte) Byte.MAX_VALUE, art.lastKey());
+
+		// assert parent of root is null
+		Field root = art.getClass().getDeclaredField("root");
+		root.setAccessible(true);
+		Assert.assertNull(((AbstractNode) root.get(art)).parent);
 
 		// remove one by one and check if others exist
 		i = Byte.MIN_VALUE;
