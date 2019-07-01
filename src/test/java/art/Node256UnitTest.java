@@ -162,6 +162,7 @@ public class Node256UnitTest {
 				Assert.assertTrue(node256.addChild((byte) -i, child));
 			}
 		}
+		Assert.assertTrue(node256.isFull());
 		Assert.assertEquals(Node256.NODE_SIZE, node256.noOfChildren);
 
 		// noOfChildren 256 reached, now adds will fail

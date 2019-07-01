@@ -169,6 +169,7 @@ public class Node48UnitTest {
 			Assert.assertTrue(node48.addChild((byte) -i, child));
 		}
 
+		Assert.assertTrue(node48.isFull());
 		Node node = node48.grow();
 
 		Assert.assertTrue(node instanceof Node256);

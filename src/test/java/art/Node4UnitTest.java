@@ -119,6 +119,8 @@ public class Node4UnitTest {
 			storedPartialKeys[i] = BinaryComparableUtils.unsigned(partialKeys[i]);
 		}
 
+		Assert.assertTrue(node4.isFull());
+
 		Node node = node4.grow();
 		// assert we grow into next larger node type 16
 		Assert.assertTrue(node instanceof Node16);

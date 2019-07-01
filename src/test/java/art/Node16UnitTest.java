@@ -148,6 +148,7 @@ public class Node16UnitTest {
 		Node16 node16 = createNode16();
 		Map<Byte, Node> children = fillNode16(node16);
 
+		Assert.assertTrue(node16.isFull());
 		Node node = node16.grow();
 		// assert we grow into next larger node type 48
 		Assert.assertTrue(node instanceof Node48);
