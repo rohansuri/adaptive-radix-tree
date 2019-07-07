@@ -1,16 +1,35 @@
 package art;
 
+import java.io.ByteArrayOutputStream;
+
 class BinaryComparableUtils {
+	// terminator should be the smallest allowed byte value to obey binary comparability of strings
+	static final byte[] TERMINATOR = new byte[] {0, 0};
+	// smallest allowed byte value 0 will have to be mapped to 01
+	// see paper's null value idea
+	static final byte[] ZERO = new byte[] {0, 1};
 
-	// https://stackoverflow.com/a/8916809/3804127
-	// an invalid byte for UTF-8, ASCII
-	private static final byte TERMINATOR = (byte) 0xff;
-
-	static byte[] terminated(byte[] key){
-		byte[] terminated = new byte[key.length + 1];
-		System.arraycopy(key, 0, terminated, 0, key.length);
-		terminated[key.length] = TERMINATOR;
-		return terminated;
+	static byte[] terminated(byte[] key) {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream(key.length + 2);
+		int i = 0;
+		while (true) {
+			// find a 0 byte
+			int prev = i;
+			for (; i < key.length && key[i] != 0; i++) ;
+			if (i < key.length) { // found a 0 byte at position i
+				bytes.write(key, prev, i - prev);
+				bytes.write(ZERO, 0, ZERO.length);
+				i++;
+			}
+			else {
+				// last portion to copy
+				bytes.write(key, prev, i - prev);
+				break;
+			}
+		}
+		// add terminator
+		bytes.write(TERMINATOR, 0, TERMINATOR.length);
+		return bytes.toByteArray();
 	}
 
 	// 2^7 = 128
