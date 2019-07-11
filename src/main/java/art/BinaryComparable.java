@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import static art.BinaryComparableUtils.terminated;
+import static art.BinaryComparableUtils.terminateUTF8;
 import static art.BinaryComparableUtils.unsigned;
 
 public interface BinaryComparable<K> {
@@ -28,6 +28,11 @@ public interface BinaryComparable<K> {
 	 * Note: Use Collators if you want locale dependent comparisons
 	 * @see <a href="https://docs.oracle.com/javase/tutorial/i18n/text/collationintro.html">Collator</a>
 	 */
-	BinaryComparable<String> UTF8 = (key) -> terminated(key.getBytes(StandardCharsets.UTF_8));
+	// TODO: make BinaryComparable interface non exposed for now and only expose the pre-defined implementations.
+	// TODO: consider switching to having a short storage in each node
+	// to mark a key end (8 bytes spare) so that it works for all keys.
+	// It'll also simplify the Node implementations, since they no longer have to
+	// explicitly interpret everything as "unsigned"
+	BinaryComparable<String> UTF8 = (key) -> terminateUTF8(key.getBytes(StandardCharsets.UTF_8));
 }
 
