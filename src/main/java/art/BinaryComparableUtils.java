@@ -9,7 +9,11 @@ class BinaryComparableUtils {
 	// see paper's null value idea
 	static final byte[] ZERO = new byte[] {0, 1};
 
-	static byte[] terminated(byte[] key) {
+	// in UTF-8 encoding, other than the 0 byte from the ASCII subset
+	// no codepoint ever will have a 0 byte!
+	// because of the continuation bytes which always have a 1 MSB.
+	// so this is safe to do
+	static byte[] terminateUTF8(byte[] key) {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream(key.length + 2);
 		int i = 0;
 		while (true) {
