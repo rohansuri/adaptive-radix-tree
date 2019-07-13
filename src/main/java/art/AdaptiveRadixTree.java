@@ -215,25 +215,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	// is compressed path equal/more/lesser (0, 1, -1) than key
 	private int compareCompressedPath(InnerNode node, byte[] key, int depth) {
-		int lcp;
 		byte[] prefix = node.prefixKeys;
 		int upperLimitForPessimisticMatch = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
-		for (lcp = 0; lcp < upperLimitForPessimisticMatch
-				&& depth < key.length
-				&& prefix[lcp] == key[depth]; lcp++, depth++)
-			;
-		if (lcp == upperLimitForPessimisticMatch) {
-			return 0;
-		}
-		// key finished but compressed path hasn't
-		// that means compressed path is longer
-		// and has been equal so far
-		else if (depth == key.length) {
-			return 1;
-		}
-		else {
-			return prefix[lcp] < key[depth] ? -1 : 1;
-		}
+		// limit key because if key length greater than compressed path
+		// and all byte comparisons are same, then also we consider
+		// compressed path == key length
+		return compare(prefix, 0, upperLimitForPessimisticMatch, key, depth, Math
+				.min(depth + upperLimitForPessimisticMatch, key.length));
 	}
 
 	private void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
@@ -577,6 +565,26 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return exportEntry(getCeilingEntry(key));
 	}
 
+	// 0 if a == b
+	// -1 if a < b
+	// 1 if a > b
+	private int compare(byte[] a, int aFrom, int aTo, byte[] b, int bFrom, int bTo) {
+		int i = aFrom, j = bFrom;
+		for (; i < aTo && j < bTo && a[i] == b[i]; i++, j++) ;
+		if (i == aTo && j == bTo) {
+			return 0;
+		}
+		else if (i == aTo) {
+			return -1;
+		}
+		else if (j == bTo) {
+			return 1;
+		}
+		else {
+			return a[i] < b[i] ? -1 : 1;
+		}
+	}
+
 	/*
 		On level X match compressed path of "this" node
 		if matches, then take follow on pointer and continue matching
@@ -617,13 +625,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
 				byte[] leafKey = leafNode.getKeyBytes();
-				int i = 0;
-				for (; i < leafKey.length && i < key.length && leafKey[i] == key[i]; i++) ;
-				if (i == key.length || leafKey[i] > key[i]) {
-					// cases where we can return this leafNode
-					// 1) if we reached end of key that means all byte comparisons were same
-					//    so either our leaf is exactly equal (same length) or it is longer, hence we can return it
-					// 2) if we broke the loop early, then it all depends on that byte comparison
+				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) <= 0) {
 					return leafNode;
 				}
 				return goUpAndFindGreater(depth, node, key);
@@ -677,7 +679,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 * Return key for entry, or null if null
 	 * Note: taken from TreeMap
 	 */
-	static <K,V> K keyOrNull(Entry<K,V> e) {
+	static <K, V> K keyOrNull(Entry<K, V> e) {
 		return (e == null) ? null : e.getKey();
 	}
 
