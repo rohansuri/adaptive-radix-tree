@@ -64,18 +64,30 @@ interface Node {
 	 * @return child pointer for the smallest partialKey stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
-	// TODO: add node level tests
+	// TODO: add Node level tests
 	Node first();
 
 	/**
 	 * @return child pointer for the largest partialKey stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
-	// TODO: add node level tests
+	// TODO: add Node level tests
 	Node last();
 
 	/**
 	 * @return true if Node has reached it's capacity
 	 */
 	boolean isFull();
+
+	/**
+	 * @return the parent of this node. Returns null for root node.
+	 */
+	Node parent();
+
+	/**
+	 * @return returns the child node for the partialKey strictly greater than the partialKey passed.
+	 * Returns null if no such child.
+	 */
+	// TODO: add Node level tests
+	Node next(byte partialKey);
 }

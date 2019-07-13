@@ -48,7 +48,7 @@ class Node256 extends InnerNode {
 		// convert it to a bigger container type
 		// or can we do something better?
 		int index = Byte.toUnsignedInt(partialKey);
-		if(this.child[index] != null) {
+		if (this.child[index] != null) {
 			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node. "
 					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
 
@@ -62,7 +62,7 @@ class Node256 extends InnerNode {
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		int index = Byte.toUnsignedInt(partialKey);
-		if(child[index] == null) {
+		if (child[index] == null) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
 		removeUplink(child[index]);
@@ -73,7 +73,7 @@ class Node256 extends InnerNode {
 	@Override
 	public void removeChild(byte partialKey) {
 		int index = Byte.toUnsignedInt(partialKey);
-		if(child[index] == null){
+		if (child[index] == null) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
 		removeUplink(child[index]);
@@ -93,7 +93,7 @@ class Node256 extends InnerNode {
 
 	@Override
 	public Node shrink() {
-		if(!shouldShrink()){
+		if (!shouldShrink()) {
 			throw new IllegalStateException("Haven't crossed shrinking threshold yet");
 		}
 		Node48 node48 = new Node48(this);
@@ -102,11 +102,11 @@ class Node256 extends InnerNode {
 
 	@Override
 	public Node first() {
-		if(noOfChildren == 0){
+		if (noOfChildren == 0) {
 			return null;
 		}
-		for(int i = 0; i < NODE_SIZE; i++){
-			if(child[i] != null){
+		for (int i = 0; i < NODE_SIZE; i++) {
+			if (child[i] != null) {
 				return child[i];
 			}
 		}
@@ -115,11 +115,21 @@ class Node256 extends InnerNode {
 
 	@Override
 	public Node last() {
-		if(noOfChildren == 0){
+		if (noOfChildren == 0) {
 			return null;
 		}
-		for(int i = NODE_SIZE - 1; i >= 0; i--){
-			if(child[i] != null){
+		for (int i = NODE_SIZE - 1; i >= 0; i--) {
+			if (child[i] != null) {
+				return child[i];
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Node next(byte partialKey) {
+		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < NODE_SIZE; i++) {
+			if (child[i] != null) {
 				return child[i];
 			}
 		}

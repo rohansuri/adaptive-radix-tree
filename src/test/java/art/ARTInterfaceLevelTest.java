@@ -35,6 +35,28 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals("2", art.get(BAZ));
 		Assert.assertEquals("3", art.get(BOZ));
 
+		Assert.assertEquals(BAR, art.ceilingKey(BAR));
+		Assert.assertEquals(BAZ, art.ceilingKey(BAZ));
+		Assert.assertEquals(BOZ, art.ceilingKey(BOZ));
+
+		Assert.assertEquals(BAR, art.ceilingEntry(BAR).getKey());
+		Assert.assertEquals(BAZ, art.ceilingEntry(BAZ).getKey());
+		Assert.assertEquals(BOZ, art.ceilingEntry(BOZ).getKey());
+		Assert.assertEquals("1", art.ceilingEntry(BAR).getValue());
+		Assert.assertEquals("2", art.ceilingEntry(BAZ).getValue());
+		Assert.assertEquals("3", art.ceilingEntry(BOZ).getValue());
+
+
+		Assert.assertEquals(BAZ, art.ceilingKey("BAS"));
+		Assert.assertEquals(BOZ, art.ceilingKey("BBA"));
+		Assert.assertNull(art.ceilingKey("BPA"));
+
+		Assert.assertEquals(BAZ, art.ceilingEntry("BAS").getKey());
+		Assert.assertEquals(BOZ, art.ceilingEntry("BBA").getKey());
+		Assert.assertNull(art.ceilingEntry("BPA"));
+		Assert.assertEquals("2", art.ceilingEntry("BAS").getValue());
+		Assert.assertEquals("3", art.ceilingEntry("BBA").getValue());
+
 		Map.Entry<String, String> firstEntry = art.firstEntry();
 		Assert.assertEquals(BAR, firstEntry.getKey());
 		Assert.assertEquals(BAR, art.firstKey());
@@ -222,6 +244,7 @@ public class ARTInterfaceLevelTest {
 		root.setAccessible(true);
 		Assert.assertNull(((AbstractNode) root.get(art)).parent);
 
+
 		// remove one by one and check if others exist
 		i = Byte.MIN_VALUE;
 		do {
@@ -231,11 +254,20 @@ public class ARTInterfaceLevelTest {
 			Assert.assertNull(art.get(i));
 			Assert.assertEquals(expectedSize, art.size());
 
+			// ceil test
+			if (i != Byte.MAX_VALUE) {
+				Assert.assertEquals(i + 1, (byte) art.ceilingKey(i));
+			}
+			else {
+				Assert.assertNull(art.ceilingKey(i));
+			}
+
 			// others should exist
 			for (byte j = ++i; j != Byte.MIN_VALUE; j++) {
 				value = String.valueOf(j);
 				Assert.assertEquals(value, art.get(j));
 			}
+
 		}
 		while (i != Byte.MIN_VALUE);
 	}

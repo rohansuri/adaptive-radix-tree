@@ -32,7 +32,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	// TODO: is it unusual for a data structure library to log?
 	// TODO: replace with java.util.logging so that we have no runtime dependencies?
-	private Logger log = LoggerFactory.getLogger(AdaptiveRadixTree.class);
+	private static final Logger log = LoggerFactory.getLogger(AdaptiveRadixTree.class);
 
 	private Node root;
 
@@ -211,6 +211,29 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				&& prefix[lcp] == key[depth]; lcp++, depth++)
 			;
 		return (lcp == upperLimitForPessimisticMatch);
+	}
+
+	// is compressed path equal/more/lesser (0, 1, -1) than key
+	private int compareCompressedPath(InnerNode node, byte[] key, int depth) {
+		int lcp;
+		byte[] prefix = node.prefixKeys;
+		int upperLimitForPessimisticMatch = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
+		for (lcp = 0; lcp < upperLimitForPessimisticMatch
+				&& depth < key.length
+				&& prefix[lcp] == key[depth]; lcp++, depth++)
+			;
+		if (lcp == upperLimitForPessimisticMatch) {
+			return 0;
+		}
+		// key finished but compressed path hasn't
+		// that means compressed path is longer
+		// and has been equal so far
+		else if (depth == key.length) {
+			return 1;
+		}
+		else {
+			return prefix[lcp] < key[depth] ? -1 : 1;
+		}
 	}
 
 	private void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
@@ -498,7 +521,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if (isEmpty()) {
 			return null;
 		}
-		Node node = root;
+		return getFirstEntry(root);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Entry<K, V> getFirstEntry(Node startFrom) {
+		Node node = startFrom;
 		Node next = node.first();
 		while (next != null) {
 			node = next;
@@ -546,12 +574,111 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> ceilingEntry(K key) {
+		return exportEntry(getCeilingEntry(key));
+	}
+
+	/*
+		On level X match compressed path of "this" node
+		if matches, then take follow on pointer and continue matching
+		if doesn't, see if compressed path greater/smaller than key
+			if greater, return the first node of the this level i.e. call first on this node and return.
+			if lesser, go one level up (using parent link)
+			and find the next partialKey greater than the uplinking partialKey on level X-1.
+			if you got one, simply take the first child nodes at each down level and return
+			 the leaf (left most traversal)
+			if not, then we got to go on level X-2 and find the next greater
+			and keep going level ups until we either find a next greater partialKey
+			or we find root (which will have parent null and hence search ends).
+
+		What if all compressed paths matched, then when taking the next follow on pointer,
+		we reach a leafNode? or a null?
+		if leafNode then it means, uptil now the leafNode has the same prefix as the provided key.
+			if leafNode >= given key, then return leafNode
+			if leafNode < given key, then take leafNode's parent uplink and find next
+			greater partialKey than the uplinking partialKey on level leaf-1.
+		if you reach a null, then it means key doesn't exist,
+			but before taking this previous partialKey, the entire path did exist.
+			Hence we come up a level from where we got the null.
+			Find the next higher partialKey than which we took for null
+			(no uplink from the null node, so we do it before the recursive call itself).
+
+		so it seems the uplinking traversal is same in all cases
+	  */
+	private Entry<K, V> getCeilingEntry(K k) {
+		if (isEmpty()) {
+			return null;
+		}
+		byte[] key = binaryComparable.get(k);
+		int depth = 0;
+		Node node = root;
+		while (true) {
+			if (node instanceof LeafNode) {
+				// binary comparable comparison
+				@SuppressWarnings("unchecked")
+				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
+				byte[] leafKey = leafNode.getKeyBytes();
+				int i = 0;
+				for (; i < leafKey.length && i < key.length && leafKey[i] == key[i]; i++) ;
+				if (i == key.length || leafKey[i] > key[i]) {
+					// cases where we can return this leafNode
+					// 1) if we reached end of key that means all byte comparisons were same
+					//    so either our leaf is exactly equal (same length) or it is longer, hence we can return it
+					// 2) if we broke the loop early, then it all depends on that byte comparison
+					return leafNode;
+				}
+				return goUpAndFindGreater(depth, node, key);
+			}
+			// compare compressed path
+			int compare = compareCompressedPath((InnerNode) node, key, depth);
+			if (compare == 1) { // greater
+				return getFirstEntry(node);
+			}
+			else if (compare == -1) { // lesser, that means all children of this node will be lesser than key
+				return goUpAndFindGreater(depth, node, key);
+			}
+			// compressed path matches completely
+			depth += ((InnerNode) node).prefixLen;
+			Node child = node.findChild(key[depth]);
+			if (child == null) { // same child not found, can we find a greater child at this node level itself?
+				// TODO: Node could also support a ceil(partialKey) in this case to combine the findChild + next
+				Node next = node.next(key[depth]);
+				if (next != null) {
+					return getFirstEntry(next);
+				}
+				depth -= ((InnerNode) node).prefixLen;
+				return goUpAndFindGreater(depth, node, key);
+			}
+			depth++;
+			node = child;
+		}
+	}
+
+	private Entry<K, V> goUpAndFindGreater(int depth, Node node, byte[] key) {
+		while ((node = node.parent()) != null) { // while you don't reach the root node
+			depth--;
+			log.info("finding next for partialKey {} on level {}", key[depth], depth);
+			Node next = node.next(key[depth]);
+			if (next != null) {
+				// found a next, return first leaf
+				return getFirstEntry(next);
+			}
+			// prepare to go up
+			depth -= ((InnerNode) node).prefixLen;
+		}
 		return null;
 	}
 
 	@Override
 	public K ceilingKey(K key) {
-		return null;
+		return keyOrNull(getCeilingEntry(key));
+	}
+
+	/**
+	 * Return key for entry, or null if null
+	 * Note: taken from TreeMap
+	 */
+	static <K,V> K keyOrNull(Entry<K,V> e) {
+		return (e == null) ? null : e.getKey();
 	}
 
 	@Override

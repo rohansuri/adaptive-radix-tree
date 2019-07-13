@@ -145,6 +145,18 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
+	public Node next(byte partialKey) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+		// TODO: use binary search here
+		for (int i = 0; i < noOfChildren; i++) {
+			if (keys[i] > partialKey) {
+				return child[i];
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public boolean isFull() {
 		return noOfChildren == NODE_SIZE;
 	}

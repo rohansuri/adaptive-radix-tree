@@ -24,4 +24,9 @@ abstract class AbstractNode implements Node {
 		AbstractNode c = (AbstractNode) child;
 		c.parent = null;
 	}
+
+	@Override
+	public Node parent(){
+		return parent;
+	}
 }

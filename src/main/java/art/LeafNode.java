@@ -89,6 +89,7 @@ class LeafNode<K, V> extends AbstractNode implements Map.Entry<K, V> {
 		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}
 
+	// dev note: first(), last() are implemented to detect end of the firstKey(), lastKey() search
 	@Override
 	public Node first() {
 		return null;
@@ -97,6 +98,11 @@ class LeafNode<K, V> extends AbstractNode implements Map.Entry<K, V> {
 	@Override
 	public Node last() {
 		return null;
+	}
+
+	@Override
+	public Node next(byte partialKey) {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}
 
 	@Override
