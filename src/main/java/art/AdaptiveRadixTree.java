@@ -531,7 +531,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if (isEmpty()) {
 			return null;
 		}
-		Node node = root;
+		return getLastEntry(root);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Entry<K, V> getLastEntry(Node startFrom) {
+		Node node = startFrom;
 		Node next = node.last();
 		while (next != null) {
 			node = next;
@@ -552,12 +557,55 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> floorEntry(K key) {
-		return null;
+		return exportEntry(getFloorEntry(key));
 	}
 
 	@Override
 	public K floorKey(K key) {
-		return null;
+		return keyOrNull(getFloorEntry(key));
+	}
+
+	private Entry<K, V> getFloorEntry(K k) {
+		if (isEmpty()) {
+			return null;
+		}
+		byte[] key = binaryComparable.get(k);
+		int depth = 0;
+		Node node = root;
+		while (true) {
+			if (node instanceof LeafNode) {
+				// binary comparable comparison
+				@SuppressWarnings("unchecked")
+				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
+				byte[] leafKey = leafNode.getKeyBytes();
+				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) >= 0) {
+					return leafNode;
+				}
+				return goUpAndFindLesser(depth, node, key);
+			}
+			// compare compressed path
+			int compare = compareCompressedPath((InnerNode) node, key, depth);
+			if (compare == -1) { // lesser
+				return getLastEntry(node);
+			}
+			else if (compare == 1) { // greater, that means all children of this node will be greater than key
+				return goUpAndFindLesser(depth, node, key);
+			}
+			// compressed path matches completely
+			depth += ((InnerNode) node).prefixLen;
+			Node child = node.findChild(key[depth]);
+			if (child == null) { // same child not found, can we find a lesser child at this node level itself?
+				// TODO: Node could also support a floor(partialKey) in this case to combine the findChild + lesser
+				Node lesser = node.lesser(key[depth]);
+				if (lesser != null) {
+					return getLastEntry(lesser);
+				}
+				depth -= ((InnerNode) node).prefixLen;
+				return goUpAndFindLesser(depth, node, key);
+			}
+			depth++;
+			node = child;
+		}
 	}
 
 	@Override
@@ -670,6 +718,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return null;
 	}
 
+	private Entry<K, V> goUpAndFindLesser(int depth, Node node, byte[] key) {
+		while ((node = node.parent()) != null) { // while you don't reach the root node
+			depth--;
+			log.info("finding lesser for partialKey {} on level {}", key[depth], depth);
+			Node lesser = node.lesser(key[depth]);
+			if (lesser != null) {
+				// found a lesser, return last leaf
+				return getLastEntry(lesser);
+			}
+			// prepare to go up
+			depth -= ((InnerNode) node).prefixLen;
+		}
+		return null;
+	}
+
 	@Override
 	public K ceilingKey(K key) {
 		return keyOrNull(getCeilingEntry(key));
@@ -679,7 +742,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 * Return key for entry, or null if null
 	 * Note: taken from TreeMap
 	 */
-	static <K, V> K keyOrNull(Entry<K, V> e) {
+	private static <K, V> K keyOrNull(Entry<K, V> e) {
 		return (e == null) ? null : e.getKey();
 	}
 

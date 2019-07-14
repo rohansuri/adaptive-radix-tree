@@ -183,6 +183,16 @@ class Node48 extends InnerNode {
 		return null;
 	}
 
+	@Override
+	public Node lesser(byte partialKey) {
+		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
+			if (keyIndex[i] != ABSENT) {
+				return child[keyIndex[i]];
+			}
+		}
+		return null;
+	}
+
 
 	byte[] getKeyIndex() {
 		return keyIndex;

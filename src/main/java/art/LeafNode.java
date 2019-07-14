@@ -106,6 +106,11 @@ class LeafNode<K, V> extends AbstractNode implements Map.Entry<K, V> {
 	}
 
 	@Override
+	public Node lesser(byte partialKey) {
+		throw new UnsupportedOperationException(EXCEPTION_MSG);
+	}
+
+	@Override
 	public boolean isFull() {
 		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}

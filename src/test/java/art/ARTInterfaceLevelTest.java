@@ -35,6 +35,7 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals("2", art.get(BAZ));
 		Assert.assertEquals("3", art.get(BOZ));
 
+		// ceil tests
 		Assert.assertEquals(BAR, art.ceilingKey(BAR));
 		Assert.assertEquals(BAZ, art.ceilingKey(BAZ));
 		Assert.assertEquals(BOZ, art.ceilingKey(BOZ));
@@ -46,21 +47,54 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals("2", art.ceilingEntry(BAZ).getValue());
 		Assert.assertEquals("3", art.ceilingEntry(BOZ).getValue());
 
-
+		Assert.assertEquals(BAR, art.ceilingKey("BAQ"));
 		Assert.assertEquals(BAZ, art.ceilingKey("BAS"));
 		Assert.assertEquals(BOZ, art.ceilingKey("BBA"));
 		Assert.assertNull(art.ceilingKey("BPA"));
 
+		Assert.assertEquals(BAR, art.ceilingEntry("BAQ").getKey());
 		Assert.assertEquals(BAZ, art.ceilingEntry("BAS").getKey());
 		Assert.assertEquals(BOZ, art.ceilingEntry("BBA").getKey());
 		Assert.assertNull(art.ceilingEntry("BPA"));
+		Assert.assertEquals("1", art.ceilingEntry("BAQ").getValue());
 		Assert.assertEquals("2", art.ceilingEntry("BAS").getValue());
 		Assert.assertEquals("3", art.ceilingEntry("BBA").getValue());
+
+		// floor tests
+
+		Assert.assertEquals(BAR, art.floorKey(BAR));
+		Assert.assertEquals(BAZ, art.floorKey(BAZ));
+		Assert.assertEquals(BOZ, art.floorKey(BOZ));
+
+		Assert.assertEquals(BAR, art.floorEntry(BAR).getKey());
+		Assert.assertEquals(BAZ, art.floorEntry(BAZ).getKey());
+		Assert.assertEquals(BOZ, art.floorEntry(BOZ).getKey());
+		Assert.assertEquals("1", art.floorEntry(BAR).getValue());
+		Assert.assertEquals("2", art.floorEntry(BAZ).getValue());
+		Assert.assertEquals("3", art.floorEntry(BOZ).getValue());
+
+
+		Assert.assertNull(art.floorKey("BAQ"));
+		Assert.assertEquals(BAR, art.floorKey("BAS"));
+		Assert.assertEquals(BAZ, art.floorKey("BBA"));
+		Assert.assertEquals(BOZ, art.floorKey("BPA"));
+
+		Assert.assertNull(art.floorEntry("BAQ"));
+		Assert.assertEquals(BAR, art.floorEntry("BAS").getKey());
+		Assert.assertEquals(BAZ, art.floorEntry("BBA").getKey());
+		Assert.assertEquals(BOZ, art.floorEntry("BPA").getKey());
+		Assert.assertEquals("1", art.floorEntry("BAS").getValue());
+		Assert.assertEquals("2", art.floorEntry("BBA").getValue());
+		Assert.assertEquals("3", art.floorEntry("BPA").getValue());
+
+		// first key test
 
 		Map.Entry<String, String> firstEntry = art.firstEntry();
 		Assert.assertEquals(BAR, firstEntry.getKey());
 		Assert.assertEquals(BAR, art.firstKey());
 		Assert.assertEquals("1", firstEntry.getValue());
+
+		// last key test
 
 		Map.Entry<String, String> lastEntry = art.lastEntry();
 		Assert.assertEquals(BOZ, lastEntry.getKey());
@@ -220,6 +254,14 @@ public class ARTInterfaceLevelTest {
 		byte i = Byte.MIN_VALUE;
 		int expectedSize = 0;
 		do {
+			// floor test
+			if (i != Byte.MIN_VALUE) {
+				Assert.assertEquals(i - 1, (byte) art.floorKey(i));
+			}
+			else {
+				Assert.assertNull(art.floorKey(i));
+			}
+			
 			String value = String.valueOf(i);
 			Assert.assertNull(art.put(i, value));
 			expectedSize++;
