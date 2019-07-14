@@ -89,7 +89,7 @@ interface Node {
 	 * Returns null if no such child.
 	 */
 	// TODO: add Node level tests
-	Node next(byte partialKey);
+	Node greater(byte partialKey);
 
 	/**
 	 * @return returns the greatest child node for the partialKey strictly lesser than the partialKey passed.

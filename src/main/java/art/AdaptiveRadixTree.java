@@ -691,7 +691,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			Node child = node.findChild(key[depth]);
 			if (child == null) { // same child not found, can we find a greater child at this node level itself?
 				// TODO: Node could also support a ceil(partialKey) in this case to combine the findChild + next
-				Node next = node.next(key[depth]);
+				Node next = node.greater(key[depth]);
 				if (next != null) {
 					return getFirstEntry(next);
 				}
@@ -707,7 +707,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		while ((node = node.parent()) != null) { // while you don't reach the root node
 			depth--;
 			log.info("finding next for partialKey {} on level {}", key[depth], depth);
-			Node next = node.next(key[depth]);
+			Node next = node.greater(key[depth]);
 			if (next != null) {
 				// found a next, return first leaf
 				return getFirstEntry(next);
