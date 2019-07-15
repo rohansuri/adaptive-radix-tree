@@ -37,6 +37,8 @@ class Node48 extends InnerNode {
 			int index = Byte.toUnsignedInt(key);
 			keyIndex[index] = (byte) i;
 			this.child[i] = child[i];
+			// update up link
+			replaceUplink(this, this.child[i]);
 		}
 	}
 
@@ -53,6 +55,7 @@ class Node48 extends InnerNode {
 			if (children[i] != null) {
 				keyIndex[i] = j;
 				child[j] = children[i];
+				replaceUplink(this, child[j]);
 				j++;
 			}
 		}

@@ -16,6 +16,11 @@ class Node16 extends InnerNode {
 		Node[] child = node.getChild();
 		System.arraycopy(keys, 0, this.keys, 0, node.noOfChildren);
 		System.arraycopy(child, 0, this.child, 0, node.noOfChildren);
+
+		// update up links
+		for (int i = 0; i < noOfChildren; i++) {
+			replaceUplink(this, this.child[i]);
+		}
 	}
 
 	Node16(Node48 node48) {
@@ -36,6 +41,7 @@ class Node16 extends InnerNode {
 			if (keyIndex[index] != Node48.ABSENT) {
 				keys[j] = BinaryComparableUtils.unsigned(i);
 				child[j] = children[keyIndex[index]];
+				replaceUplink(this, child[j]);
 				j++;
 			}
 		}
@@ -45,6 +51,7 @@ class Node16 extends InnerNode {
 			if (keyIndex[i] != Node48.ABSENT) {
 				keys[j] = BinaryComparableUtils.unsigned(i);
 				child[j] = children[keyIndex[i]];
+				replaceUplink(this, child[j]);
 				j++;
 			}
 		}

@@ -22,6 +22,8 @@ class Node256 extends InnerNode {
 			// index is byte, but gets type promoted
 			// https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#jls-10.4-120
 			this.child[i] = child[index];
+			// update up link
+			replaceUplink(this, this.child[i]);
 		}
 	}
 

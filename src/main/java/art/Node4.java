@@ -29,6 +29,11 @@ class Node4 extends InnerNode {
 		Node[] child = node16.getChild();
 		System.arraycopy(keys, 0, this.keys, 0, node16.noOfChildren);
 		System.arraycopy(child, 0, this.child, 0, node16.noOfChildren);
+
+		// update up links
+		for (int i = 0; i < noOfChildren; i++) {
+			replaceUplink(this, this.child[i]);
+		}
 	}
 
 	@Override
