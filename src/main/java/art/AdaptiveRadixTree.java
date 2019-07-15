@@ -546,70 +546,27 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return (Entry<K, V>) node;
 	}
 
-	private Entry<K, V> getLowerEntry(K k) {
-		if (isEmpty()) {
-			return null;
-		}
-		byte[] key = binaryComparable.get(k);
-		int depth = 0;
-		Node node = root;
-		while (true) {
-			if (node instanceof LeafNode) {
-				// binary comparable comparison
-				@SuppressWarnings("unchecked")
-				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
-				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) > 0) {
-					return leafNode;
-				}
-				return goUpAndFindLesser(depth, node, key);
-			}
-			// compare compressed path
-			int compare = compareCompressedPath((InnerNode) node, key, depth);
-			if (compare == -1) { // lesser
-				return getLastEntry(node);
-			}
-			else if (compare == 1) { // greater, that means all children of this node will be greater than key
-				return goUpAndFindLesser(depth, node, key);
-			}
-			// compressed path matches completely
-			depth += ((InnerNode) node).prefixLen;
-			Node child = node.findChild(key[depth]);
-			if (child == null) { // same child not found, can we find a lesser child at this node level itself?
-				// TODO: Node could also support a floor(partialKey) in this case to combine the findChild + lesser
-				Node lesser = node.lesser(key[depth]);
-				if (lesser != null) {
-					return getLastEntry(lesser);
-				}
-				depth -= ((InnerNode) node).prefixLen;
-				return goUpAndFindLesser(depth, node, key);
-			}
-			depth++;
-			node = child;
-		}
-	}
-
 	@Override
 	public Entry<K, V> lowerEntry(K key) {
-		return exportEntry(getLowerEntry(key));
+		return exportEntry(getLowerOrFloorEntry(true, key));
 	}
 
 	@Override
 	public K lowerKey(K key) {
-		return keyOrNull(getLowerEntry(key));
+		return keyOrNull(getLowerOrFloorEntry(true, key));
 	}
 
 	@Override
 	public Entry<K, V> floorEntry(K key) {
-		return exportEntry(getFloorEntry(key));
+		return exportEntry(getLowerOrFloorEntry(false, key));
 	}
 
 	@Override
 	public K floorKey(K key) {
-		return keyOrNull(getFloorEntry(key));
+		return keyOrNull(getLowerOrFloorEntry(false, key));
 	}
 
-	private Entry<K, V> getFloorEntry(K k) {
+	private Entry<K, V> getLowerOrFloorEntry(boolean lower, K k) {
 		if (isEmpty()) {
 			return null;
 		}
@@ -622,7 +579,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
 				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) >= 0) {
+				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) >= (lower ? 1 : 0)) {
 					return leafNode;
 				}
 				return goUpAndFindLesser(depth, node, key);
@@ -654,7 +611,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> ceilingEntry(K key) {
-		return exportEntry(getCeilingEntry(key));
+		return exportEntry(getHigherOrCeilEntry(true, key));
 	}
 
 	// 0 if a == b
@@ -674,76 +631,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 		else {
 			return a[i] < b[i] ? -1 : 1;
-		}
-	}
-
-	/*
-		On level X match compressed path of "this" node
-		if matches, then take follow on pointer and continue matching
-		if doesn't, see if compressed path greater/smaller than key
-			if greater, return the first node of the this level i.e. call first on this node and return.
-			if lesser, go one level up (using parent link)
-			and find the next partialKey greater than the uplinking partialKey on level X-1.
-			if you got one, simply take the first child nodes at each down level and return
-			 the leaf (left most traversal)
-			if not, then we got to go on level X-2 and find the next greater
-			and keep going level ups until we either find a next greater partialKey
-			or we find root (which will have parent null and hence search ends).
-
-		What if all compressed paths matched, then when taking the next follow on pointer,
-		we reach a leafNode? or a null?
-		if leafNode then it means, uptil now the leafNode has the same prefix as the provided key.
-			if leafNode >= given key, then return leafNode
-			if leafNode < given key, then take leafNode's parent uplink and find next
-			greater partialKey than the uplinking partialKey on level leaf-1.
-		if you reach a null, then it means key doesn't exist,
-			but before taking this previous partialKey, the entire path did exist.
-			Hence we come up a level from where we got the null.
-			Find the next higher partialKey than which we took for null
-			(no uplink from the null node, so we do it before the recursive call itself).
-
-		so it seems the uplinking traversal is same in all cases
-	  */
-	private Entry<K, V> getCeilingEntry(K k) {
-		if (isEmpty()) {
-			return null;
-		}
-		byte[] key = binaryComparable.get(k);
-		int depth = 0;
-		Node node = root;
-		while (true) {
-			if (node instanceof LeafNode) {
-				// binary comparable comparison
-				@SuppressWarnings("unchecked")
-				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
-				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) <= 0) {
-					return leafNode;
-				}
-				return goUpAndFindGreater(depth, node, key);
-			}
-			// compare compressed path
-			int compare = compareCompressedPath((InnerNode) node, key, depth);
-			if (compare == 1) { // greater
-				return getFirstEntry(node);
-			}
-			else if (compare == -1) { // lesser, that means all children of this node will be lesser than key
-				return goUpAndFindGreater(depth, node, key);
-			}
-			// compressed path matches completely
-			depth += ((InnerNode) node).prefixLen;
-			Node child = node.findChild(key[depth]);
-			if (child == null) { // same child not found, can we find a greater child at this node level itself?
-				// TODO: Node could also support a ceil(partialKey) in this case to combine the findChild + next
-				Node next = node.greater(key[depth]);
-				if (next != null) {
-					return getFirstEntry(next);
-				}
-				depth -= ((InnerNode) node).prefixLen;
-				return goUpAndFindGreater(depth, node, key);
-			}
-			depth++;
-			node = child;
 		}
 	}
 
@@ -779,7 +666,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public K ceilingKey(K key) {
-		return keyOrNull(getCeilingEntry(key));
+		return keyOrNull(getHigherOrCeilEntry(true, key));
 	}
 
 	/**
@@ -790,7 +677,34 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return (e == null) ? null : e.getKey();
 	}
 
-	private Entry<K, V> getHigherEntry(K k) {
+	/*
+		On level X match compressed path of "this" node
+		if matches, then take follow on pointer and continue matching
+		if doesn't, see if compressed path greater/smaller than key
+			if greater, return the first node of the this level i.e. call first on this node and return.
+			if lesser, go one level up (using parent link)
+			and find the next partialKey greater than the uplinking partialKey on level X-1.
+			if you got one, simply take the first child nodes at each down level and return
+			 the leaf (left most traversal)
+			if not, then we got to go on level X-2 and find the next greater
+			and keep going level ups until we either find a next greater partialKey
+			or we find root (which will have parent null and hence search ends).
+
+		What if all compressed paths matched, then when taking the next follow on pointer,
+		we reach a leafNode? or a null?
+		if leafNode then it means, uptil now the leafNode has the same prefix as the provided key.
+			if leafNode >= given key, then return leafNode
+			if leafNode < given key, then take leafNode's parent uplink and find next
+			greater partialKey than the uplinking partialKey on level leaf-1.
+		if you reach a null, then it means key doesn't exist,
+			but before taking this previous partialKey, the entire path did exist.
+			Hence we come up a level from where we got the null.
+			Find the next higher partialKey than which we took for null
+			(no uplink from the null node, so we do it before the recursive call itself).
+
+		so it seems the uplinking traversal is same in all cases
+	  */
+	private Entry<K, V> getHigherOrCeilEntry(boolean ceil, K k) {
 		if (isEmpty()) {
 			return null;
 		}
@@ -803,7 +717,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
 				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) < 0) {
+				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) < (ceil ? 1 : 0)) {
 					return leafNode;
 				}
 				return goUpAndFindGreater(depth, node, key);
@@ -835,12 +749,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> higherEntry(K key) {
-		return exportEntry(getHigherEntry(key));
+		return exportEntry(getHigherOrCeilEntry(false, key));
 	}
 
 	@Override
 	public K higherKey(K key) {
-		return keyOrNull(getHigherEntry(key));
+		return keyOrNull(getHigherOrCeilEntry(false, key));
 	}
 
 	@Override
