@@ -85,6 +85,11 @@ interface Node {
 	Node parent();
 
 	/**
+	 * @return the uplinking partial key to parent
+	 */
+	byte uplinkKey();
+
+	/**
 	 * @return returns the smallest child node for the partialKey strictly greater than the partialKey passed.
 	 * Returns null if no such child.
 	 */

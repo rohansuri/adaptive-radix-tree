@@ -514,7 +514,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@SuppressWarnings("unchecked")
-	private Entry<K, V> getFirstEntry(Node startFrom) {
+	private static <K, V> Entry<K, V> getFirstEntry(Node startFrom) {
 		Node node = startFrom;
 		Node next = node.first();
 		while (next != null) {
@@ -634,6 +634,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
+	// TODO: rather than using depth, refactor to use node.parentKey() i.e. reuse successor(...) method
 	private Entry<K, V> goUpAndFindGreater(int depth, Node node, byte[] key) {
 		while ((node = node.parent()) != null) { // while you don't reach the root node
 			depth--;
@@ -869,6 +870,19 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return size;
 	}
 
+	private static <K, V> Entry<K, V> successor(Entry<K, V> of) {
+		Node node = (Node) of; // LeafNode
+		Node uplink;
+		while ((uplink = node.parent()) != null) {
+			Node greater = uplink.greater(node.uplinkKey());
+			if (greater != null) {
+				return getFirstEntry(greater);
+			}
+			node = uplink;
+		}
+		return null;
+	}
+
 	private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
 
 		@Override
@@ -885,21 +899,25 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	private class LeafNodeIterator implements Iterator<Entry<K, V>> {
 
-		private Entry<K, V> lastReturned;
 		private Entry<K, V> next;
 
 		LeafNodeIterator() {
 			next = getFirstEntry();
 		}
 
+		// TODO: implement iterator remove?
+		// entrySet removal depends on it
+
 		@Override
 		public boolean hasNext() {
-			return false;
+			return next != null;
 		}
 
 		@Override
 		public Entry<K, V> next() {
-			return null;
+			Entry<K, V> e = next;
+			next = successor(e);
+			return e;
 		}
 	}
 }

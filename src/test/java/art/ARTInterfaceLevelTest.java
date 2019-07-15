@@ -335,6 +335,15 @@ public class ARTInterfaceLevelTest {
 		root.setAccessible(true);
 		Assert.assertNull(((AbstractNode) root.get(art)).parent);
 
+
+		// test sorted order iteration
+		i = Byte.MIN_VALUE;
+		for (Map.Entry<Byte, String> entry : art.entrySet()) {
+			Assert.assertEquals(i, (byte) entry.getKey());
+			i++;
+		}
+
+
 		// remove one by one and check if others exist
 		i = Byte.MIN_VALUE;
 		do {
@@ -343,7 +352,8 @@ public class ARTInterfaceLevelTest {
 			if (i != Byte.MAX_VALUE) {
 				try {
 					Assert.assertEquals(i + 1, (byte) art.higherKey(i));
-				}catch (NullPointerException e){
+				}
+				catch (NullPointerException e) {
 					System.out.println(i);
 					Assert.fail();
 				}

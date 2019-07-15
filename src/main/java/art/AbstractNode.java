@@ -6,10 +6,11 @@ abstract class AbstractNode implements Node {
 	Node parent;
 	byte partialKey;
 
-	AbstractNode(){}
+	AbstractNode() {
+	}
 
 	// copy ctor. called when growing/shrinking
-	AbstractNode(AbstractNode node){
+	AbstractNode(AbstractNode node) {
 		this.partialKey = node.partialKey;
 		this.parent = node.parent;
 	}
@@ -21,7 +22,7 @@ abstract class AbstractNode implements Node {
 	}
 
 	// called when growing/shrinking and all children now have a new parent
-	static void replaceUplink(Node parent, Node child){
+	static void replaceUplink(Node parent, Node child) {
 		AbstractNode c = (AbstractNode) child;
 		c.parent = parent;
 	}
@@ -32,7 +33,12 @@ abstract class AbstractNode implements Node {
 	}
 
 	@Override
-	public Node parent(){
+	public Node parent() {
 		return parent;
+	}
+
+	@Override
+	public byte uplinkKey() {
+		return partialKey;
 	}
 }
