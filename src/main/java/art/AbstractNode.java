@@ -20,6 +20,12 @@ abstract class AbstractNode implements Node {
 		c.partialKey = partialKey;
 	}
 
+	// called when growing/shrinking and all children now have a new parent
+	static void replaceUplink(Node parent, Node child){
+		AbstractNode c = (AbstractNode) child;
+		c.parent = parent;
+	}
+
 	static void removeUplink(Node child) {
 		AbstractNode c = (AbstractNode) child;
 		c.parent = null;

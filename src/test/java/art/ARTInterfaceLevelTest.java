@@ -87,6 +87,47 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals("2", art.floorEntry("BBA").getValue());
 		Assert.assertEquals("3", art.floorEntry("BPA").getValue());
 
+		// higher key test
+		Assert.assertEquals(BAZ, art.higherKey(BAR));
+		Assert.assertEquals(BOZ, art.higherKey(BAZ));
+		Assert.assertNull(art.higherKey(BOZ));
+
+		Assert.assertEquals(BAZ, art.higherEntry(BAR).getKey());
+		Assert.assertEquals(BOZ, art.higherEntry(BAZ).getKey());
+		Assert.assertEquals("2", art.higherEntry(BAR).getValue());
+		Assert.assertEquals("3", art.higherEntry(BAZ).getValue());
+
+		Assert.assertEquals(BAR, art.higherKey("BAQ"));
+		Assert.assertEquals(BAZ, art.higherKey("BAY"));
+		Assert.assertEquals(BOZ, art.higherKey("BOY"));
+
+		Assert.assertEquals(BAR, art.higherEntry("BAQ").getKey());
+		Assert.assertEquals(BAZ, art.higherEntry("BAY").getKey());
+		Assert.assertEquals(BOZ, art.higherEntry("BOY").getKey());
+		Assert.assertEquals("1", art.higherEntry("BAQ").getValue());
+		Assert.assertEquals("2", art.higherEntry("BAY").getValue());
+		Assert.assertEquals("3", art.higherEntry("BOY").getValue());
+
+		// lower key test
+		Assert.assertEquals(BAR, art.lowerKey(BAZ));
+		Assert.assertEquals(BAZ, art.lowerKey(BOZ));
+
+		Assert.assertEquals(BAR, art.lowerEntry(BAZ).getKey());
+		Assert.assertEquals(BAZ, art.lowerEntry(BOZ).getKey());
+		Assert.assertEquals("1", art.lowerEntry(BAZ).getValue());
+		Assert.assertEquals("2", art.lowerEntry(BOZ).getValue());
+
+		Assert.assertEquals(BAR, art.lowerKey("BAS"));
+		Assert.assertEquals(BAZ, art.lowerKey("BBA"));
+		Assert.assertEquals(BOZ, art.lowerKey("BPA"));
+
+		Assert.assertEquals(BAR, art.lowerEntry("BAS").getKey());
+		Assert.assertEquals(BAZ, art.lowerEntry("BBA").getKey());
+		Assert.assertEquals(BOZ, art.lowerEntry("BPA").getKey());
+		Assert.assertEquals("1", art.lowerEntry("BAS").getValue());
+		Assert.assertEquals("2", art.lowerEntry("BBA").getValue());
+		Assert.assertEquals("3", art.lowerEntry("BPA").getValue());
+
 		// first key test
 
 		Map.Entry<String, String> firstEntry = art.firstEntry();
@@ -261,12 +302,20 @@ public class ARTInterfaceLevelTest {
 			else {
 				Assert.assertNull(art.floorKey(i));
 			}
-			
+
 			String value = String.valueOf(i);
 			Assert.assertNull(art.put(i, value));
 			expectedSize++;
 			Assert.assertEquals(value, art.get(i));
 			Assert.assertEquals(expectedSize, art.size());
+
+			// lowerKey test
+			if (i != Byte.MIN_VALUE) {
+				Assert.assertEquals(i - 1, (byte) art.lowerKey(i));
+			}
+			else {
+				Assert.assertNull(art.lowerKey(i));
+			}
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
@@ -286,10 +335,23 @@ public class ARTInterfaceLevelTest {
 		root.setAccessible(true);
 		Assert.assertNull(((AbstractNode) root.get(art)).parent);
 
-
 		// remove one by one and check if others exist
 		i = Byte.MIN_VALUE;
 		do {
+
+			// higherKey test
+			if (i != Byte.MAX_VALUE) {
+				try {
+					Assert.assertEquals(i + 1, (byte) art.higherKey(i));
+				}catch (NullPointerException e){
+					System.out.println(i);
+					Assert.fail();
+				}
+			}
+			else {
+				Assert.assertNull(art.higherKey(i));
+			}
+
 			String value = String.valueOf(i);
 			Assert.assertEquals(value, art.remove(i));
 			expectedSize--;
