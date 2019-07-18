@@ -23,6 +23,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private transient AdaptiveRadixTree.EntrySet entrySet;
 	private transient int size = 0;
 
+	// TODO: offer a bulk create constructor
+
 	public AdaptiveRadixTree(BinaryComparable<K> binaryComparable) {
 		// TODO: null check for this, then key should implement bytes() method
 		Objects.requireNonNull(binaryComparable, "Specifying a BinaryComparable is necessary. Support for having keys themselves"
@@ -117,6 +119,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				if (!Arrays.equals(leaf.getKeyBytes(), key)) {
 					return null; // we don't have a mapping for this key
 				}
+				// TODO: call deleteEntry?
 				node.removeChild(key[depth]);
 				size--;
 				if (node.shouldShrink()) {
@@ -136,7 +139,23 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
+	// TODO: combine both versions of pathCompress?
+	// do we really need prevDepth to be passed around in call stack?
+	// if the uplinks have already been setup, then we could use them
 	private void pathCompress(Node4 toCompress, Node prevDepth, byte[] key, int initialDepth) {
+		updateCompressedPathOfOnlyChild(toCompress);
+		Node onlyChild = toCompress.getChild()[0];
+		replace(initialDepth, key, prevDepth, onlyChild);
+	}
+
+	private void pathCompress(Node4 toCompress) {
+		updateCompressedPathOfOnlyChild(toCompress);
+		Node onlyChild = toCompress.getChild()[0];
+		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
+	}
+
+	// TODO: unit test this
+	private void updateCompressedPathOfOnlyChild(Node4 toCompress) {
 		Node onlyChild = toCompress.getChild()[0];
 		assert onlyChild != null;
 		if (!(onlyChild instanceof LeafNode)) {
@@ -158,7 +177,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 			oc.prefixLen += toCompress.prefixLen + 1;
 		}
-		replace(initialDepth, key, prevDepth, onlyChild);
 	}
 
 	private V get(Node node, byte[] key, int depth) {
@@ -233,6 +251,19 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		else {
 			assert depth > 0;
 			prevDepth.replace(key[depth - 1], replaceWith);
+		}
+	}
+
+	// replace down link
+	// TODO: combine with other replace version?
+	private void replace(byte partialKey, Node prevDepth, Node replaceWith) {
+		if (prevDepth == null) {
+			log.trace("replacing root");
+			root = replaceWith;
+			AbstractNode.replaceUplink(null, root);
+		}
+		else {
+			prevDepth.replace(partialKey, replaceWith);
 		}
 	}
 
@@ -883,7 +914,48 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return null;
 	}
 
+	// e should not be null
+	// neither should tree be empty when calling this
+	private void deleteEntry(Entry<K, V> e) {
+		size--;
+		Node leaf = (Node) e;
+		Node parent = leaf.parent();
+		if (parent == null) {
+			// means root == leaf
+			root = null;
+			return;
+		}
+		parent.removeChild(leaf.uplinkKey());
+		if (parent.shouldShrink()) {
+			Node newParent = parent.shrink();
+			// newParent should have copied the uplink to same grandParent of oldParent
+			Node grandParent = newParent.parent();
+			replace(newParent.uplinkKey(), grandParent, newParent);
+		}
+		else if (parent.size() == 1) {
+			// this node can be path compressed
+			// so now: grandParent --> partial key to parent --> partialKey to only leaf left
+			// to path compress
+			// grandParent --> same partial key, but now to leaf
+			// leaf's compressed path updated to (parent's compressed path + partialKey to leaf + leaf's own compressed path)
+			pathCompress((Node4) parent);
+		}
+	}
+
 	private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
+
+		/*
+			offer efficient implementations of these:
+			(for example calling remove on AbstractSet by default iterates over all entries
+			to find the entry to remove)
+
+			contains
+			remove
+			size (done)
+			iterator (done)
+			spliterator
+			clear
+		 */
 
 		@Override
 		@Nonnull
@@ -900,6 +972,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private class LeafNodeIterator implements Iterator<Entry<K, V>> {
 
 		private Entry<K, V> next;
+		// to support removing the entry that was returned on the previous next() call
+		private Entry<K, V> lastReturned;
 
 		LeafNodeIterator() {
 			next = getFirstEntry();
@@ -915,9 +989,18 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 		@Override
 		public Entry<K, V> next() {
-			Entry<K, V> e = next;
-			next = successor(e);
-			return e;
+			lastReturned = next;
+			next = successor(lastReturned);
+			return lastReturned;
+		}
+
+		@Override
+		public void remove() {
+			if (lastReturned == null) {
+				throw new IllegalStateException();
+			}
+			deleteEntry(lastReturned);
+			lastReturned = null;
 		}
 	}
 }

@@ -58,6 +58,7 @@ interface Node {
 
 	boolean shouldShrink();
 
+	// TODO: add Node level tests and assert child uplinks updated and node's parent uplinks copied
 	Node shrink();
 
 	/**
@@ -102,4 +103,10 @@ interface Node {
 	 */
 	// TODO: add Node level tests
 	Node lesser(byte partialKey);
+
+	/**
+	 *
+	 * @return no of children this Node has
+	 */
+	short size();
 }

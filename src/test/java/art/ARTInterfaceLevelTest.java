@@ -1,6 +1,7 @@
 package art;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -150,7 +151,17 @@ public class ARTInterfaceLevelTest {
 
 		// untouched
 		Assert.assertEquals("3", art.get(BOZ));
-	}
+
+		// iterate and remove all
+		Assert.assertEquals(2, art.size());
+		Iterator<Map.Entry<String, String>> it = art.entrySet().iterator();
+		it.next();
+		it.remove();
+		Assert.assertEquals(1, art.size());
+		it.next();
+		it.remove();
+		Assert.assertEquals(0, art.size());
+ 	}
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildInnerNode() {
