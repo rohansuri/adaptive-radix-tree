@@ -156,12 +156,24 @@ public class ARTInterfaceLevelTest {
 		// iterate and remove all
 		Assert.assertEquals(2, art.size());
 		Iterator<Map.Entry<String, String>> it = art.entrySet().iterator();
+		try {
+			it.remove();
+			Assert.fail();
+		}
+		catch(IllegalStateException e){}
 		it.next();
 		it.remove();
 		Assert.assertEquals(1, art.size());
 		it.next();
 		it.remove();
+		try {
+			it.remove();
+			Assert.fail();
+		}
+		catch(IllegalStateException e){}
+
 		Assert.assertEquals(0, art.size());
+
 		try {
 			it.next();
 			Assert.fail();
