@@ -3,6 +3,7 @@ package art;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -161,6 +162,10 @@ public class ARTInterfaceLevelTest {
 		it.next();
 		it.remove();
 		Assert.assertEquals(0, art.size());
+		try {
+			it.next();
+			Assert.fail();
+		} catch (NoSuchElementException e){}
  	}
 
 	@Test

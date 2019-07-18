@@ -989,6 +989,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 		@Override
 		public Entry<K, V> next() {
+			if (next == null)
+				throw new NoSuchElementException();
 			lastReturned = next;
 			next = successor(lastReturned);
 			return lastReturned;
