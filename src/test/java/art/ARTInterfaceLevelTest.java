@@ -1,9 +1,11 @@
 package art;
 
 import java.lang.reflect.Field;
+import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -179,6 +181,19 @@ public class ARTInterfaceLevelTest {
 			Assert.fail();
 		} catch (NoSuchElementException e){}
  	}
+
+ 	@Test
+	public void testEntrySet(){
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+
+		Assert.assertNull(art.put(BARCA, "1"));
+
+		Set<Map.Entry<String, String>> set =  art.entrySet();
+		Assert.assertTrue(set.contains(new AbstractMap.SimpleEntry<>(BARCA, "1")));
+		Assert.assertFalse(set.contains(new AbstractMap.SimpleEntry<>(BARCA, "2")));
+		Assert.assertFalse(set.remove(new AbstractMap.SimpleEntry<>(BARCA, "2")));
+		Assert.assertTrue(set.remove(new AbstractMap.SimpleEntry<>(BARCA, "1")));
+	}
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildInnerNode() {

@@ -18,6 +18,10 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// document that we don't allow null keys
+// check which methods of TreeMap throw NPE
+// we throw there too
+
 public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements NavigableMap<K, V> {
 	private final BinaryComparable<K> binaryComparable;
 	private transient AdaptiveRadixTree.EntrySet entrySet;
@@ -39,6 +43,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private Node root;
 
 	public V put(K key, V value) {
+		if(key == null){
+			throw new NullPointerException();
+		}
 		byte[] bytes = binaryComparable.get(key);
 		return put(bytes, key, value);
 	}
@@ -63,22 +70,40 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public V get(Object key) {
-		@SuppressWarnings("unchecked")
-		K k = (K) key;
-		byte[] bytes = binaryComparable.get(k);
-		return get(bytes);
+		LeafNode<K, V> entry = getEntry(key);
+		return (entry==null ? null : entry.getValue());
 	}
 
-	private V get(byte[] key) {
-		log.trace("getting {}", Arrays.toString(key));
+	/**
+	 * Returns this map's entry for the given key, or {@code null} if the map
+	 * does not contain an entry for the key.
+	 *
+	 * @return this map's entry for the given key, or {@code null} if the map
+	 *         does not contain an entry for the key
+	 * @throws ClassCastException if the specified key cannot be compared
+	 *         with the keys currently in the map
+	 * @throws NullPointerException if the specified key is null
+	 *         and this map uses natural ordering, or its comparator
+	 *         does not permit null keys
+	 */
+	private LeafNode<K, V> getEntry(Object key) {
+		if (key == null)
+			throw new NullPointerException();
 		if (root == null) { // empty tree
 			return null;
 		}
-		return get(root, key, 0);
+		@SuppressWarnings("unchecked")
+		K k = (K) key;
+		byte[] bytes = binaryComparable.get(k);
+		log.trace("getting {}", Arrays.toString(bytes));
+		return getEntry(root, bytes, 0);
 	}
 
 	@Override
 	public V remove(Object key) {
+		if(key == null){
+			throw new NullPointerException();
+		}
 		@SuppressWarnings("unchecked")
 		K k = (K) key;
 		byte[] bytes = binaryComparable.get(k);
@@ -179,7 +204,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	private V get(Node node, byte[] key, int depth) {
+	private LeafNode<K, V> getEntry(Node node, byte[] key, int depth) {
 		while (true) {
 			if (node instanceof LeafNode) {
 				// match key to leaf
@@ -192,7 +217,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
 				if (Arrays.equals(leaf.getKeyBytes(), key)) {
-					return leaf.getValue();
+					return leaf;
 				}
 				return null;
 			}
@@ -942,20 +967,57 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
+	/**
+	 * Test two values for equality.  Differs from o1.equals(o2) only in
+	 * that it copes with {@code null} o1 properly.
+	 * Note: Taken from TreeMap
+	 */
+	private static final boolean valEquals(Object o1, Object o2) {
+		return (o1==null ? o2==null : o1.equals(o2));
+	}
+
 	private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
 
 		/*
 			offer efficient implementations of these:
-			(for example calling remove on AbstractSet by default iterates over all entries
+			(because calling remove on AbstractSet by default iterates over all entries
 			to find the entry to remove)
 
-			contains
-			remove
+			contains (done)
+			remove (done)
 			size (done)
 			iterator (done)
 			spliterator
 			clear
 		 */
+
+		// Note: Taken from TreeMap
+		public boolean contains(Object o) {
+			if (!(o instanceof Map.Entry))
+				return false;
+			Map.Entry<?,?> entry = (Map.Entry<?,?>) o;
+			Object value = entry.getValue();
+			LeafNode<K,V> p = getEntry(entry.getKey());
+			return p != null && valEquals(p.getValue(), value);
+		}
+
+		// Note: Taken from TreeMap
+		public boolean remove(Object o) {
+			if (!(o instanceof Map.Entry))
+				return false;
+			Map.Entry<?,?> entry = (Map.Entry<?,?>) o;
+			Object value = entry.getValue();
+			LeafNode<K,V> p = getEntry(entry.getKey());
+			if (p != null && valEquals(p.getValue(), value)) {
+				deleteEntry(p);
+				return true;
+			}
+			return false;
+		}
+
+//		public void clear() {
+//			AdaptiveRadixTree.this.clear();
+//		}
 
 		@Override
 		@Nonnull
@@ -979,8 +1041,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			next = getFirstEntry();
 		}
 
-		// TODO: implement iterator remove?
-		// entrySet removal depends on it
+		// TODO: any other methods to offer here?
 
 		@Override
 		public boolean hasNext() {
