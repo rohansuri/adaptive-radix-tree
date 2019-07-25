@@ -196,6 +196,17 @@ public class ARTInterfaceLevelTest {
 	}
 
 	@Test
+	public void testClear(){
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+
+		Assert.assertNull(art.put(BARCA, "1"));
+		Assert.assertEquals(1, art.size());
+		art.clear();
+		Assert.assertEquals(0, art.size());
+		Assert.assertNull(art.get(BARCA));
+	}
+
+	@Test
 	public void testSharedPrefixRemove_onlyChildInnerNode() {
 		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
 

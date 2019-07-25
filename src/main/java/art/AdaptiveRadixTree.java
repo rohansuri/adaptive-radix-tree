@@ -51,6 +51,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@Override
+	public void clear() {
+		size = 0;
+		root = null;
+	}
+
+	@Override
 	public Set<Entry<K, V>> entrySet() {
 		EntrySet es = entrySet;
 		return (es != null) ? es : (entrySet = new EntrySet());
@@ -1015,9 +1021,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			return false;
 		}
 
-//		public void clear() {
-//			AdaptiveRadixTree.this.clear();
-//		}
+		public void clear() {
+			AdaptiveRadixTree.this.clear();
+		}
 
 		@Override
 		@Nonnull
