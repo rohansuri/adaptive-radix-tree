@@ -358,10 +358,14 @@ public class ARTInterfaceLevelTest {
 			}
 
 			String value = String.valueOf(i);
+			Assert.assertFalse(art.containsKey(i));
+			Assert.assertFalse(art.containsValue(value));
 			Assert.assertNull(art.put(i, value));
 			expectedSize++;
 			Assert.assertEquals(value, art.get(i));
 			Assert.assertEquals(expectedSize, art.size());
+			Assert.assertTrue(art.containsKey(i));
+			Assert.assertTrue(art.containsValue(value));
 
 			// lowerKey test
 			if (i != Byte.MIN_VALUE) {

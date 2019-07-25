@@ -50,6 +50,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return put(bytes, key, value);
 	}
 
+	// note: taken from TreeMap
+	@Override
+	public boolean containsKey(Object key) {
+		return getEntry(key) != null;
+	}
+
+	// note: taken from TreeMap
+	@Override
+	public boolean containsValue(Object value) {
+		for (LeafNode<K,V> e = getFirstEntry(); e != null; e = successor(e))
+			if (valEquals(value, e.getValue()))
+				return true;
+		return false;
+	}
+
 	@Override
 	public void clear() {
 		size = 0;
@@ -568,7 +583,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Returns null if the ART is empty
 	 */
 	@SuppressWarnings("unchecked")
-	private Entry<K, V> getFirstEntry() {
+	private LeafNode<K, V> getFirstEntry() {
 		if (isEmpty()) {
 			return null;
 		}
@@ -576,14 +591,14 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <K, V> Entry<K, V> getFirstEntry(Node startFrom) {
+	private static <K, V> LeafNode<K, V> getFirstEntry(Node startFrom) {
 		Node node = startFrom;
 		Node next = node.first();
 		while (next != null) {
 			node = next;
 			next = node.first();
 		}
-		return (Entry<K, V>) node;
+		return (LeafNode<K, V>) node;
 	}
 
 	/*
@@ -932,8 +947,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return size;
 	}
 
-	private static <K, V> Entry<K, V> successor(Entry<K, V> of) {
-		Node node = (Node) of; // LeafNode
+	private static <K, V> LeafNode<K, V> successor(LeafNode<K, V> of) {
+		Node node = of; // LeafNode
 		Node uplink;
 		while ((uplink = node.parent()) != null) {
 			Node greater = uplink.greater(node.uplinkKey());
@@ -947,9 +962,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	// e should not be null
 	// neither should tree be empty when calling this
-	private void deleteEntry(Entry<K, V> e) {
+	private void deleteEntry(LeafNode<K, V> leaf) {
 		size--;
-		Node leaf = (Node) e;
 		Node parent = leaf.parent();
 		if (parent == null) {
 			// means root == leaf
@@ -978,7 +992,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 * that it copes with {@code null} o1 properly.
 	 * Note: Taken from TreeMap
 	 */
-	private static final boolean valEquals(Object o1, Object o2) {
+	private static boolean valEquals(Object o1, Object o2) {
 		return (o1==null ? o2==null : o1.equals(o2));
 	}
 
@@ -1039,9 +1053,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	private class LeafNodeIterator implements Iterator<Entry<K, V>> {
 
-		private Entry<K, V> next;
+		private LeafNode<K, V> next;
 		// to support removing the entry that was returned on the previous next() call
-		private Entry<K, V> lastReturned;
+		private LeafNode<K, V> lastReturned;
 
 		LeafNodeIterator() {
 			next = getFirstEntry();
