@@ -65,12 +65,31 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return false;
 	}
 
+	// Note: taken from TreeMap
+	public Map.Entry<K,V> pollFirstEntry() {
+		LeafNode<K,V> p = getFirstEntry();
+		Map.Entry<K,V> result = exportEntry(p);
+		if (p != null)
+			deleteEntry(p);
+		return result;
+	}
+
+	// Note: taken from TreeMap
+	public Map.Entry<K,V> pollLastEntry() {
+		LeafNode<K,V> p = getLastEntry();
+		Map.Entry<K,V> result = exportEntry(p);
+		if (p != null)
+			deleteEntry(p);
+		return result;
+	}
+
 	@Override
 	public void clear() {
 		size = 0;
 		root = null;
 	}
 
+	// TODO: spliterator
 	@Override
 	public Set<Entry<K, V>> entrySet() {
 		EntrySet es = entrySet;
@@ -605,7 +624,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Returns null if the ART is empty
 	 */
 	@SuppressWarnings("unchecked")
-	private Entry<K, V> getLastEntry() {
+	private LeafNode<K, V> getLastEntry() {
 		if (isEmpty()) {
 			return null;
 		}
@@ -613,14 +632,14 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@SuppressWarnings("unchecked")
-	private Entry<K, V> getLastEntry(Node startFrom) {
+	private LeafNode<K, V> getLastEntry(Node startFrom) {
 		Node node = startFrom;
 		Node next = node.last();
 		while (next != null) {
 			node = next;
 			next = node.last();
 		}
-		return (Entry<K, V>) node;
+		return (LeafNode<K, V>) node;
 	}
 
 	@Override
@@ -859,16 +878,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@Override
-	public Entry<K, V> pollFirstEntry() {
-		return null;
-	}
-
-	@Override
-	public Entry<K, V> pollLastEntry() {
-		return null;
-	}
-
-	@Override
 	public NavigableMap<K, V> descendingMap() {
 		return null;
 	}
@@ -997,19 +1006,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
-
-		/*
-			offer efficient implementations of these:
-			(because calling remove on AbstractSet by default iterates over all entries
-			to find the entry to remove)
-
-			contains (done)
-			remove (done)
-			size (done)
-			iterator (done)
-			spliterator
-			clear
-		 */
+		// TODO: spliterator
 
 		// Note: Taken from TreeMap
 		public boolean contains(Object o) {

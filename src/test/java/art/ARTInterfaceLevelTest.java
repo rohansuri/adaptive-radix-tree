@@ -207,6 +207,42 @@ public class ARTInterfaceLevelTest {
 	}
 
 	@Test
+	public void testPollFirstEntry(){
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+
+		Assert.assertNull(art.put(BAR, "1"));
+		Assert.assertNull(art.put(BAZ, "2"));
+		Assert.assertEquals(2, art.size());
+		Map.Entry<String, String> entry = art.pollFirstEntry();
+		Assert.assertEquals(entry.getKey(), BAR);
+		Assert.assertEquals(entry.getValue(), "1");
+		Assert.assertNull(art.get(BAR));
+		Assert.assertEquals("2", art.get(BAZ));
+		entry = art.pollFirstEntry();
+		Assert.assertEquals(entry.getKey(), BAZ);
+		Assert.assertEquals(entry.getValue(), "2");
+		Assert.assertEquals(0, art.size());
+	}
+
+	@Test
+	public void testPollLastEntry(){
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+
+		Assert.assertNull(art.put(BAR, "1"));
+		Assert.assertNull(art.put(BAZ, "2"));
+		Assert.assertEquals(2, art.size());
+		Map.Entry<String, String> entry = art.pollLastEntry();
+		Assert.assertEquals(entry.getKey(), BAZ);
+		Assert.assertEquals(entry.getValue(), "2");
+		Assert.assertNull(art.get(BAZ));
+		Assert.assertEquals("1", art.get(BAR));
+		entry = art.pollFirstEntry();
+		Assert.assertEquals(entry.getKey(), BAR);
+		Assert.assertEquals(entry.getValue(), "1");
+		Assert.assertEquals(0, art.size());
+	}
+
+	@Test
 	public void testSharedPrefixRemove_onlyChildInnerNode() {
 		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
 
