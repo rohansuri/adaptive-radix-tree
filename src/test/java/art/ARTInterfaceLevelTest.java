@@ -2,6 +2,7 @@ package art;
 
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -183,7 +184,7 @@ public class ARTInterfaceLevelTest {
  	}
 
  	@Test
-	public void testEntrySet(){
+	public void testEntrySetRemoval(){
 		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
 
 		Assert.assertNull(art.put(BARCA, "1"));
@@ -341,6 +342,72 @@ public class ARTInterfaceLevelTest {
 
 		Assert.assertNull(art.put(BARCA, "2"));
 		Assert.assertEquals("2", art.get(BARCA));
+	}
+
+	@Test
+	public void testDeletingAll8BitIntegersUsingValueCollection() {
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+
+		// insert all
+		byte i = Byte.MIN_VALUE;
+		do {
+			String value = String.valueOf(i);
+			Assert.assertNull(art.put(i, value));
+			i++;
+		}
+		while (i != Byte.MIN_VALUE);
+
+		// check all using values collection
+		Collection<String> values = art.values();
+		i = Byte.MIN_VALUE;
+		do {
+			String value = String.valueOf(i);
+			Assert.assertTrue(values.contains(value));
+			i++;
+		}
+		while(i != Byte.MIN_VALUE);
+
+		// remove one by one
+		i = Byte.MIN_VALUE;
+		do {
+			String value = String.valueOf(i);
+			values.remove(value);
+			Assert.assertFalse(values.contains(value));
+			i++;
+		}
+		while(i != Byte.MIN_VALUE);
+		Assert.assertEquals(0, values.size());
+	}
+
+	// we can remove this test since entrySet, valueSet, keySet iterators all use the same super remove implementation
+	// in PrivateEntryIterator
+	@Test
+	public void testDeletingAll8BitIntegersUsingValueIterator() {
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+
+		// insert all
+		byte i = Byte.MIN_VALUE;
+		do {
+			String value = String.valueOf(i);
+			Assert.assertNull(art.put(i, value));
+			i++;
+		}
+		while (i != Byte.MIN_VALUE);
+
+		// remove one by one and check if next exists
+		i = Byte.MIN_VALUE;
+		Iterator<String> it = art.values().iterator();
+		while(it.hasNext()){
+			String value = it.next();
+			Assert.assertEquals(String.valueOf(i), value);
+			it.remove();
+			i++;
+			if(i == Byte.MIN_VALUE){
+				break;
+			}
+			value = String.valueOf(i);
+			Assert.assertEquals(value, art.get(i));
+		}
 	}
 
 

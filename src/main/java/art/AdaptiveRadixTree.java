@@ -2,6 +2,7 @@ package art;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements NavigableMap<K, V> {
 	private final BinaryComparable<K> binaryComparable;
 	private transient EntrySet<K, V> entrySet;
+	private transient Collection<V> values;
 	private transient int size = 0;
 	/**
 	 * The number of structural modifications to the tree.
@@ -104,6 +106,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	public Set<Entry<K, V>> entrySet() {
 		EntrySet<K, V> es = entrySet;
 		return (es != null) ? es : (entrySet = new EntrySet<>(this));
+	}
+
+	@Override
+	public Collection<V> values() {
+		Collection<V> c = values;
+		return (c != null) ? c : (values = new Values<>(this));
 	}
 
 	private V put(byte[] keyBytes, K key, V value) {
@@ -1036,6 +1044,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	Iterator<Map.Entry<K, V>> entryIterator() {
 		return new EntryIterator<>(this, getFirstEntry());
+	}
+
+	Iterator<V> valueIterator(){
+		return new ValueIterator<>(this, getFirstEntry());
 	}
 
 	private Iterator<K> keyIterator() {

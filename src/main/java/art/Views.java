@@ -1,5 +1,6 @@
 package art;
 
+import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -9,7 +10,7 @@ import java.util.NoSuchElementException;
 // contains all stuff borrowed from TreeMap
 // such methods/utilities should be taken out and made a library of their own
 // so any implementation of NavigableMap can reuse it, while the implementation
-// provides certain primitive methods
+// provides certain primitive methods (getEntry, successor, predecessor, etc)
 
 class EntrySet<K, V> extends AbstractSet<Map.Entry<K, V>> {
 	private final AdaptiveRadixTree<K, V> m;
@@ -127,6 +128,49 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 		expectedModCount = m.getModCount();
 		lastReturned = null;
 	}
+}
+
+class Values<K, V> extends AbstractCollection<V> {
+	private final AdaptiveRadixTree<K, V> m;
+
+	Values(AdaptiveRadixTree<K, V> m){
+		this.m = m;
+	}
+
+	@Override
+	public Iterator<V> iterator() {
+		return m.valueIterator();
+	}
+
+	@Override
+	public int size() {
+		return m.size();
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return m.containsValue(o);
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		for (LeafNode<K,V> e = m.getFirstEntry(); e != null; e = AdaptiveRadixTree.successor(e)) {
+			if (AdaptiveRadixTree.valEquals(e.getValue(), o)) {
+				m.deleteEntry(e);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void clear() {
+		m.clear();
+	}
+
+	/*public Spliterator<V> spliterator() {
+		return new TreeMap.ValueSpliterator<K,V>(TreeMap.this, null, null, 0, -1, 0);
+	}*/
 }
 
 final class EntryIterator<K, V> extends PrivateEntryIterator<K, V, Map.Entry<K, V>> {
