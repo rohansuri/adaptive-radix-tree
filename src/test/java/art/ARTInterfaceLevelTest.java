@@ -378,6 +378,35 @@ public class ARTInterfaceLevelTest {
 	}
 
 	@Test
+	public void testDeletingAll8BitIntegersUsingEntrySetIterator() {
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+
+		// insert all
+		byte i = Byte.MIN_VALUE;
+		do {
+			String value = String.valueOf(i);
+			Assert.assertNull(art.put(i, value));
+			i++;
+		}
+		while (i != Byte.MIN_VALUE);
+
+		// remove one by one and check if next exists
+		i = Byte.MIN_VALUE;
+		Iterator<Map.Entry<Byte, String>> it = art.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry<Byte, String> entry = it.next();
+			Assert.assertEquals(i, (byte)entry.getKey());
+			it.remove();
+			i++;
+			if(i == Byte.MIN_VALUE){
+				break;
+			}
+			String value = String.valueOf(i);
+			Assert.assertEquals(value, art.get(i));
+		}
+	}
+
+	@Test
 	public void testInsertingAndDeletingAllInt8BitIntegers() throws ReflectiveOperationException {
 		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
 

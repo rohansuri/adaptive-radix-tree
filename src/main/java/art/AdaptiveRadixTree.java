@@ -998,7 +998,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return null;
 	}
 
-	// e should not be null
+	// leaf should not be null
 	// neither should tree be empty when calling this
 	void deleteEntry(LeafNode<K, V> leaf) {
 		size--;
