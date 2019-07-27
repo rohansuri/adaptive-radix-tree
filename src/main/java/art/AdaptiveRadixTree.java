@@ -1,7 +1,6 @@
 package art;
 
 import java.util.AbstractMap;
-import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -24,8 +23,17 @@ import org.slf4j.LoggerFactory;
 
 public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements NavigableMap<K, V> {
 	private final BinaryComparable<K> binaryComparable;
-	private transient AdaptiveRadixTree.EntrySet entrySet;
+	private transient EntrySet<K, V> entrySet;
 	private transient int size = 0;
+	/**
+	 * The number of structural modifications to the tree.
+	 * TODO: increment this in all tree modification methods
+	 */
+	private transient int modCount = 0;
+
+	int getModCount() {
+		return modCount;
+	}
 
 	// TODO: offer a bulk create constructor
 
@@ -57,6 +65,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// note: taken from TreeMap
+	// why doesn't TreeMap use AbstractMap's provided impl?
+	// the only difference is default impl requires an iterator to be created,
+	// but it ultimately uses the successor calls to iterate.
 	@Override
 	public boolean containsValue(Object value) {
 		for (LeafNode<K,V> e = getFirstEntry(); e != null; e = successor(e))
@@ -89,11 +100,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		root = null;
 	}
 
-	// TODO: spliterator
 	@Override
 	public Set<Entry<K, V>> entrySet() {
-		EntrySet es = entrySet;
-		return (es != null) ? es : (entrySet = new EntrySet());
+		EntrySet<K, V> es = entrySet;
+		return (es != null) ? es : (entrySet = new EntrySet<>(this));
 	}
 
 	private V put(byte[] keyBytes, K key, V value) {
@@ -126,7 +136,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 *         and this map uses natural ordering, or its comparator
 	 *         does not permit null keys
 	 */
-	private LeafNode<K, V> getEntry(Object key) {
+	LeafNode<K, V> getEntry(Object key) {
 		if (key == null)
 			throw new NullPointerException();
 		if (root == null) { // empty tree
@@ -602,7 +612,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Returns null if the ART is empty
 	 */
 	@SuppressWarnings("unchecked")
-	private LeafNode<K, V> getFirstEntry() {
+	LeafNode<K, V> getFirstEntry() {
 		if (isEmpty()) {
 			return null;
 		}
@@ -632,7 +642,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@SuppressWarnings("unchecked")
-	private LeafNode<K, V> getLastEntry(Node startFrom) {
+	private static <K, V> LeafNode<K, V> getLastEntry(Node startFrom) {
 		Node node = startFrom;
 		Node next = node.last();
 		while (next != null) {
@@ -662,7 +672,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return keyOrNull(getLowerOrFloorEntry(false, key));
 	}
 
-	private Entry<K, V> getLowerOrFloorEntry(boolean lower, K k) {
+	private LeafNode<K, V> getLowerOrFloorEntry(boolean lower, K k) {
 		if (isEmpty()) {
 			return null;
 		}
@@ -710,6 +720,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return exportEntry(getHigherOrCeilEntry(true, key));
 	}
 
+	private int compare(K k1, K k2){
+		byte[] k1bytes = binaryComparable.get(k1);
+		byte[] k2bytes = binaryComparable.get(k2);
+		return compare(k1bytes, 0, k1bytes.length, k2bytes, 0, k2bytes.length);
+	}
+
 	// 0 if a == b
 	// -1 if a < b
 	// 1 if a > b
@@ -731,7 +747,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// TODO: rather than using depth, refactor to use node.parentKey() i.e. reuse successor(...) method
-	private Entry<K, V> goUpAndFindGreater(int depth, Node node, byte[] key) {
+	private LeafNode<K, V> goUpAndFindGreater(int depth, Node node, byte[] key) {
 		while ((node = node.parent()) != null) { // while you don't reach the root node
 			depth--;
 			log.info("finding greater for partialKey {} on level {}", key[depth], depth);
@@ -746,7 +762,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return null;
 	}
 
-	private Entry<K, V> goUpAndFindLesser(int depth, Node node, byte[] key) {
+	private LeafNode<K, V> goUpAndFindLesser(int depth, Node node, byte[] key) {
 		while ((node = node.parent()) != null) { // while you don't reach the root node
 			depth--;
 			log.info("finding lesser for partialKey {} on level {}", key[depth], depth);
@@ -801,7 +817,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 		so it seems the uplinking traversal is same in all cases
 	  */
-	private Entry<K, V> getHigherOrCeilEntry(boolean ceil, K k) {
+	private LeafNode<K, V> getHigherOrCeilEntry(boolean ceil, K k) {
 		if (isEmpty()) {
 			return null;
 		}
@@ -956,7 +972,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return size;
 	}
 
-	private static <K, V> LeafNode<K, V> successor(LeafNode<K, V> of) {
+	static <K, V> LeafNode<K, V> successor(LeafNode<K, V> of) {
 		Node node = of; // LeafNode
 		Node uplink;
 		while ((uplink = node.parent()) != null) {
@@ -969,9 +985,22 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return null;
 	}
 
+	static <K, V> LeafNode<K, V> predecessor(LeafNode<K, V> of) {
+		Node node = of; // LeafNode
+		Node uplink;
+		while ((uplink = node.parent()) != null) {
+			Node lesser = uplink.lesser(node.uplinkKey());
+			if (lesser != null) {
+				return getLastEntry(lesser);
+			}
+			node = uplink;
+		}
+		return null;
+	}
+
 	// e should not be null
 	// neither should tree be empty when calling this
-	private void deleteEntry(LeafNode<K, V> leaf) {
+	void deleteEntry(LeafNode<K, V> leaf) {
 		size--;
 		Node parent = leaf.parent();
 		if (parent == null) {
@@ -1001,86 +1030,20 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 * that it copes with {@code null} o1 properly.
 	 * Note: Taken from TreeMap
 	 */
-	private static boolean valEquals(Object o1, Object o2) {
+	static boolean valEquals(Object o1, Object o2) {
 		return (o1==null ? o2==null : o1.equals(o2));
 	}
 
-	private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
-		// TODO: spliterator
-
-		// Note: Taken from TreeMap
-		public boolean contains(Object o) {
-			if (!(o instanceof Map.Entry))
-				return false;
-			Map.Entry<?,?> entry = (Map.Entry<?,?>) o;
-			Object value = entry.getValue();
-			LeafNode<K,V> p = getEntry(entry.getKey());
-			return p != null && valEquals(p.getValue(), value);
-		}
-
-		// Note: Taken from TreeMap
-		public boolean remove(Object o) {
-			if (!(o instanceof Map.Entry))
-				return false;
-			Map.Entry<?,?> entry = (Map.Entry<?,?>) o;
-			Object value = entry.getValue();
-			LeafNode<K,V> p = getEntry(entry.getKey());
-			if (p != null && valEquals(p.getValue(), value)) {
-				deleteEntry(p);
-				return true;
-			}
-			return false;
-		}
-
-		public void clear() {
-			AdaptiveRadixTree.this.clear();
-		}
-
-		@Override
-		@Nonnull
-		public Iterator<Entry<K, V>> iterator() {
-			return new LeafNodeIterator();
-		}
-
-		@Override
-		public int size() {
-			return AdaptiveRadixTree.this.size();
-		}
+	Iterator<Map.Entry<K, V>> entryIterator() {
+		return new EntryIterator<>(this, getFirstEntry());
 	}
 
-	private class LeafNodeIterator implements Iterator<Entry<K, V>> {
-
-		private LeafNode<K, V> next;
-		// to support removing the entry that was returned on the previous next() call
-		private LeafNode<K, V> lastReturned;
-
-		LeafNodeIterator() {
-			next = getFirstEntry();
-		}
-
-		// TODO: any other methods to offer here?
-
-		@Override
-		public boolean hasNext() {
-			return next != null;
-		}
-
-		@Override
-		public Entry<K, V> next() {
-			if (next == null)
-				throw new NoSuchElementException();
-			lastReturned = next;
-			next = successor(lastReturned);
-			return lastReturned;
-		}
-
-		@Override
-		public void remove() {
-			if (lastReturned == null) {
-				throw new IllegalStateException();
-			}
-			deleteEntry(lastReturned);
-			lastReturned = null;
-		}
+	private Iterator<K> keyIterator() {
+		return new KeyIterator<>(this, getFirstEntry());
 	}
+
+	private Iterator<K> descendingKeyIterator() {
+		return new DescendingKeyIterator<>(this, getLastEntry());
+	}
+
 }
