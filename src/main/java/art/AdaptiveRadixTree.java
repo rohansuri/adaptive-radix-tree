@@ -1054,7 +1054,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return new KeyIterator<>(this, getFirstEntry());
 	}
 
-	private Iterator<K> descendingKeyIterator() {
+	Iterator<K> descendingKeyIterator() {
 		return new DescendingKeyIterator<>(this, getLastEntry());
 	}
 

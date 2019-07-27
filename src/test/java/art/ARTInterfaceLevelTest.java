@@ -379,6 +379,27 @@ public class ARTInterfaceLevelTest {
 		Assert.assertEquals(0, values.size());
 	}
 
+	@Test
+	public void testDescendingIterator(){
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+
+		// insert all
+		byte i = Byte.MIN_VALUE;
+		do {
+			String value = String.valueOf(i);
+			Assert.assertNull(art.put(i, value));
+			i++;
+		}
+		while (i != Byte.MIN_VALUE);
+
+		i = Byte.MAX_VALUE;
+		Iterator<Byte> it = art.descendingKeyIterator();
+		while(it.hasNext()){
+			Assert.assertEquals(i, (byte)it.next());
+			i--;
+		}
+	}
+
 	// we can remove this test since entrySet, valueSet, keySet iterators all use the same super remove implementation
 	// in PrivateEntryIterator
 	@Test
