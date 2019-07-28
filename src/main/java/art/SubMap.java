@@ -155,11 +155,7 @@ final class KeySet<E> extends AbstractSet<E> implements NavigableSet<E> {
 		return new KeySet<>(m.descendingMap());
 	}
 
-	/*
-	public Spliterator<E> spliterator() {
-			return keySpliteratorFor(m);
-	}
-	*/
+	// TODO: implement Spliterator
 }
 
 // A NavigableMap that adds range checking (if passed in key is within lower and upper bound)
@@ -647,7 +643,6 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	}
 
 	// Implement minimal Spliterator as KeySpliterator backup
-	// TODO: understand spliterators
 	final class SubMapKeyIterator extends SubMapIterator<K>
 			implements Spliterator<K> {
 		SubMapKeyIterator(LeafNode<K, V> first,
@@ -680,6 +675,9 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			return false;
 		}
 
+		// estimating size of submap would be expensive
+		// since we'd have to traverse from lower bound to upper bound
+		// for this submap
 		@Override
 		public long estimateSize() {
 			return Long.MAX_VALUE;

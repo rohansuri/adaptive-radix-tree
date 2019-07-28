@@ -58,9 +58,7 @@ class EntrySet<K, V> extends AbstractSet<Map.Entry<K, V>> {
 		m.clear();
 	}
 
-	/*public Spliterator<Map.Entry<K,V>> spliterator() {
-		return new TreeMap.EntrySpliterator<K,V>(TreeMap.this, null, null, 0, -1, 0);
-	}*/
+	// TODO: implement Spliterator
 }
 
 /**
@@ -168,9 +166,7 @@ class Values<K, V> extends AbstractCollection<V> {
 		m.clear();
 	}
 
-	/*public Spliterator<V> spliterator() {
-		return new TreeMap.ValueSpliterator<K,V>(TreeMap.this, null, null, 0, -1, 0);
-	}*/
+	// TODO: implement Spliterator
 }
 
 final class EntryIterator<K, V> extends PrivateEntryIterator<K, V, Map.Entry<K, V>> {
