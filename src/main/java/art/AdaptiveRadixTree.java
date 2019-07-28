@@ -31,7 +31,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private transient int size = 0;
 	/**
 	 * The number of structural modifications to the tree.
-	 * TODO: increment this in all tree modification methods
+	 * To be touched where ever size changes.
 	 */
 	private transient int modCount = 0;
 
@@ -102,6 +102,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	public void clear() {
 		size = 0;
 		root = null;
+		modCount++;
 	}
 
 	@Override
@@ -123,6 +124,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			log.trace("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays
 					.toString(keyBytes));
 			size = 1;
+			modCount++;
 			return null;
 		}
 		return put(root, keyBytes, key, value, 0, null);
@@ -182,6 +184,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 			root = null;
 			size = 0;
+			modCount++;
 			return leaf.getValue();
 		}
 		return remove(root, key, 0, null);
@@ -204,9 +207,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				if (!Arrays.equals(leaf.getKeyBytes(), key)) {
 					return null; // we don't have a mapping for this key
 				}
-				// TODO: call deleteEntry?
+				// TODO: use getEntry + deleteEntry?
 				node.removeChild(key[depth]);
 				size--;
+				modCount++;
 				if (node.shouldShrink()) {
 					log.trace("shrinking {}", node.getClass());
 					node = node.shrink();
@@ -368,6 +372,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				// we gotta replace the prevDepth's child pointer to this new node
 				replace(depth, keyBytes, prevDepth, pathCompressedNode);
 				size++;
+				modCount++;
 				return null;
 			}
 
@@ -428,6 +433,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			replace(depth, keyBytes, prevDepth, node);
 		}
 		size++;
+		modCount++;
 	}
 
 	/*
@@ -528,6 +534,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		else {
 			branchOut(node, keyBytes, key, value, lcp, depth, prevDepth);
 			size++;
+			modCount++;
 			return -1; // we've already inserted the leaf node, caller needs to do nothing more
 		}
 	}
@@ -1049,6 +1056,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	// neither should tree be empty when calling this
 	void deleteEntry(LeafNode<K, V> leaf) {
 		size--;
+		modCount++;
 		Node parent = leaf.parent();
 		if (parent == null) {
 			// means root == leaf
