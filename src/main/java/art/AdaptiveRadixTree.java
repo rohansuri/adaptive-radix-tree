@@ -157,85 +157,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		@SuppressWarnings("unchecked")
 		K k = (K) key;
 		byte[] bytes = binaryComparable.get(k);
-		log.trace("getting {}", Arrays.toString(bytes));
 		return getEntry(root, bytes, 0);
 	}
 
 	@Override
 	public V remove(Object key) {
-		if(key == null){
-			throw new NullPointerException();
-		}
-		@SuppressWarnings("unchecked")
-		K k = (K) key;
-		byte[] bytes = binaryComparable.get(k);
-		return remove(bytes);
-	}
-
-	private V remove(byte[] key) {
-		if (root == null) {
+		LeafNode<K,V> p = getEntry(key);
+		if (p == null)
 			return null;
-		}
-		else if (root instanceof LeafNode) {
-			@SuppressWarnings("unchecked")
-			LeafNode<K, V> leaf = (LeafNode<K, V>) root;
-			if (!Arrays.equals(leaf.getKeyBytes(), key)) {
-				return null; // we don't have a mapping for this key
-			}
-			root = null;
-			size = 0;
-			modCount++;
-			return leaf.getValue();
-		}
-		return remove(root, key, 0, null);
+		V oldValue = p.getValue();
+		deleteEntry(p);
+		return oldValue;
 	}
 
-	private V remove(Node node, byte[] key, int depth, InnerNode prevDepth) {
-		while (true) {
-			if (!matchesCompressedPathCompletely((InnerNode) node, key, depth)) {
-				return null;
-			}
-			final int initialDepth = depth;
-			depth = depth + ((InnerNode) node).prefixLen;
-			Node nextNode = node.findChild(key[depth]);
-			if (nextNode == null) {
-				return null;
-			}
-			if (nextNode instanceof LeafNode) {
-				@SuppressWarnings("unchecked")
-				LeafNode<K, V> leaf = (LeafNode<K, V>) nextNode;
-				if (!Arrays.equals(leaf.getKeyBytes(), key)) {
-					return null; // we don't have a mapping for this key
-				}
-				// TODO: use getEntry + deleteEntry?
-				node.removeChild(key[depth]);
-				size--;
-				modCount++;
-				if (node.shouldShrink()) {
-					log.trace("shrinking {}", node.getClass());
-					node = node.shrink();
-					replace(initialDepth, key, prevDepth, node);
-				}
-				else if (((InnerNode) node).noOfChildren == 1) {
-					pathCompress((Node4) node, prevDepth, key, initialDepth);
-				}
-				return leaf.getValue();
-			}
-			// set fields for next iteration
-			prevDepth = (InnerNode) node;
-			node = nextNode;
-			depth++;
-		}
-	}
-
-	// TODO: combine both versions of pathCompress?
 	// do we really need prevDepth to be passed around in call stack?
 	// if the uplinks have already been setup, then we could use them
-	private void pathCompress(Node4 toCompress, Node prevDepth, byte[] key, int initialDepth) {
-		updateCompressedPathOfOnlyChild(toCompress);
-		Node onlyChild = toCompress.getChild()[0];
-		replace(initialDepth, key, prevDepth, onlyChild);
-	}
 
 	private void pathCompress(Node4 toCompress) {
 		updateCompressedPathOfOnlyChild(toCompress);
