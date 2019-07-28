@@ -2,12 +2,9 @@ package art;
 
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class Node4 extends InnerNode {
 
-	private static final Logger log = LoggerFactory.getLogger(Node4.class);
+	// private static final Logger log = LoggerFactory.getLogger(Node4.class);
 
 	static final int NODE_SIZE = 4;
 
@@ -77,7 +74,7 @@ class Node4 extends InnerNode {
 		}
 		keys[insertionPoint] = unsignedPartialKey;
 		this.child[insertionPoint] = child;
-		log.trace("partialKey {} added at {}", unsignedPartialKey, insertionPoint);
+		// log.trace("partialKey {} added at {}", unsignedPartialKey, insertionPoint);
 		noOfChildren++;
 		createUplink(this, child, partialKey);
 		return true;

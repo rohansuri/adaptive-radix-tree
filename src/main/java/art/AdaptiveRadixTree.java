@@ -15,9 +15,6 @@ import java.util.SortedMap;
 
 import javax.annotation.Nonnull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 // document that we don't allow null keys
 // check which methods of TreeMap throw NPE
 // we throw there too
@@ -48,9 +45,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		this.binaryComparable = binaryComparable;
 	}
 
-	// TODO: is it unusual for a data structure library to log?
-	// TODO: replace with java.util.logging so that we have no runtime dependencies?
-	private static final Logger log = LoggerFactory.getLogger(AdaptiveRadixTree.class);
+	// TODO: remove logs after sufficient testing
+	// private static final Logger log = LoggerFactory.getLogger(AdaptiveRadixTree.class);
 
 	private Node root;
 
@@ -121,8 +117,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<>(keyBytes, key, value);
-			log.trace("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays
-					.toString(keyBytes));
+			// log.trace("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays.toString(keyBytes));
 			size = 1;
 			modCount++;
 			return null;
@@ -226,17 +221,16 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// and do findChild and continue search over that child.
 			// if incomplete match, then we return null.
 			if (!matchesCompressedPathCompletely((InnerNode) node, key, depth)) {
-				log.trace("compressed path {} and key {} didn't match entirely", ((InnerNode) node)
-						.getValidPrefixKey(), key);
+				// log.trace("compressed path {} and key {} didn't match entirely", ((InnerNode) node).getValidPrefixKey(), key);
 				return null;
 			}
 
-			log.trace("compressed path {} and key {} matched entirely", ((InnerNode) node).getValidPrefixKey(), key);
+			// log.trace("compressed path {} and key {} matched entirely", ((InnerNode) node).getValidPrefixKey(), key);
 			// complete match, continue search
 			depth = depth + ((InnerNode) node).prefixLen;
 			Node nextNode = node.findChild(key[depth]);
 			if (nextNode == null) {
-				log.trace("no follow on child pointer for partialKey {}", key[depth]);
+				// log.trace("no follow on child pointer for partialKey {}", key[depth]);
 				return null;
 			}
 			// set fields for next iteration
@@ -269,7 +263,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	private void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
-			log.trace("replacing root");
+			// log.trace("replacing root");
 			root = replaceWith;
 			AbstractNode.replaceUplink(null, root);
 		}
@@ -283,7 +277,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	// TODO: combine with other replace version?
 	private void replace(byte partialKey, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
-			log.trace("replacing root");
+			// log.trace("replacing root");
 			root = replaceWith;
 			AbstractNode.replaceUplink(null, root);
 		}
@@ -300,7 +294,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				Node pathCompressedNode = createPathCompressedNodeAfterExpandLazyLeaf(leaf, keyBytes, key, value, depth);
 				if (pathCompressedNode == node) {
 					// key already exists
-					log.trace("key already exists, replacing value");
+					// log.trace("key already exists, replacing value");
 					V oldValue = leaf.getValue();
 					leaf.setValue(value);
 					return oldValue;
@@ -360,7 +354,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node leaf = new LeafNode<>(keyBytes, key, value);
 		// TODO: check isFull before calling addChild? to be consistent with paper?
 		if (!node.addChild(partialKey, leaf)) {
-			log.trace("growing node");
+			// log.trace("growing node");
 			node = node.grow();
 			assert node.addChild(partialKey, leaf);
 
@@ -422,7 +416,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			node.prefixKeys[j] = node.prefixKeys[i];
 		}
 		node.prefixLen = node.prefixLen - lcp - 1;
-		log.trace("updated compressed path {}", node.getValidPrefixKey());
+		// log.trace("updated compressed path {}", node.getValidPrefixKey());
 	}
 
 	private int matchCompressedPath(InnerNode node, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
@@ -434,7 +428,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			return depth;
 		}
 
-		log.trace("depth before lcp {}", depth);
+		// log.trace("depth before lcp {}", depth);
 		// match pessimistic compressed path
 		int lcp = 0;
 		// it is important to have both prefixLen and prefixKeys.Length checks
@@ -444,9 +438,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		for (; lcp < node.prefixLen && depth < keyBytes.length && lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
 
-		log.trace("LCP of key {} and compressed path {} is {}",
-				Arrays.toString(keyBytes),
-				Arrays.toString(node.getValidPrefixKey()), lcp);
+		// log.trace("LCP of key {} and compressed path {} is {}", Arrays.toString(keyBytes), Arrays.toString(node.getValidPrefixKey()), lcp);
+
 		// can lcp be 0? yes
 		// consider BAZ, BAR already inserted
 		// and we want to insert BOZ?
@@ -460,11 +453,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// purpose of pessimistic prefixKeys match is to serve as safety net and early return.
 
 		if (lcp <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && lcp == node.prefixLen) {
-			log.trace("pessimistic match");
+			// log.trace("pessimistic match");
 			return depth;
 		}
 		else if (lcp == InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
-			log.trace("optimistic match");
+			// log.trace("optimistic match");
 			return depth + (node.prefixLen - InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		}
 		else {
@@ -481,14 +474,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// BAR, BAZ inserted, now inserting BOZ
 
 		int initialDepth = depth - lcp;
-		log.trace("initial depth calculated {}", initialDepth);
+		// log.trace("initial depth calculated {}", initialDepth);
 
 		// create new lazy leaf node for unmatched key?
 		// TODO: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
 		LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
 
-		log.trace("Entire compressed path didn't match, branching out on partialKey {} and {}",
-				new String(new byte[] {keyBytes[depth]}), new String(new byte[] {node.prefixKeys[depth]}));
+		// log.trace("Entire compressed path didn't match, branching out on partialKey {} and {}", new String(new byte[] {keyBytes[depth]}), new String(new byte[] {node.prefixKeys[depth]}));
 
 		// new node with updated prefix len, compressed path
 		Node4 branchOut = new Node4();
@@ -497,12 +489,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		System.arraycopy(keyBytes, initialDepth, branchOut.prefixKeys, 0, lcp);
 		branchOut.addChild(keyBytes[depth], leafNode);
 		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
-		log.trace("added follow on pointer for partialKey {}", keyBytes[depth]);
-		log.trace("added follow on pointer for partialKey {}", node.prefixKeys[lcp]);
+		// log.trace("added follow on pointer for partialKey {}", keyBytes[depth]);
+		// log.trace("added follow on pointer for partialKey {}", node.prefixKeys[lcp]);
 		// log.trace("new node contains following keys {}", Arrays.toString(branchOut.getKeys()));
 
-		log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut
-				.getValidPrefixKey()));
+		// log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut.getValidPrefixKey()));
 
 		// remove lcp common prefix key from "this" node
 		updateCompressedPath(node, lcp);
@@ -555,9 +546,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 		}
 		pathCompressedNode.prefixLen = lcp;
-		log.trace("longest common prefix between new key {} and lazily stored leaf {} is {}", Arrays
-				.toString(key), Arrays.toString(node
-				.getKeyBytes()), lcp);
+		// log.trace("longest common prefix between new key {} and lazily stored leaf {} is {}", Arrays.toString(key), Arrays.toString(node.getKeyBytes()), lcp);
 		return lcp;
 	}
 
