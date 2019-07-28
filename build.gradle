@@ -9,6 +9,13 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+	id "me.champeau.gradle.jmh" version "0.4.7"
+}
+
+jmh {
+	fork=1
+	warmup='1s'
+	timeOnIteration='1s'
 }
 
 dependencies {
