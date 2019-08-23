@@ -1,0 +1,4 @@
+Benchmark     (mapType)  (size)   Mode  Cnt         Score        Error  Units
+Lookup.dense   HASH_MAP   65000  thrpt   25  18496993.545 ± 168845.678  ops/s
+Lookup.dense        ART   65000  thrpt   25   7958298.502 ± 166212.912  ops/s
+Lookup.dense   TREE_MAP   65000  thrpt   25   3973457.662 ±  57722.270  ops/s

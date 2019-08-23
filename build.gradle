@@ -7,37 +7,37 @@
  */
 
 plugins {
-    // Apply the java-library plugin to add support for Java Library
-    id 'java-library'
+	// Apply the java-library plugin to add support for Java Library
+	id 'java-library'
 	id "me.champeau.gradle.jmh" version "0.4.7"
 }
 
 jmh {
-	fork=1
-	warmup='1s'
-	timeOnIteration='1s'
+	include = ['Lookup']
+	fork = 1
+	warmup = '1s'
+	timeOnIteration = '1s'
 }
 
 dependencies {
-	
+
 	// for research, comparing performance, etc
 	implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
 	testImplementation group: 'com.ibm.icu', name: 'icu4j', version: '64.2'
 
-
 	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation 'com.google.guava:guava:23.0'
-    // implementation 'ch.qos.logback:logback-classic:1.2.3'
+	implementation 'com.google.guava:guava:23.0'
+	// implementation 'ch.qos.logback:logback-classic:1.2.3'
 
-    // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
+	// Use JUnit test framework
+	testImplementation 'junit:junit:4.12'
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.26.0'
 }
 
 // In this section you declare where to find the dependencies of your project
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
+	// Use jcenter for resolving your dependencies.
+	// You can declare any Maven/Ivy/file repository here.
 	mavenCentral()
 }
 
