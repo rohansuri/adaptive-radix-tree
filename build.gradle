@@ -17,6 +17,8 @@ jmh {
 	fork = 1
 	warmup = '1s'
 	timeOnIteration = '1s'
+	// benchmarkParameters = [:]
+	// benchmarkParameters['mapType'] = ['ART']
 }
 
 dependencies {

@@ -21,7 +21,7 @@ public class Lookup {
 	@State(Scope.Benchmark)
 	public static class Dense {
 		Map<Integer, Object> m;
-		@Param("65000")
+		@Param({"65000", "16000000", "256000000"}) // 65k, 16m, 256m
 		int size;
 
 		public enum MapType {
@@ -37,10 +37,10 @@ public class Lookup {
 		public void setup() {
 			switch (mapType) {
 			case HASH_MAP:
-				m= new HashMap<>();
+				m = new HashMap<>();
 				break;
 			case ART:
-				m =  new AdaptiveRadixTree<>(BinaryComparable.INTEGER);
+				m = new AdaptiveRadixTree<>(BinaryComparable.INTEGER);
 				break;
 			case TREE_MAP:
 				m = new TreeMap<>();
@@ -50,14 +50,17 @@ public class Lookup {
 			}
 			Object holder = new Object();
 			List<Integer> keys = new ArrayList<>(size);
+
 			// dense keys
-			for(int i = 0; i < size; i++){
+			for (int i = 0; i < size; i++) {
 				keys.add(i);
 			}
+
 			// randomly permute keys
 			Collections.shuffle(keys);
 
-			for(int key: keys){
+			// insert into map
+			for (int key : keys) {
 				m.put(key, holder);
 			}
 		}
@@ -65,7 +68,8 @@ public class Lookup {
 
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
-	public Object dense(Dense d){
+	public Object dense(Dense d) {
+		// https://hg.openjdk.java.net/code-tools/jmh/file/99d7b73cf1e3/jmh-samples/src/main/java/org/openjdk/jmh/samples/JMHSample_38_PerInvokeSetup.java#l124
 		int x = ThreadLocalRandom.current().nextInt(0, d.size);
 		return d.m.get(x);
 	}
