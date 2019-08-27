@@ -15,7 +15,7 @@ public class Lookup {
 
 	@State(Scope.Benchmark)
 	public static class Data {
-		List<Integer> keys;
+		int[] keys;
 		Map<Integer, Object> m;
 		@Param({"65000", "16000000"}) // 65k, 16m
 				int size;
@@ -55,14 +55,14 @@ public class Lookup {
 			}
 			Object holder = new Object();
 
-			keys = new ArrayList<>(size);
+			keys = new int[size];
 
 			// TODO: refactor if-else block into a KeyGenerator
 			if (distributionType == DistributionType.DENSE) {
 				// dense keys
 				// 0, 1, 2, 3, 4, .... ,size
 				for (int i = 0; i < size; i++) {
-					keys.add(i);
+					keys[i] = i;
 				}
 			}
 			else {
@@ -73,7 +73,7 @@ public class Lookup {
 						x = ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE);
 					}
 					while (m.containsKey(x));
-					keys.add(x);
+					keys[i] = x;
 				}
 			}
 
@@ -88,9 +88,10 @@ public class Lookup {
 	@Benchmark
 	@BenchmarkMode({Mode.Throughput, Mode.AverageTime})
 	public Object lookup(Data d) {
-		// https://hg.openjdk.java.net/code-tools/jmh/file/99d7b73cf1e3/jmh-samples/src/main/java/org/openjdk/jmh/samples/JMHSample_38_PerInvokeSetup.java#l124
+		// why Setup(Level.Invocation) is not used
+		// http://javadox.com/org.openjdk.jmh/jmh-core/1.7/org/openjdk/jmh/annotations/Level.html
 		int x = ThreadLocalRandom.current().nextInt(0, d.size);
-		int key = d.keys.get(x);
+		int key = d.keys[x];
 		return d.m.get(key);
 	}
 }
