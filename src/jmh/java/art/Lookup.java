@@ -86,7 +86,7 @@ public class Lookup {
 	}
 
 	@Benchmark
-	@BenchmarkMode({Mode.Throughput, Mode.AverageTime})
+	@BenchmarkMode({Mode.Throughput})
 	public Object lookup(Data d) {
 		// why Setup(Level.Invocation) is not used
 		// http://javadox.com/org.openjdk.jmh/jmh-core/1.7/org/openjdk/jmh/annotations/Level.html
