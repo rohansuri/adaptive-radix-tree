@@ -36,20 +36,13 @@ class Node4 extends InnerNode {
 	@Override
 	public Node findChild(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		// TODO: consider linear loop over search vs binary search?
-		// paper does simple loop over probably because it's a tiny array (size 4)
-
-		// binary search for key
-		// having the from and to gives us only a valid view into what are the
-		// valid array elements that actually have keys and are not ABSENT
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
-		// FIXME: partialKeys greater than 127 would be wrongly stored in sorted order
-		// this hasn't been a problem yet because it's just simply follow ons
-		// but range scan/iteration would be erroneous!
-		if (index < 0) {
-			return null;
+		// paper does simple loop over because it's a tiny array of size 4
+		for (int i = 0; i < noOfChildren; i++) {
+			if (keys[i] == partialKey) {
+				return child[i];
+			}
 		}
-		return child[index];
+		return null;
 	}
 
 	@Override
@@ -59,14 +52,19 @@ class Node4 extends InnerNode {
 		}
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
 
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
-		if (index >= 0) { // the partialKey should not exist
-			throw new IllegalArgumentException("Cannot insert partial key " + BinaryComparableUtils
-					.signed(unsignedPartialKey) + " that already exists in Node. "
-					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
+		int insertionPoint = 0;
+		for (; insertionPoint < noOfChildren; insertionPoint++) {
+			if (keys[insertionPoint] > unsignedPartialKey) {
+				break;
+			}
+			else if (keys[insertionPoint] == unsignedPartialKey) {
+				throw new IllegalArgumentException("Cannot insert partial key " + BinaryComparableUtils
+						.signed(unsignedPartialKey) + " that already exists in Node. "
+						+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
+			}
 		}
-		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
+		// noOfChildren here would never be == Node_SIZE (since we have isFull() check)
 		assert insertionPoint <= noOfChildren;
 		for (int i = noOfChildren; i > insertionPoint; i--) {
 			keys[i] = keys[i - 1];
@@ -84,9 +82,14 @@ class Node4 extends InnerNode {
 	public void replace(byte partialKey, Node newChild) {
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
 
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
+		int index = 0;
+		for (; index < noOfChildren; index++) {
+			if (keys[index] == unsignedPartialKey) {
+				break;
+			}
+		}
 		// replace must be called from in a state where you know partialKey entry surely exists
-		if (index < 0) {
+		if (index == noOfChildren) {
 			throw new IllegalArgumentException("Partial key " + unsignedPartialKey + " does not exist in this Node.");
 		}
 		removeUplink(child[index]);
@@ -97,11 +100,15 @@ class Node4 extends InnerNode {
 	@Override
 	public void removeChild(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, partialKey);
+		int index = 0;
+		for(; index < noOfChildren; index++){
+			if(keys[index] == partialKey){
+				break;
+			}
+		}
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
-		if (index < 0) {
+		if (index == noOfChildren) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
 		removeUplink(child[index]);
@@ -149,7 +156,6 @@ class Node4 extends InnerNode {
 	@Override
 	public Node greater(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		// TODO: use binary search here
 		for (int i = 0; i < noOfChildren; i++) {
 			if (keys[i] > partialKey) {
 				return child[i];
@@ -161,7 +167,6 @@ class Node4 extends InnerNode {
 	@Override
 	public Node lesser(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		// TODO: use binary search here
 		for (int i = noOfChildren - 1; i >= 0; i--) {
 			if (keys[i] < partialKey) {
 				return child[i];
