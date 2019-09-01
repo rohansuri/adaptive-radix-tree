@@ -84,7 +84,7 @@ public class Lookup {
 
 	@Benchmark
 	@BenchmarkMode({Mode.Throughput})
-	public Object lookup(Data d) {
+	public Object integer(Data d) {
 		// why Setup(Level.Invocation) is not used
 		// http://javadox.com/org.openjdk.jmh/jmh-core/1.7/org/openjdk/jmh/annotations/Level.html
 		int x = ThreadLocalRandom.current().nextInt(0, d.size);
