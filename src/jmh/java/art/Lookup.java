@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,10 +17,11 @@ public class Lookup {
 
 	@State(Scope.Benchmark)
 	public static class Data {
+		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
 		int[] keys;
 		Map<Integer, Object> m;
 		@Param({"65000", "16000000"}) // 65k, 16m
-				int size;
+		int size;
 
 		public enum MapType {
 			HASH_MAP,
@@ -53,7 +56,7 @@ public class Lookup {
 				throw new AssertionError();
 			}
 			Object holder = new Object();
-
+			keySet = new HashSet<>(size);
 			keys = new int[size];
 
 			// TODO: refactor if-else block into a KeyGenerator
@@ -71,8 +74,9 @@ public class Lookup {
 					do {
 						x = ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE);
 					}
-					while (m.containsKey(x));
+					while (keySet.contains(x));
 					keys[i] = x;
+					keySet.add(x);
 				}
 			}
 			// insert into map
