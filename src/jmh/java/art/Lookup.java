@@ -39,13 +39,12 @@ public class Lookup {
 
 		@Setup
 		public void setup() {
-			System.out.println("setup for " + distributionType + " distribution");
 			switch (mapType) {
 			case HASH_MAP:
 				m = new HashMap<>();
 				break;
 			case ART:
-				m = new AdaptiveRadixTree<>(BinaryComparable.INTEGER);
+				m = new AdaptiveRadixTree<>(BinaryComparables.INTEGER);
 				break;
 			case TREE_MAP:
 				m = new TreeMap<>();
@@ -76,12 +75,10 @@ public class Lookup {
 					keys[i] = x;
 				}
 			}
-
 			// insert into map
 			for (int key : keys) {
 				m.put(key, holder);
 			}
-
 		}
 	}
 

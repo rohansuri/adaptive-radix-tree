@@ -21,7 +21,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testSingleRemove() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
@@ -31,7 +31,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildLeaf() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -185,7 +185,7 @@ public class ARTInterfaceLevelTest {
 
  	@Test
 	public void testEntrySetRemoval(){
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BARCA, "1"));
 
@@ -198,7 +198,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testClear(){
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BARCA, "1"));
 		Assert.assertEquals(1, art.size());
@@ -209,7 +209,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testPollFirstEntry(){
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -227,7 +227,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testPollLastEntry(){
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -245,7 +245,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildInnerNode() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BARCA, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -290,7 +290,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testSingleInsert() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
@@ -301,7 +301,7 @@ public class ARTInterfaceLevelTest {
 	 */
 	@Test
 	public void testSharedPrefixInsert() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -311,7 +311,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testBreakCompressedPath() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertNull(art.put(BAZ, "2"));
@@ -323,7 +323,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testReplace() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
@@ -335,7 +335,7 @@ public class ARTInterfaceLevelTest {
 	// we'll have to provide nice Serdes that can take care of strings this way
 	@Test
 	public void testPrefixesInsert() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparable.UTF8);
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.UTF8);
 
 		Assert.assertNull(art.put(BAR, "1"));
 		Assert.assertEquals("1", art.get(BAR));
@@ -346,7 +346,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testDeletingAll8BitIntegersUsingValueCollection() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -381,7 +381,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testDescendingIterator(){
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -404,7 +404,7 @@ public class ARTInterfaceLevelTest {
 	// in PrivateEntryIterator
 	@Test
 	public void testDeletingAll8BitIntegersUsingValueIterator() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -444,7 +444,7 @@ public class ARTInterfaceLevelTest {
 	 */
 	@Test
 	public void testInsertingAllInt16BitIntegers() {
-		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparable.SHORT);
+		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparables.SHORT);
 
 		short i = Short.MIN_VALUE;
 		do {
@@ -467,7 +467,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testDeletingAll8BitIntegersUsingEntrySetIterator() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -496,7 +496,7 @@ public class ARTInterfaceLevelTest {
 
 	@Test
 	public void testInsertingAndDeletingAllInt8BitIntegers() throws ReflectiveOperationException {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparable.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -600,7 +600,7 @@ public class ARTInterfaceLevelTest {
 	@Test
 	@Ignore // takes too long (1m 20secs locally)
 	public void testInsertingAndDeletingAllInt16BitIntegers() {
-		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparable.SHORT);
+		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparables.SHORT);
 
 		// insert all
 		short i = Short.MIN_VALUE;
@@ -633,7 +633,7 @@ public class ARTInterfaceLevelTest {
 	@Test
 	@Ignore // heavy test (in terms of?). Disable logging
 	public void testInsertingAllInt32BitIntegers() {
-		AdaptiveRadixTree<Integer, String> art = new AdaptiveRadixTree<>(BinaryComparable.INTEGER);
+		AdaptiveRadixTree<Integer, String> art = new AdaptiveRadixTree<>(BinaryComparables.INTEGER);
 
 		int i = Integer.MIN_VALUE;
 		do {
