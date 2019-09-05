@@ -1,6 +1,7 @@
 package art;
 
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class Insert {
 		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
 		int[] keys;
 		Supplier<Map<Integer, Object>> supplier;
-		@Param({"1000000"}) // 1m
+		@Param({"16000000"}) // 16m
 		int size;
 
 		public enum MapType {
@@ -93,11 +94,11 @@ public class Insert {
 
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
-	@OutputTimeUnit(TimeUnit.MICROSECONDS)
-	public int integer(Data d) {
+	@OutputTimeUnit(TimeUnit.NANOSECONDS)
+	public int integer(Blackhole bh, Data d) {
 		Map<Integer, Object> m = d.supplier.get();
 		for (int i = 0; i < d.size; i++) {
-			m.put(d.keys[i], d.holder);
+			bh.consume(m.put(d.keys[i], d.holder));
 		}
 		return m.size();
 	}

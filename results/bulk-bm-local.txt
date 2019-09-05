@@ -1,0 +1,11 @@
+Benchmark       (distributionType)  (mapType)    (size)  Mode  Cnt            Score            Error  Units
+Insert.integer              SPARSE        ART  16000000  avgt    5    593601662.500 ±    9031902.374  ns/op
+Insert.integer              SPARSE   HASH_MAP  16000000  avgt    5  17778238100.200 ±  562951916.556  ns/op
+Insert.integer        DENSE_SORTED        ART  16000000  avgt    5    604449163.400 ±   10125630.779  ns/op
+Insert.integer        DENSE_SORTED   HASH_MAP  16000000  avgt    5   2454135024.200 ±  966088807.812  ns/op
+Insert.integer       DENSE_SHUFFLE        ART  16000000  avgt    5    608875684.100 ±   52977252.693  ns/op
+Insert.integer       DENSE_SHUFFLE   HASH_MAP  16000000  avgt    5  11643605755.400 ± 2932717563.405  ns/op
+Lookup.integer              SPARSE        ART  16000000  avgt    5    188719980.467 ±    6462341.890  ns/op
+Lookup.integer              SPARSE   HASH_MAP  16000000  avgt    5   2354568842.000 ±  243008824.862  ns/op
+Lookup.integer               DENSE        ART  16000000  avgt    5    187370397.467 ±    3505463.975  ns/op
+Lookup.integer               DENSE   HASH_MAP  16000000  avgt    5    282267321.850 ±   68290463.779  ns/op

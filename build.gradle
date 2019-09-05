@@ -13,12 +13,13 @@ plugins {
 }
 
 jmh {
-	include = ['Lookup']
+	include = ['Lookup', 'Insert']
 	fork = 1
 	warmup = '1s'
 	timeOnIteration = '1s'
-	// benchmarkParameters = [:]
-	// benchmarkParameters['mapType'] = ['ART']
+	benchmarkParameters = [:]
+	benchmarkParameters['mapType'] = ['ART', 'HASH_MAP']
+	benchmarkParameters['size'] = ['16000000']
 }
 
 dependencies {
@@ -34,6 +35,8 @@ dependencies {
 	// Use JUnit test framework
 	testImplementation 'junit:junit:4.12'
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.26.0'
+
+	jmh group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 }
 
 // In this section you declare where to find the dependencies of your project

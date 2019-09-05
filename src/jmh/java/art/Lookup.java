@@ -1,6 +1,7 @@
 package art;
 
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 // https://github.com/openjdk/jdk13/blob/master/test/micro/org/openjdk/bench/java/util/HashMapBench.java
 public class Lookup {
@@ -87,12 +89,12 @@ public class Lookup {
 	}
 
 	@Benchmark
-	@BenchmarkMode({Mode.Throughput})
-	public Object integer(Data d) {
-		// why Setup(Level.Invocation) is not used
-		// http://javadox.com/org.openjdk.jmh/jmh-core/1.7/org/openjdk/jmh/annotations/Level.html
-		int x = ThreadLocalRandom.current().nextInt(0, d.size);
-		int key = d.keys[x];
-		return d.m.get(key);
+	@BenchmarkMode({Mode.AverageTime})
+	@OutputTimeUnit(TimeUnit.NANOSECONDS)
+	public int integer(Blackhole bh, Data d) {
+		for (int i = 0; i < d.size; i++) {
+			bh.consume(d.m.get(d.keys[i]));
+		}
+		return d.m.size();
 	}
 }
