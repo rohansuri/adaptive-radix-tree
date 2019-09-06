@@ -1,0 +1,22 @@
+Benchmark       (distributionType)  (mapType)    (size)  Mode  Cnt            Score           Error  Units
+Insert.integer              SPARSE   HASH_MAP  16000000  avgt   25   8595310802.340 ±  55890574.620  ns/op
+Insert.integer              SPARSE        ART  16000000  avgt   25    527017687.790 ±   1680146.140  ns/op
+Insert.integer              SPARSE   TREE_MAP  16000000  avgt   25  31821785460.400 ± 424440807.738  ns/op
+Insert.integer        DENSE_SORTED   HASH_MAP  16000000  avgt   25   1517325921.794 ±  28339943.587  ns/op
+Insert.integer        DENSE_SORTED        ART  16000000  avgt   25    528990394.235 ±   3159569.066  ns/op
+Insert.integer        DENSE_SORTED   TREE_MAP  16000000  avgt   25   3495493889.960 ±  53487985.634  ns/op
+Insert.integer       DENSE_SHUFFLE   HASH_MAP  16000000  avgt   25   6718519971.460 ± 225553156.274  ns/op
+Insert.integer       DENSE_SHUFFLE        ART  16000000  avgt   25    529724472.798 ±   1294132.551  ns/op
+Insert.integer       DENSE_SHUFFLE   TREE_MAP  16000000  avgt   25  36374716705.240 ± 703960711.953  ns/op
+Lookup.integer              SPARSE   HASH_MAP     65000  avgt   25      1978076.958 ±     18200.413  ns/op
+Lookup.integer              SPARSE   HASH_MAP  16000000  avgt   25   2853051503.670 ±  42368615.922  ns/op
+Lookup.integer              SPARSE        ART     65000  avgt   25       713637.658 ±      9954.319  ns/op
+Lookup.integer              SPARSE        ART  16000000  avgt   25    171581233.902 ±    447974.683  ns/op
+Lookup.integer              SPARSE   TREE_MAP     65000  avgt   25     16802370.334 ±    174007.725  ns/op
+Lookup.integer              SPARSE   TREE_MAP  16000000  avgt   25  31477183189.000 ± 572280430.407  ns/op
+Lookup.integer               DENSE   HASH_MAP     65000  avgt   25       698614.995 ±     24772.529  ns/op
+Lookup.integer               DENSE   HASH_MAP  16000000  avgt   25    314843321.880 ±   5856765.148  ns/op
+Lookup.integer               DENSE        ART     65000  avgt   25       721895.811 ±     20166.671  ns/op
+Lookup.integer               DENSE        ART  16000000  avgt   25    171891412.317 ±    246222.756  ns/op
+Lookup.integer               DENSE   TREE_MAP     65000  avgt   25      5722709.461 ±     59088.224  ns/op
+Lookup.integer               DENSE   TREE_MAP  16000000  avgt   25   1790165743.627 ±  42351477.638  ns/op

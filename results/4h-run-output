@@ -1,0 +1,2145 @@
+Exception in thread "DisconnectableInputStream source reader" org.gradle.api.UncheckedIOException: java.io.IOException: Bad file descriptor
+	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:61)
+	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:41)
+	at org.gradle.util.DisconnectableInputStream$1.run(DisconnectableInputStream.java:127)
+	at java.base/java.lang.Thread.run(Thread.java:835)
+Caused by: java.io.IOException: Bad file descriptor
+	at java.base/java.io.FileInputStream.readBytes(Native Method)
+	at java.base/java.io.FileInputStream.read(FileInputStream.java:273)
+	at java.base/java.io.BufferedInputStream.read1(BufferedInputStream.java:290)
+	at java.base/java.io.BufferedInputStream.read(BufferedInputStream.java:351)
+	at org.gradle.util.DisconnectableInputStream$1.run(DisconnectableInputStream.java:98)
+	... 1 more
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava UP-TO-DATE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :compileJmhJava UP-TO-DATE
+> Task :processJmhResources NO-SOURCE
+> Task :jmhClasses UP-TO-DATE
+> Task :jmhRunBytecodeGenerator UP-TO-DATE
+> Task :jmhCompileGeneratedClasses UP-TO-DATE
+> Task :jmhJar UP-TO-DATE
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.openjdk.jmh.util.Utils (file:/home/rohan_a_suri/.gradle/caches/modules-2/files-2.1/org.openjdk.jmh/jmh-core/1.21/442447101f63074c61063858033fbfde8a076873/jmh-core-1.21.jar) to field java.io.PrintStream.charOut
+WARNING: Please consider reporting this to the maintainers of org.openjdk.jmh.util.Utils
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+# Warmup Iteration   1: 
+> Task :jmh
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = SPARSE, mapType = HASH_MAP, size = 16000000)
+
+# Run progress: 0.00% complete, ETA 02:55:00
+# Fork: 1 of 5
+
+9774168227.500 ns/op
+# Warmup Iteration   2: 9017896767.000 ns/op
+# Warmup Iteration   3: 8454447244.000 ns/op
+# Warmup Iteration   4: 8483624094.000 ns/op
+# Warmup Iteration   5: 8478652890.500 ns/op
+Iteration   1: 8591789760.500 ns/op
+Iteration   2: 8399737382.500 ns/op
+Iteration   3: 8629124861.000 ns/op
+Iteration   4: 8499162049.500 ns/op
+Iteration   5: 8581707533.000 ns/op
+
+> Task :jmh
+
+# Run progress: 0.95% complete, ETA 05:22:24
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 10046385718.000 ns/op
+# Warmup Iteration   2: 9486822129.000 ns/op
+# Warmup Iteration   3: 8703682448.000 ns/op
+# Warmup Iteration   4: 8616633686.500 ns/op
+# Warmup Iteration   5: 8635448301.500 ns/op
+Iteration   1: 8629334034.000 ns/op
+Iteration   2: 8486184802.500 ns/op
+Iteration   3: 8592448513.500 ns/op
+Iteration   4: 8584013492.000 ns/op
+Iteration   5: 8629622929.500 ns/op
+
+> Task :jmh
+
+# Run progress: 1.90% complete, ETA 05:13:14
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 9876014363.500 ns/op
+# Warmup Iteration   2: 8922914001.500 ns/op
+# Warmup Iteration   3: 8606509840.000 ns/op
+# Warmup Iteration   4: 8616993114.500 ns/op
+# Warmup Iteration   5: 8597820846.000 ns/op
+Iteration   1: 8540748946.500 ns/op
+Iteration   2: 8613116665.500 ns/op
+Iteration   3: 8572863232.500 ns/op
+Iteration   4: 8602471772.000 ns/op
+Iteration   5: 8571520806.500 ns/op
+
+> Task :jmh
+
+# Run progress: 2.86% complete, ETA 05:12:59
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 9698280605.000 ns/op
+# Warmup Iteration   2: 9057120337.500 ns/op
+# Warmup Iteration   3: 8667538532.000 ns/op
+# Warmup Iteration   4: 8616915037.500 ns/op
+# Warmup Iteration   5: 8594161615.000 ns/op
+Iteration   1: 8665280049.500 ns/op
+Iteration   2: 8664996854.500 ns/op
+Iteration   3: 8671396022.500 ns/op
+Iteration   4: 8786559692.000 ns/op
+Iteration   5: 8574387581.500 ns/op
+
+> Task :jmh
+
+# Run progress: 3.81% complete, ETA 05:11:35
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 9835340253.500 ns/op
+# Warmup Iteration   2: 9075827392.500 ns/op
+# Warmup Iteration   3: 8676873356.000 ns/op
+# Warmup Iteration   4: 8673728918.000 ns/op
+# Warmup Iteration   5: 8747415027.000 ns/op
+Iteration   1: 8639915533.000 ns/op
+Iteration   2: 8568909667.500 ns/op
+Iteration   3: 8660665676.000 ns/op
+Iteration   4: 8610474016.500 ns/op
+Iteration   5: 8516338184.500 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  8595310802.340 ±(99.9%) 55890574.620 ns/op [Average]
+  (min, avg, max) = (8399737382.500, 8595310802.340, 8786559692.000), stdev = 74612318.074
+  CI (99.9%): [8539420227.720, 8651201376.960] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = SPARSE, mapType = ART, size = 16000000)
+
+# Run progress: 4.76% complete, ETA 05:09:32
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 626070279.063 ns/op
+# Warmup Iteration   2: 526384451.263 ns/op
+# Warmup Iteration   3: 528331075.105 ns/op
+# Warmup Iteration   4: 525881185.250 ns/op
+# Warmup Iteration   5: 527192183.474 ns/op
+Iteration   1: 527700008.526 ns/op
+Iteration   2: 528747005.368 ns/op
+Iteration   3: 529976959.895 ns/op
+Iteration   4: 530325540.579 ns/op
+Iteration   5: 530550693.211 ns/op
+
+> Task :jmh
+
+# Run progress: 5.71% complete, ETA 04:45:41
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 627375346.188 ns/op
+# Warmup Iteration   2: 525402757.300 ns/op
+# Warmup Iteration   3: 528937378.211 ns/op
+# Warmup Iteration   4: 528690654.211 ns/op
+# Warmup Iteration   5: 528808051.579 ns/op
+Iteration   1: 525381392.450 ns/op
+Iteration   2: 529269591.684 ns/op
+Iteration   3: 529288127.316 ns/op
+Iteration   4: 529604228.053 ns/op
+Iteration   5: 528714969.000 ns/op
+
+> Task :jmh
+
+# Run progress: 6.67% complete, ETA 04:28:20
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 628559954.813 ns/op
+# Warmup Iteration   2: 526855383.526 ns/op
+# Warmup Iteration   3: 526983623.842 ns/op
+# Warmup Iteration   4: 527785834.316 ns/op
+# Warmup Iteration   5: 526337417.526 ns/op
+Iteration   1: 527664863.632 ns/op
+Iteration   2: 529073612.316 ns/op
+Iteration   3: 524042268.850 ns/op
+Iteration   4: 524628553.700 ns/op
+Iteration   5: 527499370.158 ns/op
+
+> Task :jmh
+
+# Run progress: 7.62% complete, ETA 04:14:51
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 805099238.538 ns/op
+# Warmup Iteration   2: 526565973.368 ns/op
+# Warmup Iteration   3: 525141097.450 ns/op
+# Warmup Iteration   4: 524195101.200 ns/op
+# Warmup Iteration   5: 525036508.150 ns/op
+Iteration   1: 528122260.105 ns/op
+Iteration   2: 524274668.750 ns/op
+Iteration   3: 524266660.350 ns/op
+Iteration   4: 523718309.600 ns/op
+Iteration   5: 525224952.500 ns/op
+
+> Task :jmh
+
+# Run progress: 8.57% complete, ETA 04:04:27
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 629978169.625 ns/op
+# Warmup Iteration   2: 525839697.300 ns/op
+# Warmup Iteration   3: 525350279.300 ns/op
+# Warmup Iteration   4: 525673192.900 ns/op
+# Warmup Iteration   5: 527209952.895 ns/op
+Iteration   1: 525736247.900 ns/op
+Iteration   2: 524768186.350 ns/op
+Iteration   3: 525876887.150 ns/op
+Iteration   4: 525242246.700 ns/op
+Iteration   5: 525744590.600 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  527017687.790 ±(99.9%) 1680146.140 ns/op [Average]
+  (min, avg, max) = (523718309.600, 527017687.790, 530550693.211), stdev = 2242947.027
+  CI (99.9%): [525337541.650, 528697833.930] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = SPARSE, mapType = TREE_MAP, size = 16000000)
+
+# Run progress: 9.52% complete, ETA 03:55:43
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 36694920943.000 ns/op
+# Warmup Iteration   2: 34622785025.000 ns/op
+# Warmup Iteration   3: 32676706619.000 ns/op
+# Warmup Iteration   4: 32936758415.000 ns/op
+# Warmup Iteration   5: 32216442539.000 ns/op
+Iteration   1: 32165243808.000 ns/op
+Iteration   2: 31833461561.000 ns/op
+Iteration   3: 31669145443.000 ns/op
+Iteration   4: 31962419513.000 ns/op
+Iteration   5: 31707982049.000 ns/op
+
+> Task :jmh
+
+# Run progress: 10.48% complete, ETA 04:20:34
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 33744300330.000 ns/op
+# Warmup Iteration   2: 31667757368.000 ns/op
+# Warmup Iteration   3: 32015368083.000 ns/op
+# Warmup Iteration   4: 31603076888.000 ns/op
+# Warmup Iteration   5: 31997924341.000 ns/op
+Iteration   1: 30816726174.000 ns/op
+Iteration   2: 32893945889.000 ns/op
+Iteration   3: 31939198552.000 ns/op
+Iteration   4: 32475161884.000 ns/op
+Iteration   5: 33275003734.000 ns/op
+
+> Task :jmh
+
+# Run progress: 11.43% complete, ETA 04:39:12
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 34566323256.000 ns/op
+# Warmup Iteration   2: 32752825335.000 ns/op
+# Warmup Iteration   3: 32074726597.000 ns/op
+# Warmup Iteration   4: 31867174079.000 ns/op
+# Warmup Iteration   5: 31988291680.000 ns/op
+Iteration   1: 32295707765.000 ns/op
+Iteration   2: 31202670290.000 ns/op
+Iteration   3: 31494587375.000 ns/op
+Iteration   4: 31484096358.000 ns/op
+Iteration   5: 31682154998.000 ns/op
+
+> Task :jmh
+
+# Run progress: 12.38% complete, ETA 04:54:18
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 33962092993.000 ns/op
+# Warmup Iteration   2: 32018482883.000 ns/op
+# Warmup Iteration   3: 31776726866.000 ns/op
+# Warmup Iteration   4: 31428456739.000 ns/op
+# Warmup Iteration   5: 31643796519.000 ns/op
+Iteration   1: 31453359043.000 ns/op
+Iteration   2: 30942051461.000 ns/op
+Iteration   3: 31455632151.000 ns/op
+Iteration   4: 31404252066.000 ns/op
+Iteration   5: 31964323694.000 ns/op
+
+> Task :jmh
+
+# Run progress: 13.33% complete, ETA 05:06:13
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 33609942131.000 ns/op
+# Warmup Iteration   2: 31961572708.000 ns/op
+# Warmup Iteration   3: 32318416214.000 ns/op
+# Warmup Iteration   4: 31506235545.000 ns/op
+# Warmup Iteration   5: 32620567273.000 ns/op
+Iteration   1: 32242009801.000 ns/op
+Iteration   2: 31650869471.000 ns/op
+Iteration   3: 31287422017.000 ns/op
+Iteration   4: 31952510785.000 ns/op
+Iteration   5: 32294700628.000 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  31821785460.400 ±(99.9%) 424440807.738 ns/op [Average]
+  (min, avg, max) = (30816726174.000, 31821785460.400, 33275003734.000), stdev = 566616334.976
+  CI (99.9%): [31397344652.662, 32246226268.138] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = DENSE_SORTED, mapType = HASH_MAP, size = 16000000)
+
+# Run progress: 14.29% complete, ETA 05:15:58
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 1560467248.857 ns/op
+# Warmup Iteration   2: 1673248740.167 ns/op
+# Warmup Iteration   3: 1518157875.857 ns/op
+# Warmup Iteration   4: 1497289661.429 ns/op
+# Warmup Iteration   5: 1495965062.000 ns/op
+Iteration   1: 1510867725.714 ns/op
+Iteration   2: 1625790128.429 ns/op
+Iteration   3: 1524492005.000 ns/op
+Iteration   4: 1464634180.714 ns/op
+Iteration   5: 1589119776.714 ns/op
+
+> Task :jmh
+
+# Run progress: 15.24% complete, ETA 05:02:50
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 1735108006.167 ns/op
+# Warmup Iteration   2: 1539558273.000 ns/op
+# Warmup Iteration   3: 1468586534.571 ns/op
+# Warmup Iteration   4: 1645546999.429 ns/op
+# Warmup Iteration   5: 1500347799.571 ns/op
+Iteration   1: 1486472480.857 ns/op
+Iteration   2: 1505811740.714 ns/op
+Iteration   3: 1493258075.714 ns/op
+Iteration   4: 1490599986.000 ns/op
+Iteration   5: 1487920221.571 ns/op
+
+> Task :jmh
+
+# Run progress: 16.19% complete, ETA 04:50:58
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 1734755293.333 ns/op
+# Warmup Iteration   2: 1723679729.333 ns/op
+# Warmup Iteration   3: 1649782204.857 ns/op
+# Warmup Iteration   4: 1526422809.571 ns/op
+# Warmup Iteration   5: 1531557570.714 ns/op
+Iteration   1: 1533355486.286 ns/op
+Iteration   2: 1576355734.143 ns/op
+Iteration   3: 1548718065.286 ns/op
+Iteration   4: 1529052829.286 ns/op
+Iteration   5: 1524813758.714 ns/op
+
+> Task :jmh
+
+# Run progress: 17.14% complete, ETA 04:40:24
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 1774406758.167 ns/op
+# Warmup Iteration   2: 1557222993.571 ns/op
+# Warmup Iteration   3: 1522814850.714 ns/op
+# Warmup Iteration   4: 1523944588.714 ns/op
+# Warmup Iteration   5: 1534441033.000 ns/op
+Iteration   1: 1525667034.714 ns/op
+Iteration   2: 1526820086.143 ns/op
+Iteration   3: 1524793884.714 ns/op
+Iteration   4: 1528787113.857 ns/op
+Iteration   5: 1522669212.857 ns/op
+
+> Task :jmh
+
+# Run progress: 18.10% complete, ETA 04:30:41
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 1577506800.857 ns/op
+# Warmup Iteration   2: 1495248435.857 ns/op
+# Warmup Iteration   3: 1492137589.429 ns/op
+# Warmup Iteration   4: 1485002786.429 ns/op
+# Warmup Iteration   5: 1484434933.857 ns/op
+Iteration   1: 1483200796.286 ns/op
+Iteration   2: 1482811158.857 ns/op
+Iteration   3: 1480727853.714 ns/op
+Iteration   4: 1484020647.286 ns/op
+Iteration   5: 1482388061.286 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  1517325921.794 ±(99.9%) 28339943.587 ns/op [Average]
+  (min, avg, max) = (1464634180.714, 1517325921.794, 1625790128.429), stdev = 37833013.876
+  CI (99.9%): [1488985978.207, 1545665865.381] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = DENSE_SORTED, mapType = ART, size = 16000000)
+
+# Run progress: 19.05% complete, ETA 04:21:36
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 544079801.105 ns/op
+# Warmup Iteration   2: 526770569.526 ns/op
+# Warmup Iteration   3: 527142533.368 ns/op
+# Warmup Iteration   4: 527213649.579 ns/op
+# Warmup Iteration   5: 526691772.158 ns/op
+Iteration   1: 528035359.421 ns/op
+Iteration   2: 527061526.579 ns/op
+Iteration   3: 527317318.579 ns/op
+Iteration   4: 526991012.316 ns/op
+Iteration   5: 527029430.684 ns/op
+
+> Task :jmh
+
+# Run progress: 20.00% complete, ETA 04:12:56
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 544975202.368 ns/op
+# Warmup Iteration   2: 526274910.950 ns/op
+# Warmup Iteration   3: 527947526.947 ns/op
+# Warmup Iteration   4: 530906879.947 ns/op
+# Warmup Iteration   5: 529574832.368 ns/op
+Iteration   1: 527057555.474 ns/op
+Iteration   2: 528366824.684 ns/op
+Iteration   3: 525781829.400 ns/op
+Iteration   4: 526596741.895 ns/op
+Iteration   5: 525714323.550 ns/op
+
+> Task :jmh
+
+# Run progress: 20.95% complete, ETA 04:05:00
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 554513843.895 ns/op
+# Warmup Iteration   2: 536957205.895 ns/op
+# Warmup Iteration   3: 544170176.316 ns/op
+# Warmup Iteration   4: 536703029.632 ns/op
+# Warmup Iteration   5: 535567338.632 ns/op
+Iteration   1: 536073753.737 ns/op
+Iteration   2: 536154265.947 ns/op
+Iteration   3: 537190043.579 ns/op
+Iteration   4: 538269470.316 ns/op
+Iteration   5: 536967167.789 ns/op
+
+> Task :jmh
+
+# Run progress: 21.90% complete, ETA 03:57:38
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 543887167.842 ns/op
+# Warmup Iteration   2: 527493128.684 ns/op
+# Warmup Iteration   3: 525863699.350 ns/op
+# Warmup Iteration   4: 527665554.842 ns/op
+# Warmup Iteration   5: 526354702.526 ns/op
+Iteration   1: 527220529.105 ns/op
+Iteration   2: 527806281.000 ns/op
+Iteration   3: 527041462.211 ns/op
+Iteration   4: 526379776.895 ns/op
+Iteration   5: 526188495.100 ns/op
+
+> Task :jmh
+
+# Run progress: 22.86% complete, ETA 03:50:41
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 544634105.632 ns/op
+# Warmup Iteration   2: 527362277.263 ns/op
+# Warmup Iteration   3: 527452012.316 ns/op
+# Warmup Iteration   4: 528924081.947 ns/op
+# Warmup Iteration   5: 532384173.000 ns/op
+Iteration   1: 526015961.900 ns/op
+Iteration   2: 531161860.684 ns/op
+Iteration   3: 526894262.368 ns/op
+Iteration   4: 525562124.200 ns/op
+Iteration   5: 525882478.450 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  528990394.235 ±(99.9%) 3159569.066 ns/op [Average]
+  (min, avg, max) = (525562124.200, 528990394.235, 538269470.316), stdev = 4217934.307
+  CI (99.9%): [525830825.169, 532149963.300] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = DENSE_SORTED, mapType = TREE_MAP, size = 16000000)
+
+# Run progress: 23.81% complete, ETA 03:44:11
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 4000728153.667 ns/op
+# Warmup Iteration   2: 3456988764.000 ns/op
+# Warmup Iteration   3: 3536118163.667 ns/op
+# Warmup Iteration   4: 3507692863.000 ns/op
+# Warmup Iteration   5: 3560741006.667 ns/op
+Iteration   1: 3409985903.000 ns/op
+Iteration   2: 3499885156.000 ns/op
+Iteration   3: 3456192328.333 ns/op
+Iteration   4: 3544153927.000 ns/op
+Iteration   5: 3469169886.000 ns/op
+
+> Task :jmh
+
+# Run progress: 24.76% complete, ETA 03:38:19
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 3934613680.000 ns/op
+# Warmup Iteration   2: 3503066072.667 ns/op
+# Warmup Iteration   3: 3568273800.667 ns/op
+# Warmup Iteration   4: 3535118329.667 ns/op
+# Warmup Iteration   5: 3489419194.667 ns/op
+Iteration   1: 3501442025.000 ns/op
+Iteration   2: 3467222237.667 ns/op
+Iteration   3: 3503062811.000 ns/op
+Iteration   4: 3474257262.667 ns/op
+Iteration   5: 3545376630.667 ns/op
+
+> Task :jmh
+
+# Run progress: 25.71% complete, ETA 03:32:48
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 4016275493.000 ns/op
+# Warmup Iteration   2: 3588766283.333 ns/op
+# Warmup Iteration   3: 3618879296.000 ns/op
+# Warmup Iteration   4: 3471292317.000 ns/op
+# Warmup Iteration   5: 3689251752.000 ns/op
+Iteration   1: 3550693500.667 ns/op
+Iteration   2: 3454372642.667 ns/op
+Iteration   3: 3698107924.667 ns/op
+Iteration   4: 3610315292.667 ns/op
+Iteration   5: 3594739930.667 ns/op
+
+> Task :jmh
+
+# Run progress: 26.67% complete, ETA 03:27:38
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 3959487758.333 ns/op
+# Warmup Iteration   2: 3470547027.667 ns/op
+# Warmup Iteration   3: 3477190554.333 ns/op
+# Warmup Iteration   4: 3529650541.333 ns/op
+# Warmup Iteration   5: 3508587806.000 ns/op
+Iteration   1: 3373208691.667 ns/op
+Iteration   2: 3480090531.667 ns/op
+Iteration   3: 3418619703.333 ns/op
+Iteration   4: 3460991686.333 ns/op
+Iteration   5: 3479495206.000 ns/op
+
+> Task :jmh
+
+# Run progress: 27.62% complete, ETA 03:22:29
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 3934437960.000 ns/op
+# Warmup Iteration   2: 3512853769.000 ns/op
+# Warmup Iteration   3: 3491108633.000 ns/op
+# Warmup Iteration   4: 3398923029.667 ns/op
+# Warmup Iteration   5: 3631398099.667 ns/op
+Iteration   1: 3481455959.333 ns/op
+Iteration   2: 3579081575.000 ns/op
+Iteration   3: 3447040232.333 ns/op
+Iteration   4: 3458925853.333 ns/op
+Iteration   5: 3429460351.333 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  3495493889.960 ±(99.9%) 53487985.634 ns/op [Average]
+  (min, avg, max) = (3373208691.667, 3495493889.960, 3698107924.667), stdev = 71404930.518
+  CI (99.9%): [3442005904.326, 3548981875.594] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = DENSE_SHUFFLE, mapType = HASH_MAP, size = 16000000)
+
+# Run progress: 28.57% complete, ETA 03:17:36
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 7600473536.500 ns/op
+# Warmup Iteration   2: 7111661985.000 ns/op
+# Warmup Iteration   3: 6581595952.500 ns/op
+# Warmup Iteration   4: 6896901275.500 ns/op
+# Warmup Iteration   5: 6890925570.000 ns/op
+Iteration   1: 7235600039.500 ns/op
+Iteration   2: 6523294132.500 ns/op
+Iteration   3: 6393337670.500 ns/op
+Iteration   4: 6609903880.500 ns/op
+Iteration   5: 6466852752.000 ns/op
+
+> Task :jmh
+
+# Run progress: 29.52% complete, ETA 03:14:13
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 7605827329.000 ns/op
+# Warmup Iteration   2: 6336161553.000 ns/op
+# Warmup Iteration   3: 6492613894.000 ns/op
+# Warmup Iteration   4: 6745953582.000 ns/op
+# Warmup Iteration   5: 6896280262.000 ns/op
+Iteration   1: 6912510264.000 ns/op
+Iteration   2: 7052948194.000 ns/op
+Iteration   3: 6422873723.500 ns/op
+Iteration   4: 6543059472.000 ns/op
+Iteration   5: 6258545789.000 ns/op
+
+> Task :jmh
+
+# Run progress: 30.48% complete, ETA 03:10:51
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 7698416974.500 ns/op
+# Warmup Iteration   2: 6604231219.500 ns/op
+# Warmup Iteration   3: 6417297300.000 ns/op
+# Warmup Iteration   4: 6916430385.500 ns/op
+# Warmup Iteration   5: 6990606933.000 ns/op
+Iteration   1: 7267177781.500 ns/op
+Iteration   2: 7145609614.500 ns/op
+Iteration   3: 7104612224.000 ns/op
+Iteration   4: 6895496549.500 ns/op
+Iteration   5: 6978889001.500 ns/op
+
+> Task :jmh
+
+# Run progress: 31.43% complete, ETA 03:07:45
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 7878191567.500 ns/op
+# Warmup Iteration   2: 6643027932.500 ns/op
+# Warmup Iteration   3: 7054303461.500 ns/op
+# Warmup Iteration   4: 6920439740.500 ns/op
+# Warmup Iteration   5: 6839318128.000 ns/op
+Iteration   1: 6873095055.500 ns/op
+Iteration   2: 6886459599.500 ns/op
+Iteration   3: 6652962145.000 ns/op
+Iteration   4: 6601972965.000 ns/op
+Iteration   5: 6384400860.000 ns/op
+
+> Task :jmh
+
+# Run progress: 32.38% complete, ETA 03:04:32
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 7471108899.500 ns/op
+# Warmup Iteration   2: 6732490870.000 ns/op
+# Warmup Iteration   3: 7163198539.000 ns/op
+# Warmup Iteration   4: 7222999327.500 ns/op
+# Warmup Iteration   5: 7051335414.000 ns/op
+Iteration   1: 6820742945.500 ns/op
+Iteration   2: 6635308662.500 ns/op
+Iteration   3: 6395573197.500 ns/op
+Iteration   4: 6323969501.500 ns/op
+Iteration   5: 6577803266.000 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  6718519971.460 ±(99.9%) 225553156.274 ns/op [Average]
+  (min, avg, max) = (6258545789.000, 6718519971.460, 7267177781.500), stdev = 301107010.495
+  CI (99.9%): [6492966815.186, 6944073127.734] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = DENSE_SHUFFLE, mapType = ART, size = 16000000)
+
+# Run progress: 33.33% complete, ETA 03:01:22
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 542578119.737 ns/op
+# Warmup Iteration   2: 528153474.474 ns/op
+# Warmup Iteration   3: 528746181.632 ns/op
+# Warmup Iteration   4: 533890266.421 ns/op
+# Warmup Iteration   5: 526176110.900 ns/op
+Iteration   1: 527524258.263 ns/op
+Iteration   2: 528010064.947 ns/op
+Iteration   3: 529982060.158 ns/op
+Iteration   4: 527692845.000 ns/op
+Iteration   5: 528175673.158 ns/op
+
+> Task :jmh
+
+# Run progress: 34.29% complete, ETA 02:57:05
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 545521635.474 ns/op
+# Warmup Iteration   2: 529637833.263 ns/op
+# Warmup Iteration   3: 528573428.263 ns/op
+# Warmup Iteration   4: 529037067.421 ns/op
+# Warmup Iteration   5: 530510028.895 ns/op
+Iteration   1: 527873590.421 ns/op
+Iteration   2: 529514400.947 ns/op
+Iteration   3: 529681020.105 ns/op
+Iteration   4: 529010395.579 ns/op
+Iteration   5: 530784063.842 ns/op
+
+> Task :jmh
+
+# Run progress: 35.24% complete, ETA 02:52:57
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 543379938.526 ns/op
+# Warmup Iteration   2: 532720975.316 ns/op
+# Warmup Iteration   3: 537696242.105 ns/op
+# Warmup Iteration   4: 538426557.632 ns/op
+# Warmup Iteration   5: 532216308.684 ns/op
+Iteration   1: 533136472.158 ns/op
+Iteration   2: 531806284.316 ns/op
+Iteration   3: 531167493.789 ns/op
+Iteration   4: 529812698.368 ns/op
+Iteration   5: 531893842.684 ns/op
+
+> Task :jmh
+
+# Run progress: 36.19% complete, ETA 02:48:57
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 542662810.105 ns/op
+# Warmup Iteration   2: 527537693.632 ns/op
+# Warmup Iteration   3: 531287502.579 ns/op
+# Warmup Iteration   4: 533845811.526 ns/op
+# Warmup Iteration   5: 529599640.684 ns/op
+Iteration   1: 527506547.895 ns/op
+Iteration   2: 527892361.368 ns/op
+Iteration   3: 530255380.737 ns/op
+Iteration   4: 529680491.895 ns/op
+Iteration   5: 528034901.000 ns/op
+
+> Task :jmh
+
+# Run progress: 37.14% complete, ETA 02:45:04
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 543596827.000 ns/op
+# Warmup Iteration   2: 527517715.158 ns/op
+# Warmup Iteration   3: 528176464.737 ns/op
+# Warmup Iteration   4: 529353641.737 ns/op
+# Warmup Iteration   5: 530654348.579 ns/op
+Iteration   1: 531778770.579 ns/op
+Iteration   2: 527757870.737 ns/op
+Iteration   3: 530359595.579 ns/op
+Iteration   4: 531670984.737 ns/op
+Iteration   5: 532109751.684 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  529724472.798 ±(99.9%) 1294132.551 ns/op [Average]
+  (min, avg, max) = (527506547.895, 529724472.798, 533136472.158), stdev = 1727629.930
+  CI (99.9%): [528430340.247, 531018605.349] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Insert.integer
+# Parameters: (distributionType = DENSE_SHUFFLE, mapType = TREE_MAP, size = 16000000)
+
+# Run progress: 38.10% complete, ETA 02:41:16
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 41575163909.000 ns/op
+# Warmup Iteration   2: 36426907630.000 ns/op
+# Warmup Iteration   3: 34932736055.000 ns/op
+# Warmup Iteration   4: 36929825773.000 ns/op
+# Warmup Iteration   5: 36414092690.000 ns/op
+Iteration   1: 36516723085.000 ns/op
+Iteration   2: 37085147977.000 ns/op
+Iteration   3: 36259901738.000 ns/op
+Iteration   4: 37780206527.000 ns/op
+Iteration   5: 36994307409.000 ns/op
+
+> Task :jmh
+
+# Run progress: 39.05% complete, ETA 02:44:37
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 41187472911.000 ns/op
+# Warmup Iteration   2: 37005843130.000 ns/op
+# Warmup Iteration   3: 36865132391.000 ns/op
+# Warmup Iteration   4: 35913561496.000 ns/op
+# Warmup Iteration   5: 36421696927.000 ns/op
+Iteration   1: 35525580476.000 ns/op
+Iteration   2: 34856462225.000 ns/op
+Iteration   3: 37109631934.000 ns/op
+Iteration   4: 34875281641.000 ns/op
+Iteration   5: 36807666451.000 ns/op
+
+> Task :jmh
+
+# Run progress: 40.00% complete, ETA 02:47:24
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 41249827698.000 ns/op
+# Warmup Iteration   2: 35729365493.000 ns/op
+# Warmup Iteration   3: 36211912084.000 ns/op
+# Warmup Iteration   4: 34655916225.000 ns/op
+# Warmup Iteration   5: 35725672971.000 ns/op
+Iteration   1: 35267016019.000 ns/op
+Iteration   2: 35621157227.000 ns/op
+Iteration   3: 36709839429.000 ns/op
+Iteration   4: 35206519338.000 ns/op
+Iteration   5: 37566029069.000 ns/op
+
+> Task :jmh
+
+# Run progress: 40.95% complete, ETA 02:49:42
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 40927154967.000 ns/op
+# Warmup Iteration   2: 37317567686.000 ns/op
+# Warmup Iteration   3: 37933217923.000 ns/op
+# Warmup Iteration   4: 36236514154.000 ns/op
+# Warmup Iteration   5: 37033107382.000 ns/op
+Iteration   1: 37500108639.000 ns/op
+Iteration   2: 38237081272.000 ns/op
+Iteration   3: 36688455642.000 ns/op
+Iteration   4: 36811598529.000 ns/op
+Iteration   5: 37133559080.000 ns/op
+
+> Task :jmh
+
+# Run progress: 41.90% complete, ETA 02:51:57
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 39497492836.000 ns/op
+# Warmup Iteration   2: 34359424976.000 ns/op
+# Warmup Iteration   3: 36293661080.000 ns/op
+# Warmup Iteration   4: 36447057902.000 ns/op
+# Warmup Iteration   5: 36839989112.000 ns/op
+Iteration   1: 35877364341.000 ns/op
+Iteration   2: 35726519712.000 ns/op
+Iteration   3: 35557324886.000 ns/op
+Iteration   4: 35639742359.000 ns/op
+Iteration   5: 36014692626.000 ns/op
+
+> Task :jmh
+
+
+Result "art.Insert.integer":
+  36374716705.240 ±(99.9%) 703960711.953 ns/op [Average]
+  (min, avg, max) = (34856462225.000, 36374716705.240, 38237081272.000), stdev = 939767409.972
+  CI (99.9%): [35670755993.287, 37078677417.193] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = SPARSE, mapType = HASH_MAP, size = 65000)
+
+# Run progress: 42.86% complete, ETA 02:53:30
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 2024707.564 ns/op
+# Warmup Iteration   2: 2004364.601 ns/op
+# Warmup Iteration   3: 2032794.379 ns/op
+# Warmup Iteration   4: 1955162.173 ns/op
+# Warmup Iteration   5: 1974162.809 ns/op
+Iteration   1: 1955563.476 ns/op
+Iteration   2: 1960056.233 ns/op
+Iteration   3: 1969142.885 ns/op
+Iteration   4: 1958816.925 ns/op
+Iteration   5: 1964454.917 ns/op
+
+> Task :jmh
+
+# Run progress: 43.81% complete, ETA 02:49:02
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 1980675.115 ns/op
+# Warmup Iteration   2: 1978161.816 ns/op
+# Warmup Iteration   3: 1977461.284 ns/op
+# Warmup Iteration   4: 1972503.369 ns/op
+# Warmup Iteration   5: 1975185.913 ns/op
+Iteration   1: 2015010.066 ns/op
+Iteration   2: 2034870.168 ns/op
+Iteration   3: 1968595.742 ns/op
+Iteration   4: 1973872.828 ns/op
+Iteration   5: 1971105.002 ns/op
+
+> Task :jmh
+
+# Run progress: 44.76% complete, ETA 02:44:42
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 1977979.381 ns/op
+# Warmup Iteration   2: 1974813.022 ns/op
+# Warmup Iteration   3: 1956862.096 ns/op
+# Warmup Iteration   4: 1948479.923 ns/op
+# Warmup Iteration   5: 1957141.382 ns/op
+Iteration   1: 1950616.112 ns/op
+Iteration   2: 1954506.018 ns/op
+Iteration   3: 1968775.485 ns/op
+Iteration   4: 1944258.603 ns/op
+Iteration   5: 1958705.855 ns/op
+
+> Task :jmh
+
+# Run progress: 45.71% complete, ETA 02:40:28
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 1994537.989 ns/op
+# Warmup Iteration   2: 1975830.092 ns/op
+# Warmup Iteration   3: 1991106.575 ns/op
+# Warmup Iteration   4: 1980274.727 ns/op
+# Warmup Iteration   5: 1959068.655 ns/op
+Iteration   1: 1978872.476 ns/op
+Iteration   2: 1997387.026 ns/op
+Iteration   3: 1971329.828 ns/op
+Iteration   4: 1967300.710 ns/op
+Iteration   5: 1964607.932 ns/op
+
+> Task :jmh
+
+# Run progress: 46.67% complete, ETA 02:36:21
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 2042873.745 ns/op
+# Warmup Iteration   2: 1973677.238 ns/op
+# Warmup Iteration   3: 1976478.097 ns/op
+# Warmup Iteration   4: 1973384.288 ns/op
+# Warmup Iteration   5: 1987152.205 ns/op
+Iteration   1: 2004940.426 ns/op
+Iteration   2: 2016524.351 ns/op
+Iteration   3: 2020031.385 ns/op
+Iteration   4: 1993915.288 ns/op
+Iteration   5: 1988664.209 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  1978076.958 ±(99.9%) 18200.413 ns/op [Average]
+  (min, avg, max) = (1944258.603, 1978076.958, 2034870.168), stdev = 24297.031
+  CI (99.9%): [1959876.545, 1996277.371] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = SPARSE, mapType = HASH_MAP, size = 16000000)
+
+# Run progress: 47.62% complete, ETA 02:32:20
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 3037160124.250 ns/op
+# Warmup Iteration   2: 2865911836.250 ns/op
+# Warmup Iteration   3: 2865541268.250 ns/op
+# Warmup Iteration   4: 2858641139.750 ns/op
+# Warmup Iteration   5: 2863728018.500 ns/op
+Iteration   1: 2893404658.000 ns/op
+Iteration   2: 2848666325.750 ns/op
+Iteration   3: 2887352652.750 ns/op
+Iteration   4: 2863215090.000 ns/op
+Iteration   5: 2894293801.250 ns/op
+
+> Task :jmh
+
+# Run progress: 48.57% complete, ETA 02:29:01
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 3124397411.500 ns/op
+# Warmup Iteration   2: 2915935192.500 ns/op
+# Warmup Iteration   3: 2873395828.250 ns/op
+# Warmup Iteration   4: 2876483361.500 ns/op
+# Warmup Iteration   5: 2854251390.000 ns/op
+Iteration   1: 2885739246.750 ns/op
+Iteration   2: 2867840096.750 ns/op
+Iteration   3: 2850708740.000 ns/op
+Iteration   4: 2831663882.500 ns/op
+Iteration   5: 2843824383.750 ns/op
+
+> Task :jmh
+
+# Run progress: 49.52% complete, ETA 02:25:45
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 2976750741.250 ns/op
+# Warmup Iteration   2: 2808697033.750 ns/op
+# Warmup Iteration   3: 2768286526.750 ns/op
+# Warmup Iteration   4: 2749849559.250 ns/op
+# Warmup Iteration   5: 2756133063.750 ns/op
+Iteration   1: 2828288086.500 ns/op
+Iteration   2: 2769781191.250 ns/op
+Iteration   3: 2762786821.250 ns/op
+Iteration   4: 2729425326.500 ns/op
+Iteration   5: 2749798039.000 ns/op
+
+> Task :jmh
+
+# Run progress: 50.48% complete, ETA 02:22:27
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 3069167168.250 ns/op
+# Warmup Iteration   2: 2876735018.500 ns/op
+# Warmup Iteration   3: 2826918961.250 ns/op
+# Warmup Iteration   4: 2845909625.750 ns/op
+# Warmup Iteration   5: 2835304819.500 ns/op
+Iteration   1: 2904393948.500 ns/op
+Iteration   2: 2824053953.250 ns/op
+Iteration   3: 2844427150.500 ns/op
+Iteration   4: 2826974836.000 ns/op
+Iteration   5: 2835163068.750 ns/op
+
+> Task :jmh
+
+# Run progress: 51.43% complete, ETA 02:19:15
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 3151229499.250 ns/op
+# Warmup Iteration   2: 2917242837.000 ns/op
+# Warmup Iteration   3: 2919969200.750 ns/op
+# Warmup Iteration   4: 2924213755.500 ns/op
+# Warmup Iteration   5: 2907868268.500 ns/op
+Iteration   1: 2959687845.500 ns/op
+Iteration   2: 2893688946.750 ns/op
+Iteration   3: 2886367354.250 ns/op
+Iteration   4: 2936184878.000 ns/op
+Iteration   5: 2908557268.250 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  2853051503.670 ±(99.9%) 42368615.922 ns/op [Average]
+  (min, avg, max) = (2729425326.500, 2853051503.670, 2959687845.500), stdev = 56560890.080
+  CI (99.9%): [2810682887.748, 2895420119.592] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = SPARSE, mapType = ART, size = 65000)
+
+# Run progress: 52.38% complete, ETA 02:16:07
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 707012.979 ns/op
+# Warmup Iteration   2: 697438.704 ns/op
+# Warmup Iteration   3: 697681.567 ns/op
+# Warmup Iteration   4: 700716.066 ns/op
+# Warmup Iteration   5: 699750.595 ns/op
+Iteration   1: 698646.165 ns/op
+Iteration   2: 698503.122 ns/op
+Iteration   3: 729553.709 ns/op
+Iteration   4: 726459.555 ns/op
+Iteration   5: 725018.938 ns/op
+
+> Task :jmh
+
+# Run progress: 53.33% complete, ETA 02:12:28
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 709814.256 ns/op
+# Warmup Iteration   2: 700767.719 ns/op
+# Warmup Iteration   3: 701110.408 ns/op
+# Warmup Iteration   4: 703318.233 ns/op
+# Warmup Iteration   5: 702279.449 ns/op
+Iteration   1: 702761.337 ns/op
+Iteration   2: 701151.353 ns/op
+Iteration   3: 711637.716 ns/op
+Iteration   4: 730014.103 ns/op
+Iteration   5: 730177.796 ns/op
+
+> Task :jmh
+
+# Run progress: 54.29% complete, ETA 02:08:54
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 706772.656 ns/op
+# Warmup Iteration   2: 700385.426 ns/op
+# Warmup Iteration   3: 705411.956 ns/op
+# Warmup Iteration   4: 702736.126 ns/op
+# Warmup Iteration   5: 699369.462 ns/op
+Iteration   1: 699779.087 ns/op
+Iteration   2: 699488.515 ns/op
+Iteration   3: 708020.238 ns/op
+Iteration   4: 728060.887 ns/op
+Iteration   5: 725344.506 ns/op
+
+> Task :jmh
+
+# Run progress: 55.24% complete, ETA 02:05:24
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 706600.903 ns/op
+# Warmup Iteration   2: 700176.278 ns/op
+# Warmup Iteration   3: 700745.296 ns/op
+# Warmup Iteration   4: 698698.036 ns/op
+# Warmup Iteration   5: 698951.789 ns/op
+Iteration   1: 698633.586 ns/op
+Iteration   2: 699357.209 ns/op
+Iteration   3: 710883.318 ns/op
+Iteration   4: 729648.861 ns/op
+Iteration   5: 725097.100 ns/op
+
+> Task :jmh
+
+# Run progress: 56.19% complete, ETA 02:01:57
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 709913.622 ns/op
+# Warmup Iteration   2: 701083.858 ns/op
+# Warmup Iteration   3: 700628.027 ns/op
+# Warmup Iteration   4: 702424.229 ns/op
+# Warmup Iteration   5: 700315.500 ns/op
+Iteration   1: 699074.878 ns/op
+Iteration   2: 699290.139 ns/op
+Iteration   3: 709253.396 ns/op
+Iteration   4: 727349.658 ns/op
+Iteration   5: 727736.275 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  713637.658 ±(99.9%) 9954.319 ns/op [Average]
+  (min, avg, max) = (698503.122, 713637.658, 730177.796), stdev = 13288.730
+  CI (99.9%): [703683.339, 723591.976] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = SPARSE, mapType = ART, size = 16000000)
+
+# Run progress: 57.14% complete, ETA 01:58:34
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 182953751.309 ns/op
+# Warmup Iteration   2: 170910373.627 ns/op
+# Warmup Iteration   3: 172341072.441 ns/op
+# Warmup Iteration   4: 171553328.220 ns/op
+# Warmup Iteration   5: 172016203.051 ns/op
+Iteration   1: 171141485.203 ns/op
+Iteration   2: 170927797.712 ns/op
+Iteration   3: 170781586.169 ns/op
+Iteration   4: 171099586.136 ns/op
+Iteration   5: 171035900.542 ns/op
+
+> Task :jmh
+
+# Run progress: 58.10% complete, ETA 01:55:22
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 182663072.964 ns/op
+# Warmup Iteration   2: 171228903.610 ns/op
+# Warmup Iteration   3: 171204111.186 ns/op
+# Warmup Iteration   4: 171559557.661 ns/op
+# Warmup Iteration   5: 171178943.475 ns/op
+Iteration   1: 171650095.780 ns/op
+Iteration   2: 172154657.153 ns/op
+Iteration   3: 171382395.390 ns/op
+Iteration   4: 171137315.932 ns/op
+Iteration   5: 170898497.831 ns/op
+
+> Task :jmh
+
+# Run progress: 59.05% complete, ETA 01:52:14
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 183529382.073 ns/op
+# Warmup Iteration   2: 171842582.847 ns/op
+# Warmup Iteration   3: 172054051.712 ns/op
+# Warmup Iteration   4: 172374177.695 ns/op
+# Warmup Iteration   5: 172126832.983 ns/op
+Iteration   1: 173096431.655 ns/op
+Iteration   2: 172436451.793 ns/op
+Iteration   3: 172246478.525 ns/op
+Iteration   4: 172193602.288 ns/op
+Iteration   5: 172343077.966 ns/op
+
+> Task :jmh
+
+# Run progress: 60.00% complete, ETA 01:49:07
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 183585784.836 ns/op
+# Warmup Iteration   2: 171200412.898 ns/op
+# Warmup Iteration   3: 171254651.949 ns/op
+# Warmup Iteration   4: 171210131.034 ns/op
+# Warmup Iteration   5: 171431635.915 ns/op
+Iteration   1: 170951808.949 ns/op
+Iteration   2: 172022209.712 ns/op
+Iteration   3: 171300151.051 ns/op
+Iteration   4: 171158055.000 ns/op
+Iteration   5: 171034895.000 ns/op
+
+> Task :jmh
+
+# Run progress: 60.95% complete, ETA 01:46:03
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 182242275.218 ns/op
+# Warmup Iteration   2: 170913079.966 ns/op
+# Warmup Iteration   3: 170792059.000 ns/op
+# Warmup Iteration   4: 172058496.610 ns/op
+# Warmup Iteration   5: 170796792.695 ns/op
+Iteration   1: 171608126.254 ns/op
+Iteration   2: 171571845.763 ns/op
+Iteration   3: 171794359.695 ns/op
+Iteration   4: 171953419.017 ns/op
+Iteration   5: 171610617.034 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  171581233.902 ±(99.9%) 447974.683 ns/op [Average]
+  (min, avg, max) = (170781586.169, 171581233.902, 173096431.655), stdev = 598033.385
+  CI (99.9%): [171133259.219, 172029208.585] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = SPARSE, mapType = TREE_MAP, size = 65000)
+
+# Run progress: 61.90% complete, ETA 01:43:02
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 17596491.176 ns/op
+# Warmup Iteration   2: 17196003.505 ns/op
+# Warmup Iteration   3: 17263276.931 ns/op
+# Warmup Iteration   4: 16664098.398 ns/op
+# Warmup Iteration   5: 17144137.260 ns/op
+Iteration   1: 16948135.756 ns/op
+Iteration   2: 16946964.051 ns/op
+Iteration   3: 16898327.838 ns/op
+Iteration   4: 16724972.182 ns/op
+Iteration   5: 17388902.823 ns/op
+
+> Task :jmh
+
+# Run progress: 62.86% complete, ETA 01:39:55
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 17983159.774 ns/op
+# Warmup Iteration   2: 16674445.848 ns/op
+# Warmup Iteration   3: 17001405.440 ns/op
+# Warmup Iteration   4: 16949455.374 ns/op
+# Warmup Iteration   5: 17004552.307 ns/op
+Iteration   1: 16904196.473 ns/op
+Iteration   2: 16834320.190 ns/op
+Iteration   3: 16614259.784 ns/op
+Iteration   4: 16690817.615 ns/op
+Iteration   5: 16331555.773 ns/op
+
+> Task :jmh
+
+# Run progress: 63.81% complete, ETA 01:36:51
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 17113111.781 ns/op
+# Warmup Iteration   2: 16635564.015 ns/op
+# Warmup Iteration   3: 16555369.612 ns/op
+# Warmup Iteration   4: 16999165.961 ns/op
+# Warmup Iteration   5: 17415701.344 ns/op
+Iteration   1: 16717244.960 ns/op
+Iteration   2: 17058380.649 ns/op
+Iteration   3: 16810439.408 ns/op
+Iteration   4: 16782625.916 ns/op
+Iteration   5: 16671554.432 ns/op
+
+> Task :jmh
+
+# Run progress: 64.76% complete, ETA 01:33:50
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 17310367.856 ns/op
+# Warmup Iteration   2: 17033011.048 ns/op
+# Warmup Iteration   3: 16858554.258 ns/op
+# Warmup Iteration   4: 16956945.332 ns/op
+# Warmup Iteration   5: 16624551.958 ns/op
+Iteration   1: 16412487.798 ns/op
+Iteration   2: 16523816.678 ns/op
+Iteration   3: 16677175.042 ns/op
+Iteration   4: 16746656.177 ns/op
+Iteration   5: 16573117.866 ns/op
+
+> Task :jmh
+
+# Run progress: 65.71% complete, ETA 01:30:51
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 17253298.103 ns/op
+# Warmup Iteration   2: 17614455.229 ns/op
+# Warmup Iteration   3: 17052052.344 ns/op
+# Warmup Iteration   4: 16955348.759 ns/op
+# Warmup Iteration   5: 16909850.164 ns/op
+Iteration   1: 16770254.704 ns/op
+Iteration   2: 17116910.207 ns/op
+Iteration   3: 16872460.474 ns/op
+Iteration   4: 16921084.569 ns/op
+Iteration   5: 17122596.986 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  16802370.334 ±(99.9%) 174007.725 ns/op [Average]
+  (min, avg, max) = (16331555.773, 16802370.334, 17388902.823), stdev = 232295.335
+  CI (99.9%): [16628362.609, 16976378.059] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = SPARSE, mapType = TREE_MAP, size = 16000000)
+
+# Run progress: 66.67% complete, ETA 01:27:54
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 34278010968.000 ns/op
+# Warmup Iteration   2: 32565914893.000 ns/op
+# Warmup Iteration   3: 32577742548.000 ns/op
+# Warmup Iteration   4: 32294186256.000 ns/op
+# Warmup Iteration   5: 32814087446.000 ns/op
+Iteration   1: 32930840819.000 ns/op
+Iteration   2: 32506226643.000 ns/op
+Iteration   3: 32820960197.000 ns/op
+Iteration   4: 32689339509.000 ns/op
+Iteration   5: 32594795873.000 ns/op
+
+> Task :jmh
+
+# Run progress: 67.62% complete, ETA 01:27:12
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 33306105111.000 ns/op
+# Warmup Iteration   2: 32010988222.000 ns/op
+# Warmup Iteration   3: 32091878247.000 ns/op
+# Warmup Iteration   4: 30874102454.000 ns/op
+# Warmup Iteration   5: 30674724167.000 ns/op
+Iteration   1: 31164504787.000 ns/op
+Iteration   2: 30778326334.000 ns/op
+Iteration   3: 31168982734.000 ns/op
+Iteration   4: 30978713631.000 ns/op
+Iteration   5: 30728088017.000 ns/op
+
+> Task :jmh
+
+# Run progress: 68.57% complete, ETA 01:26:12
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 32416770079.000 ns/op
+# Warmup Iteration   2: 31396420247.000 ns/op
+# Warmup Iteration   3: 30984918262.000 ns/op
+# Warmup Iteration   4: 31297330987.000 ns/op
+# Warmup Iteration   5: 30733703310.000 ns/op
+Iteration   1: 30912673412.000 ns/op
+Iteration   2: 30981107732.000 ns/op
+Iteration   3: 30710921764.000 ns/op
+Iteration   4: 30678450330.000 ns/op
+Iteration   5: 30589661125.000 ns/op
+
+> Task :jmh
+
+# Run progress: 69.52% complete, ETA 01:25:02
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 32240178634.000 ns/op
+# Warmup Iteration   2: 30590901403.000 ns/op
+# Warmup Iteration   3: 30691880161.000 ns/op
+# Warmup Iteration   4: 30745396953.000 ns/op
+# Warmup Iteration   5: 31098773055.000 ns/op
+Iteration   1: 30850873346.000 ns/op
+Iteration   2: 30670057704.000 ns/op
+Iteration   3: 30994547963.000 ns/op
+Iteration   4: 31654701825.000 ns/op
+Iteration   5: 32160899170.000 ns/op
+
+> Task :jmh
+
+# Run progress: 70.48% complete, ETA 01:23:44
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 32978643996.000 ns/op
+# Warmup Iteration   2: 32035485950.000 ns/op
+# Warmup Iteration   3: 32228471703.000 ns/op
+# Warmup Iteration   4: 32026306449.000 ns/op
+# Warmup Iteration   5: 32020919494.000 ns/op
+Iteration   1: 32089341806.000 ns/op
+Iteration   2: 31546564689.000 ns/op
+Iteration   3: 31409234164.000 ns/op
+Iteration   4: 31568208713.000 ns/op
+Iteration   5: 31751557438.000 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  31477183189.000 ±(99.9%) 572280430.407 ns/op [Average]
+  (min, avg, max) = (30589661125.000, 31477183189.000, 32930840819.000), stdev = 763978001.513
+  CI (99.9%): [30904902758.593, 32049463619.407] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = DENSE, mapType = HASH_MAP, size = 65000)
+
+# Run progress: 71.43% complete, ETA 01:22:23
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 696282.968 ns/op
+# Warmup Iteration   2: 668620.230 ns/op
+# Warmup Iteration   3: 662933.111 ns/op
+# Warmup Iteration   4: 663980.576 ns/op
+# Warmup Iteration   5: 664641.097 ns/op
+Iteration   1: 663181.412 ns/op
+Iteration   2: 663414.579 ns/op
+Iteration   3: 735324.280 ns/op
+Iteration   4: 691546.095 ns/op
+Iteration   5: 688665.555 ns/op
+
+> Task :jmh
+
+# Run progress: 72.38% complete, ETA 01:19:14
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 691326.172 ns/op
+# Warmup Iteration   2: 671575.099 ns/op
+# Warmup Iteration   3: 665752.806 ns/op
+# Warmup Iteration   4: 666781.655 ns/op
+# Warmup Iteration   5: 660112.890 ns/op
+Iteration   1: 658886.050 ns/op
+Iteration   2: 663767.596 ns/op
+Iteration   3: 724351.024 ns/op
+Iteration   4: 692187.989 ns/op
+Iteration   5: 689423.153 ns/op
+
+> Task :jmh
+
+# Run progress: 73.33% complete, ETA 01:16:07
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 703859.972 ns/op
+# Warmup Iteration   2: 679076.897 ns/op
+# Warmup Iteration   3: 676659.929 ns/op
+# Warmup Iteration   4: 674197.922 ns/op
+# Warmup Iteration   5: 671548.016 ns/op
+Iteration   1: 670221.482 ns/op
+Iteration   2: 669080.445 ns/op
+Iteration   3: 745927.999 ns/op
+Iteration   4: 711099.228 ns/op
+Iteration   5: 699818.602 ns/op
+
+> Task :jmh
+
+# Run progress: 74.29% complete, ETA 01:13:02
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 704772.370 ns/op
+# Warmup Iteration   2: 677963.331 ns/op
+# Warmup Iteration   3: 671072.014 ns/op
+# Warmup Iteration   4: 671900.255 ns/op
+# Warmup Iteration   5: 674793.462 ns/op
+Iteration   1: 672108.506 ns/op
+Iteration   2: 674797.065 ns/op
+Iteration   3: 724219.289 ns/op
+Iteration   4: 711405.828 ns/op
+Iteration   5: 704898.889 ns/op
+
+> Task :jmh
+
+# Run progress: 75.24% complete, ETA 01:09:59
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 761728.787 ns/op
+# Warmup Iteration   2: 751393.051 ns/op
+# Warmup Iteration   3: 750962.403 ns/op
+# Warmup Iteration   4: 753659.724 ns/op
+# Warmup Iteration   5: 727486.061 ns/op
+Iteration   1: 656884.653 ns/op
+Iteration   2: 746761.129 ns/op
+Iteration   3: 746395.976 ns/op
+Iteration   4: 775763.201 ns/op
+Iteration   5: 685244.859 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  698614.995 ±(99.9%) 24772.529 ns/op [Average]
+  (min, avg, max) = (656884.653, 698614.995, 775763.201), stdev = 33070.617
+  CI (99.9%): [673842.467, 723387.524] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = DENSE, mapType = HASH_MAP, size = 16000000)
+
+# Run progress: 76.19% complete, ETA 01:06:59
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 341254708.100 ns/op
+# Warmup Iteration   2: 311676147.515 ns/op
+# Warmup Iteration   3: 311305001.970 ns/op
+# Warmup Iteration   4: 312949906.938 ns/op
+# Warmup Iteration   5: 311652339.788 ns/op
+Iteration   1: 312036956.333 ns/op
+Iteration   2: 311208265.000 ns/op
+Iteration   3: 311505900.455 ns/op
+Iteration   4: 312922694.563 ns/op
+Iteration   5: 311324086.303 ns/op
+
+> Task :jmh
+
+# Run progress: 77.14% complete, ETA 01:04:01
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 338766825.500 ns/op
+# Warmup Iteration   2: 308943073.303 ns/op
+# Warmup Iteration   3: 308089678.697 ns/op
+# Warmup Iteration   4: 308094719.030 ns/op
+# Warmup Iteration   5: 308011081.939 ns/op
+Iteration   1: 309375479.485 ns/op
+Iteration   2: 310667827.848 ns/op
+Iteration   3: 309416351.152 ns/op
+Iteration   4: 314034526.469 ns/op
+Iteration   5: 310382575.758 ns/op
+
+> Task :jmh
+
+# Run progress: 78.10% complete, ETA 01:01:05
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 362322180.036 ns/op
+# Warmup Iteration   2: 329831357.516 ns/op
+# Warmup Iteration   3: 329744976.290 ns/op
+# Warmup Iteration   4: 329590086.742 ns/op
+# Warmup Iteration   5: 328840254.484 ns/op
+Iteration   1: 328538705.323 ns/op
+Iteration   2: 330267372.871 ns/op
+Iteration   3: 330768114.677 ns/op
+Iteration   4: 329484609.419 ns/op
+Iteration   5: 329828202.581 ns/op
+
+> Task :jmh
+
+# Run progress: 79.05% complete, ETA 00:58:11
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 341838837.533 ns/op
+# Warmup Iteration   2: 312656049.750 ns/op
+# Warmup Iteration   3: 311224395.242 ns/op
+# Warmup Iteration   4: 312123093.455 ns/op
+# Warmup Iteration   5: 311003178.970 ns/op
+Iteration   1: 310956747.697 ns/op
+Iteration   2: 310946078.242 ns/op
+Iteration   3: 312826494.438 ns/op
+Iteration   4: 315287921.406 ns/op
+Iteration   5: 313668392.188 ns/op
+
+> Task :jmh
+
+# Run progress: 80.00% complete, ETA 00:55:19
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 332567608.129 ns/op
+# Warmup Iteration   2: 308954667.576 ns/op
+# Warmup Iteration   3: 309478850.030 ns/op
+# Warmup Iteration   4: 308174237.424 ns/op
+# Warmup Iteration   5: 308072482.030 ns/op
+Iteration   1: 308916116.303 ns/op
+Iteration   2: 307608507.606 ns/op
+Iteration   3: 310013157.000 ns/op
+Iteration   4: 310147710.030 ns/op
+Iteration   5: 308950253.848 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  314843321.880 ±(99.9%) 5856765.148 ns/op [Average]
+  (min, avg, max) = (307608507.606, 314843321.880, 330768114.677), stdev = 7818613.909
+  CI (99.9%): [308986556.732, 320700087.028] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = DENSE, mapType = ART, size = 65000)
+
+# Run progress: 80.95% complete, ETA 00:52:28
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 786732.539 ns/op
+# Warmup Iteration   2: 780824.607 ns/op
+# Warmup Iteration   3: 778395.638 ns/op
+# Warmup Iteration   4: 778912.893 ns/op
+# Warmup Iteration   5: 760216.111 ns/op
+Iteration   1: 776132.850 ns/op
+Iteration   2: 776771.100 ns/op
+Iteration   3: 777238.927 ns/op
+Iteration   4: 754316.546 ns/op
+Iteration   5: 752242.916 ns/op
+
+> Task :jmh
+
+# Run progress: 81.90% complete, ETA 00:49:38
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 720526.049 ns/op
+# Warmup Iteration   2: 699797.834 ns/op
+# Warmup Iteration   3: 697288.429 ns/op
+# Warmup Iteration   4: 697320.212 ns/op
+# Warmup Iteration   5: 697701.427 ns/op
+Iteration   1: 697933.388 ns/op
+Iteration   2: 696322.454 ns/op
+Iteration   3: 706900.126 ns/op
+Iteration   4: 724553.512 ns/op
+Iteration   5: 729224.124 ns/op
+
+> Task :jmh
+
+# Run progress: 82.86% complete, ETA 00:46:50
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 718605.958 ns/op
+# Warmup Iteration   2: 697713.251 ns/op
+# Warmup Iteration   3: 699303.432 ns/op
+# Warmup Iteration   4: 697374.760 ns/op
+# Warmup Iteration   5: 698691.087 ns/op
+Iteration   1: 697698.985 ns/op
+Iteration   2: 695747.610 ns/op
+Iteration   3: 705159.829 ns/op
+Iteration   4: 731262.034 ns/op
+Iteration   5: 731772.577 ns/op
+
+> Task :jmh
+
+# Run progress: 83.81% complete, ETA 00:44:03
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 716972.093 ns/op
+# Warmup Iteration   2: 699062.961 ns/op
+# Warmup Iteration   3: 699489.762 ns/op
+# Warmup Iteration   4: 696054.855 ns/op
+# Warmup Iteration   5: 697836.427 ns/op
+Iteration   1: 696087.866 ns/op
+Iteration   2: 696656.703 ns/op
+Iteration   3: 707289.564 ns/op
+Iteration   4: 723847.442 ns/op
+Iteration   5: 724890.828 ns/op
+
+> Task :jmh
+
+# Run progress: 84.76% complete, ETA 00:41:17
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 721622.413 ns/op
+# Warmup Iteration   2: 696996.958 ns/op
+# Warmup Iteration   3: 696724.213 ns/op
+# Warmup Iteration   4: 698042.766 ns/op
+# Warmup Iteration   5: 696902.552 ns/op
+Iteration   1: 696020.488 ns/op
+Iteration   2: 695250.526 ns/op
+Iteration   3: 706333.802 ns/op
+Iteration   4: 723768.924 ns/op
+Iteration   5: 723972.161 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  721895.811 ±(99.9%) 20166.671 ns/op [Average]
+  (min, avg, max) = (695250.526, 721895.811, 777238.927), stdev = 26921.928
+  CI (99.9%): [701729.141, 742062.482] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = DENSE, mapType = ART, size = 16000000)
+
+# Run progress: 85.71% complete, ETA 00:38:33
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 175513345.246 ns/op
+# Warmup Iteration   2: 171537713.407 ns/op
+# Warmup Iteration   3: 171386091.051 ns/op
+# Warmup Iteration   4: 171304542.797 ns/op
+# Warmup Iteration   5: 171147380.576 ns/op
+Iteration   1: 171571341.966 ns/op
+Iteration   2: 171895674.288 ns/op
+Iteration   3: 171524151.373 ns/op
+Iteration   4: 172098370.119 ns/op
+Iteration   5: 171892450.254 ns/op
+
+> Task :jmh
+
+# Run progress: 86.67% complete, ETA 00:35:51
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 173106548.121 ns/op
+# Warmup Iteration   2: 171889705.695 ns/op
+# Warmup Iteration   3: 171389565.780 ns/op
+# Warmup Iteration   4: 171467309.373 ns/op
+# Warmup Iteration   5: 171514307.831 ns/op
+Iteration   1: 171822027.814 ns/op
+Iteration   2: 171748962.915 ns/op
+Iteration   3: 171389909.220 ns/op
+Iteration   4: 171973622.559 ns/op
+Iteration   5: 172423821.390 ns/op
+
+> Task :jmh
+
+# Run progress: 87.62% complete, ETA 00:33:10
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 173788150.431 ns/op
+# Warmup Iteration   2: 172057217.407 ns/op
+# Warmup Iteration   3: 171680286.186 ns/op
+# Warmup Iteration   4: 171966993.864 ns/op
+# Warmup Iteration   5: 172185864.186 ns/op
+Iteration   1: 171727320.492 ns/op
+Iteration   2: 171517573.898 ns/op
+Iteration   3: 171332895.153 ns/op
+Iteration   4: 171814823.085 ns/op
+Iteration   5: 171620521.932 ns/op
+
+> Task :jmh
+
+# Run progress: 88.57% complete, ETA 00:30:31
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 175509146.140 ns/op
+# Warmup Iteration   2: 171942607.305 ns/op
+# Warmup Iteration   3: 172236809.492 ns/op
+# Warmup Iteration   4: 172360608.661 ns/op
+# Warmup Iteration   5: 171777542.932 ns/op
+Iteration   1: 172304189.322 ns/op
+Iteration   2: 172143470.559 ns/op
+Iteration   3: 171658606.831 ns/op
+Iteration   4: 172384814.051 ns/op
+Iteration   5: 171943115.085 ns/op
+
+> Task :jmh
+
+# Run progress: 89.52% complete, ETA 00:27:52
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 173222171.534 ns/op
+# Warmup Iteration   2: 171918571.203 ns/op
+# Warmup Iteration   3: 171743694.780 ns/op
+# Warmup Iteration   4: 171307798.339 ns/op
+# Warmup Iteration   5: 171895400.068 ns/op
+Iteration   1: 172606038.103 ns/op
+Iteration   2: 171726810.017 ns/op
+Iteration   3: 172057114.763 ns/op
+Iteration   4: 171919798.136 ns/op
+Iteration   5: 172187884.610 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  171891412.317 ±(99.9%) 246222.756 ns/op [Average]
+  (min, avg, max) = (171332895.153, 171891412.317, 172606038.103), stdev = 328700.334
+  CI (99.9%): [171645189.562, 172137635.073] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = DENSE, mapType = TREE_MAP, size = 65000)
+
+# Run progress: 90.48% complete, ETA 00:25:15
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 5732350.476 ns/op
+# Warmup Iteration   2: 5667618.977 ns/op
+# Warmup Iteration   3: 5719264.193 ns/op
+# Warmup Iteration   4: 5693752.727 ns/op
+# Warmup Iteration   5: 5695620.555 ns/op
+Iteration   1: 5648584.500 ns/op
+Iteration   2: 5675009.184 ns/op
+Iteration   3: 5671625.386 ns/op
+Iteration   4: 5651692.909 ns/op
+Iteration   5: 5680781.337 ns/op
+
+> Task :jmh
+
+# Run progress: 91.43% complete, ETA 00:22:38
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 5751150.891 ns/op
+# Warmup Iteration   2: 5771226.412 ns/op
+# Warmup Iteration   3: 5669444.643 ns/op
+# Warmup Iteration   4: 5669348.599 ns/op
+# Warmup Iteration   5: 5648657.280 ns/op
+Iteration   1: 5693668.850 ns/op
+Iteration   2: 5693273.524 ns/op
+Iteration   3: 5674389.558 ns/op
+Iteration   4: 5677938.336 ns/op
+Iteration   5: 5749816.171 ns/op
+
+> Task :jmh
+
+# Run progress: 92.38% complete, ETA 00:20:03
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 5673571.106 ns/op
+# Warmup Iteration   2: 5665535.078 ns/op
+# Warmup Iteration   3: 5631391.164 ns/op
+# Warmup Iteration   4: 5666580.407 ns/op
+# Warmup Iteration   5: 5667377.025 ns/op
+Iteration   1: 5636112.596 ns/op
+Iteration   2: 5692350.475 ns/op
+Iteration   3: 5801890.171 ns/op
+Iteration   4: 5724289.374 ns/op
+Iteration   5: 5727428.377 ns/op
+
+> Task :jmh
+
+# Run progress: 93.33% complete, ETA 00:17:29
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 5803626.921 ns/op
+# Warmup Iteration   2: 5660318.133 ns/op
+# Warmup Iteration   3: 5743287.429 ns/op
+# Warmup Iteration   4: 5704629.867 ns/op
+# Warmup Iteration   5: 5697112.911 ns/op
+Iteration   1: 5661890.929 ns/op
+Iteration   2: 5683597.941 ns/op
+Iteration   3: 5673299.658 ns/op
+Iteration   4: 5647433.225 ns/op
+Iteration   5: 5703801.350 ns/op
+
+> Task :jmh
+
+# Run progress: 94.29% complete, ETA 00:14:56
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 5792362.515 ns/op
+# Warmup Iteration   2: 5799816.442 ns/op
+# Warmup Iteration   3: 5955837.664 ns/op
+# Warmup Iteration   4: 5881350.543 ns/op
+# Warmup Iteration   5: 5824733.945 ns/op
+Iteration   1: 5884548.423 ns/op
+Iteration   2: 5835646.922 ns/op
+Iteration   3: 5831806.679 ns/op
+Iteration   4: 5855027.166 ns/op
+Iteration   5: 5891833.485 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  5722709.461 ±(99.9%) 59088.224 ns/op [Average]
+  (min, avg, max) = (5636112.596, 5722709.461, 5891833.485), stdev = 78881.089
+  CI (99.9%): [5663621.237, 5781797.685] (assumes normal distribution)
+
+
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: <none>
+# Warmup: 5 iterations, 10 s each
+# Measurement: 5 iterations, 10 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: art.Lookup.integer
+# Parameters: (distributionType = DENSE, mapType = TREE_MAP, size = 16000000)
+
+# Run progress: 95.24% complete, ETA 00:12:24
+# Fork: 1 of 5
+
+# Warmup Iteration   1: 1816883177.667 ns/op
+# Warmup Iteration   2: 1784066897.167 ns/op
+# Warmup Iteration   3: 1772381031.333 ns/op
+# Warmup Iteration   4: 1783696168.000 ns/op
+# Warmup Iteration   5: 1772619001.167 ns/op
+Iteration   1: 1776112842.500 ns/op
+Iteration   2: 1766307022.167 ns/op
+Iteration   3: 1766394306.167 ns/op
+Iteration   4: 1769774310.500 ns/op
+Iteration   5: 1771571573.500 ns/op
+
+> Task :jmh
+
+# Run progress: 96.19% complete, ETA 00:09:54
+# Fork: 2 of 5
+
+# Warmup Iteration   1: 1780653345.167 ns/op
+# Warmup Iteration   2: 1763859065.500 ns/op
+# Warmup Iteration   3: 1758156667.167 ns/op
+# Warmup Iteration   4: 1755992294.167 ns/op
+# Warmup Iteration   5: 1762306962.500 ns/op
+Iteration   1: 1755181567.333 ns/op
+Iteration   2: 1753830133.167 ns/op
+Iteration   3: 1754607650.167 ns/op
+Iteration   4: 1754846634.833 ns/op
+Iteration   5: 1756351757.000 ns/op
+
+> Task :jmh
+
+# Run progress: 97.14% complete, ETA 00:07:24
+# Fork: 3 of 5
+
+# Warmup Iteration   1: 1850288515.333 ns/op
+# Warmup Iteration   2: 1829820210.500 ns/op
+# Warmup Iteration   3: 1822578808.667 ns/op
+# Warmup Iteration   4: 1818185746.333 ns/op
+# Warmup Iteration   5: 1819693953.167 ns/op
+Iteration   1: 1821860767.833 ns/op
+Iteration   2: 1825081266.667 ns/op
+Iteration   3: 1825480980.333 ns/op
+Iteration   4: 1815791669.667 ns/op
+Iteration   5: 1816103695.833 ns/op
+
+> Task :jmh
+
+# Run progress: 98.10% complete, ETA 00:04:55
+# Fork: 4 of 5
+
+# Warmup Iteration   1: 1759290295.167 ns/op
+# Warmup Iteration   2: 1738024960.000 ns/op
+# Warmup Iteration   3: 1727776883.667 ns/op
+# Warmup Iteration   4: 1724403586.667 ns/op
+# Warmup Iteration   5: 1725407364.833 ns/op
+Iteration   1: 1727772627.167 ns/op
+Iteration   2: 1722194034.333 ns/op
+Iteration   3: 1727013513.667 ns/op
+Iteration   4: 1719185859.333 ns/op
+Iteration   5: 1722823216.167 ns/op
+
+> Task :jmh
+
+# Run progress: 99.05% complete, ETA 00:02:27
+# Fork: 5 of 5
+
+# Warmup Iteration   1: 1881846016.667 ns/op
+# Warmup Iteration   2: 1892789629.333 ns/op
+# Warmup Iteration   3: 1879848459.667 ns/op
+# Warmup Iteration   4: 1878818489.500 ns/op
+# Warmup Iteration   5: 1878378710.333 ns/op
+Iteration   1: 1877145742.167 ns/op
+Iteration   2: 1882950236.000 ns/op
+Iteration   3: 1879954639.000 ns/op
+Iteration   4: 1890402455.833 ns/op
+Iteration   5: 1875405089.333 ns/op
+
+> Task :jmh
+
+
+Result "art.Lookup.integer":
+  1790165743.627 ±(99.9%) 42351477.638 ns/op [Average]
+  (min, avg, max) = (1719185859.333, 1790165743.627, 1890402455.833), stdev = 56538010.961
+  CI (99.9%): [1747814265.988, 1832517221.265] (assumes normal distribution)
+
+
+# Run complete. Total time: 04:17:40
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+Benchmark       (distributionType)  (mapType)    (size)  Mode  Cnt            Score           Error  Units
+Insert.integer              SPARSE   HASH_MAP  16000000  avgt   25   8595310802.340 ±  55890574.620  ns/op
+Insert.integer              SPARSE        ART  16000000  avgt   25    527017687.790 ±   1680146.140  ns/op
+Insert.integer              SPARSE   TREE_MAP  16000000  avgt   25  31821785460.400 ± 424440807.738  ns/op
+Insert.integer        DENSE_SORTED   HASH_MAP  16000000  avgt   25   1517325921.794 ±  28339943.587  ns/op
+Insert.integer        DENSE_SORTED        ART  16000000  avgt   25    528990394.235 ±   3159569.066  ns/op
+Insert.integer        DENSE_SORTED   TREE_MAP  16000000  avgt   25   3495493889.960 ±  53487985.634  ns/op
+Insert.integer       DENSE_SHUFFLE   HASH_MAP  16000000  avgt   25   6718519971.460 ± 225553156.274  ns/op
+Insert.integer       DENSE_SHUFFLE        ART  16000000  avgt   25    529724472.798 ±   1294132.551  ns/op
+Insert.integer       DENSE_SHUFFLE   TREE_MAP  16000000  avgt   25  36374716705.240 ± 703960711.953  ns/op
+Lookup.integer              SPARSE   HASH_MAP     65000  avgt   25      1978076.958 ±     18200.413  ns/op
+Lookup.integer              SPARSE   HASH_MAP  16000000  avgt   25   2853051503.670 ±  42368615.922  ns/op
+Lookup.integer              SPARSE        ART     65000  avgt   25       713637.658 ±      9954.319  ns/op
+Lookup.integer              SPARSE        ART  16000000  avgt   25    171581233.902 ±    447974.683  ns/op
+Lookup.integer              SPARSE   TREE_MAP     65000  avgt   25     16802370.334 ±    174007.725  ns/op
+Lookup.integer              SPARSE   TREE_MAP  16000000  avgt   25  31477183189.000 ± 572280430.407  ns/op
+Lookup.integer               DENSE   HASH_MAP     65000  avgt   25       698614.995 ±     24772.529  ns/op
+Lookup.integer               DENSE   HASH_MAP  16000000  avgt   25    314843321.880 ±   5856765.148  ns/op
+Lookup.integer               DENSE        ART     65000  avgt   25       721895.811 ±     20166.671  ns/op
+Lookup.integer               DENSE        ART  16000000  avgt   25    171891412.317 ±    246222.756  ns/op
+Lookup.integer               DENSE   TREE_MAP     65000  avgt   25      5722709.461 ±     59088.224  ns/op
+Lookup.integer               DENSE   TREE_MAP  16000000  avgt   25   1790165743.627 ±  42351477.638  ns/op
+
+Benchmark result is saved to /home/rohan_a_suri/adaptive-radix-tree/build/reports/jmh/results.txt
+
+BUILD SUCCESSFUL in 4h 17m 42s
+8 actionable tasks: 1 executed, 7 up-to-date
