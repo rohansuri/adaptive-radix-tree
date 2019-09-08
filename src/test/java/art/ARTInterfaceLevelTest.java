@@ -544,7 +544,7 @@ public class ARTInterfaceLevelTest {
 		// assert parent of root is null
 		Field root = art.getClass().getDeclaredField("root");
 		root.setAccessible(true);
-		Assert.assertNull(((AbstractNode) root.get(art)).parent);
+		Assert.assertNull(((AbstractNode) root.get(art)).parent());
 
 
 		// test sorted order iteration

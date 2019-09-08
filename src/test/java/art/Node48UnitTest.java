@@ -86,7 +86,7 @@ public class Node48UnitTest {
 	public void testAddOnePartialKey() {
 		Node48 node48 = createNode48();
 		byte partialKey = 9;
-		AbstractNode child = Mockito.mock(AbstractNode.class);
+		AbstractNode child = Mockito.spy(AbstractNode.class);
 		Assert.assertTrue(node48.addChild(partialKey, child));
 		Assert.assertEquals(17, node48.noOfChildren);
 		Assert.assertEquals(child, node48.findChild(partialKey));
@@ -97,11 +97,11 @@ public class Node48UnitTest {
 		Assert.assertEquals(child, node48.getChild()[keyIndex]);
 
 		// assert up link
-		Assert.assertEquals(partialKey, child.partialKey);
-		Assert.assertEquals(node48, child.parent);
+		Assert.assertEquals(partialKey, child.uplinkKey());
+		Assert.assertEquals(node48, child.parent());
 
 		partialKey = -9;
-		child = Mockito.mock(AbstractNode.class);
+		child = Mockito.spy(AbstractNode.class);
 		Assert.assertTrue(node48.addChild(partialKey, child));
 		Assert.assertEquals(18, node48.noOfChildren);
 		Assert.assertEquals(child, node48.findChild(partialKey));
@@ -112,8 +112,8 @@ public class Node48UnitTest {
 		Assert.assertEquals(child, node48.getChild()[keyIndex]);
 
 		// assert up link
-		Assert.assertEquals(partialKey, child.partialKey);
-		Assert.assertEquals(node48, child.parent);
+		Assert.assertEquals(partialKey, child.uplinkKey());
+		Assert.assertEquals(node48, child.parent());
 	}
 
 	@Test
@@ -203,7 +203,7 @@ public class Node48UnitTest {
 		Node48 node48 = createNode48();
 		byte partialKey = 1;
 		AbstractNode oldChild = (AbstractNode) node48.findChild(partialKey);
-		AbstractNode newChild = Mockito.mock(AbstractNode.class);
+		AbstractNode newChild = Mockito.spy(AbstractNode.class);
 		// assert the same child index position is updated with new child
 		int keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)];
 		node48.replace(partialKey, newChild);
@@ -211,22 +211,22 @@ public class Node48UnitTest {
 		Assert.assertEquals(keyIndex, node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)]);
 
 		// assert up link
-		Assert.assertNull(oldChild.parent);
-		Assert.assertEquals(node48, newChild.parent);
-		Assert.assertEquals(partialKey, newChild.partialKey);
+		Assert.assertNull(oldChild.parent());
+		Assert.assertEquals(node48, newChild.parent());
+		Assert.assertEquals(partialKey, newChild.uplinkKey());
 
 		partialKey = -1;
 		oldChild = (AbstractNode) node48.findChild(partialKey);
-		newChild = Mockito.mock(AbstractNode.class);
+		newChild = Mockito.spy(AbstractNode.class);
 		keyIndex = node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)];
 		node48.replace(partialKey, newChild);
 		Assert.assertEquals(newChild, node48.findChild(partialKey));
 		Assert.assertEquals(keyIndex, node48.getKeyIndex()[Byte.toUnsignedInt(partialKey)]);
 
 		// assert up link
-		Assert.assertNull(oldChild.parent);
-		Assert.assertEquals(node48, newChild.parent);
-		Assert.assertEquals(partialKey, newChild.partialKey);
+		Assert.assertNull(oldChild.parent());
+		Assert.assertEquals(node48, newChild.parent());
+		Assert.assertEquals(partialKey, newChild.uplinkKey());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -268,8 +268,8 @@ public class Node48UnitTest {
 		Assert.assertNull(node48.getChild()[keyIndex]);
 
 		// assert up link
-		Assert.assertNull(child1.parent);
-		Assert.assertNull(child2.parent);
+		Assert.assertNull(child1.parent());
+		Assert.assertNull(child2.parent());
 	}
 
 	@Test

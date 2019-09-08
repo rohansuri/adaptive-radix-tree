@@ -59,14 +59,14 @@ public class Node16UnitTest {
 		byte storedKey = BinaryComparableUtils.unsigned(partialKey);
 
 		Node16 node16 = createNode16();
-		AbstractNode child = Mockito.mock(AbstractNode.class);
+		AbstractNode child = Mockito.spy(AbstractNode.class);
 		Assert.assertTrue(node16.addChild(partialKey, child));
 		Assert.assertEquals(5, node16.noOfChildren);
 		Assert.assertEquals(child, node16.findChild(partialKey));
 
 		// assert up links
-		Assert.assertEquals(node16, child.parent);
-		Assert.assertEquals(partialKey, child.partialKey);
+		Assert.assertEquals(node16, child.parent());
+		Assert.assertEquals(partialKey, child.uplinkKey());
 
 		// assert inserted at correct position
 		Assert.assertEquals(storedKey, node16.getKeys()[2]);
@@ -186,24 +186,24 @@ public class Node16UnitTest {
 
 		byte partialKey = 1;
 		AbstractNode oldChild = (AbstractNode) node16.findChild(partialKey);
-		AbstractNode newChild = Mockito.mock(AbstractNode.class);
+		AbstractNode newChild = Mockito.spy(AbstractNode.class);
 		node16.replace(partialKey, newChild);
 		Assert.assertEquals(newChild, node16.findChild(partialKey));
 
 		// assert up links
-		Assert.assertEquals(node16, newChild.parent);
-		Assert.assertEquals(partialKey, newChild.partialKey);
-		Assert.assertNull(oldChild.parent);
+		Assert.assertEquals(node16, newChild.parent());
+		Assert.assertEquals(partialKey, newChild.uplinkKey());
+		Assert.assertNull(oldChild.parent());
 
 		partialKey = -1;
 		oldChild = (AbstractNode) node16.findChild(partialKey);
-		newChild = Mockito.mock(AbstractNode.class);
+		newChild = Mockito.spy(AbstractNode.class);
 		node16.replace(partialKey, newChild);
 		Assert.assertEquals(newChild, node16.findChild(partialKey));
 
-		Assert.assertEquals(node16, newChild.parent);
-		Assert.assertEquals(partialKey, newChild.partialKey);
-		Assert.assertNull(oldChild.parent);
+		Assert.assertEquals(node16, newChild.parent());
+		Assert.assertEquals(partialKey, newChild.uplinkKey());
+		Assert.assertNull(oldChild.parent());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -319,8 +319,8 @@ public class Node16UnitTest {
 		Assert.assertNull(node16.findChild(partialKey2));
 		Assert.assertEquals(4, node16.noOfChildren);
 
-		Assert.assertNull(child1.parent);
-		Assert.assertNull(child2.parent);
+		Assert.assertNull(child1.parent());
+		Assert.assertNull(child2.parent());
 	}
 
 	@Test

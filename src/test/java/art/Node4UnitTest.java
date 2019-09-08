@@ -29,12 +29,12 @@ public class Node4UnitTest {
 		byte partialKeys[] = new byte[] {1, 2, -2, -1};
 		byte storedPartialKeys[] = new byte[Node4.NODE_SIZE];
 		for (int i = 0; i < Node4.NODE_SIZE; i++) {
-			AbstractNode child = Mockito.mock(AbstractNode.class);
+			AbstractNode child = Mockito.spy(AbstractNode.class);
 			node4.addChild(partialKeys[i], child);
 
 			// assert up links created
-			Assert.assertEquals(node4, child.parent);
-			Assert.assertEquals(partialKeys[i], child.partialKey);
+			Assert.assertEquals(node4, child.parent());
+			Assert.assertEquals(partialKeys[i], child.uplinkKey());
 
 			children[i] = child;
 			// node4 stores all partialKeys as unsigned
@@ -146,17 +146,17 @@ public class Node4UnitTest {
 	}
 
 	private void testReplace(Node4 node4, byte partialKey) {
-		AbstractNode child1 = Mockito.mock(AbstractNode.class);
-		AbstractNode child2 = Mockito.mock(AbstractNode.class);
+		AbstractNode child1 = Mockito.spy(AbstractNode.class);
+		AbstractNode child2 = Mockito.spy(AbstractNode.class);
 		node4.addChild(partialKey, child1);
 		Assert.assertEquals(child1, node4.findChild(partialKey));
 		node4.replace(partialKey, child2);
 		Assert.assertEquals(child2, node4.findChild(partialKey));
 
 		// assert up links
-		Assert.assertNull(child1.parent);
-		Assert.assertEquals(node4, child2.parent);
-		Assert.assertEquals(partialKey, child2.partialKey);
+		Assert.assertNull(child1.parent());
+		Assert.assertEquals(node4, child2.parent());
+		Assert.assertEquals(partialKey, child2.uplinkKey());
 	}
 
 	@Test
@@ -258,8 +258,8 @@ public class Node4UnitTest {
 		Assert.assertEquals(0, node4.noOfChildren);
 
 		// assert up link removed
-		Assert.assertNull(child1.parent);
-		Assert.assertNull(child2.parent);
+		Assert.assertNull(child1.parent());
+		Assert.assertNull(child2.parent());
 	}
 
 	@Test
