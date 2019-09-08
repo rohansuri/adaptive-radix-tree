@@ -9,14 +9,7 @@ import static art.BinaryComparableUtils.unsigned;
 
 public class BinaryComparables {
 
-	private static final ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
-
-	private static ByteBuffer getBuffer(){
-		buffer.clear();
-		return buffer;
-	}
-
-	public static final BinaryComparable<Integer> INTEGER = (key) -> unsigned(getBuffer().putInt(key).array());
+	public static final BinaryComparable<Integer> INTEGER = (key) -> unsigned(ByteBuffer.allocate(Integer.BYTES).putInt(key).array());
 	public static final BinaryComparable<Long> LONG = (key) -> unsigned(ByteBuffer.allocate(Long.BYTES).putLong(key).array());
 	public static final BinaryComparable<Short> SHORT = (key) -> unsigned(ByteBuffer.allocate(Short.BYTES).putShort(key).array());
 	public static final BinaryComparable<Byte> BYTE = (key) -> unsigned(ByteBuffer.allocate(Byte.BYTES).put(key).array());
