@@ -102,7 +102,6 @@ class Node48 extends InnerNode {
 		if (!(index >= 0 && index <= 47)) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
-		removeUplink(child[index]);
 		child[index] = newChild;
 		createUplink(this, newChild, partialKey);
 	}

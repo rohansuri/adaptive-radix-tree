@@ -154,7 +154,6 @@ public class Node4UnitTest {
 		Assert.assertEquals(child2, node4.findChild(partialKey));
 
 		// assert up links
-		Assert.assertNull(child1.parent());
 		Assert.assertEquals(node4, child2.parent());
 		Assert.assertEquals(partialKey, child2.uplinkKey());
 	}

@@ -67,7 +67,6 @@ class Node256 extends InnerNode {
 		if (child[index] == null) {
 			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
 		}
-		removeUplink(child[index]);
 		child[index] = newChild;
 		createUplink(this, newChild, partialKey);
 	}

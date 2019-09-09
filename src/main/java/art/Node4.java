@@ -92,7 +92,6 @@ class Node4 extends InnerNode {
 		if (index == noOfChildren) {
 			throw new IllegalArgumentException("Partial key " + unsignedPartialKey + " does not exist in this Node.");
 		}
-		removeUplink(child[index]);
 		child[index] = newChild;
 		createUplink(this, newChild, partialKey);
 	}
