@@ -13,7 +13,7 @@ class Node256 extends InnerNode {
 		byte[] keyIndex = node.getKeyIndex();
 		Node[] child = node.getChild();
 
-		for (int i = 0; i < 256; i++) {
+		for (int i = 0; i < Node48.KEY_INDEX_SIZE; i++) {
 			byte index = keyIndex[i];
 			if (index == Node48.ABSENT) {
 				continue;

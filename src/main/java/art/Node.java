@@ -66,14 +66,12 @@ interface Node {
 	 * @return child pointer for the smallest partialKey stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
-	// TODO: add Node level tests
 	Node first();
 
 	/**
 	 * @return child pointer for the largest partialKey stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
-	// TODO: add Node level tests
 	Node last();
 
 	/**
@@ -95,14 +93,12 @@ interface Node {
 	 * @return returns the smallest child node for the partialKey strictly greater than the partialKey passed.
 	 * Returns null if no such child.
 	 */
-	// TODO: add Node level tests
 	Node greater(byte partialKey);
 
 	/**
 	 * @return returns the greatest child node for the partialKey strictly lesser than the partialKey passed.
 	 * Returns null if no such child.
 	 */
-	// TODO: add Node level tests
 	Node lesser(byte partialKey);
 
 	/**

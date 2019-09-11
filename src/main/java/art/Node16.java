@@ -33,34 +33,19 @@ class Node16 extends InnerNode {
 
 		// keyIndex by virtue of being "array indexed" is already sorted
 		// so we can iterate and keep adding into Node16
-		int j = 0;
-
-		// go from -128 to -1 (interpreted as +128 to +255 unsigned int)
-		for (byte i = Byte.MIN_VALUE; i < 0; i++) {
-			int index = Byte.toUnsignedInt(i);
-			if (keyIndex[index] != Node48.ABSENT) {
-				keys[j] = BinaryComparableUtils.unsigned(i);
-				child[j] = children[keyIndex[index]];
-				replaceUplink(this, child[j]);
-				j++;
-			}
-		}
-
-		// i goes upto Byte.MAX_VALUE 127 and then becomes -128, where the loop will break
-		for (byte i = 0; i >= 0; i++) {
+		for (int i = 0, j = 0; i < Node48.KEY_INDEX_SIZE; i++) {
 			if (keyIndex[i] != Node48.ABSENT) {
-				keys[j] = BinaryComparableUtils.unsigned(i);
 				child[j] = children[keyIndex[i]];
+				keys[j] = BinaryComparableUtils.unsigned(child[j].uplinkKey());
 				replaceUplink(this, child[j]);
 				j++;
 			}
 		}
-
-		assert j == NODE_SIZE;
 	}
 
 	@Override
 	public Node findChild(byte partialKey) {
+		// TODO: use simple loop to see if -XX:+SuperWord applies SIMD JVM instrinsics
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		// binary search for key
 		// having the from and to gives us only a valid view into what are the
@@ -72,7 +57,6 @@ class Node16 extends InnerNode {
 		return child[index];
 	}
 
-	// TODO: unit test binary search insertion point edge cases (first, last)
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
 		if (isFull()) {
@@ -169,7 +153,7 @@ class Node16 extends InnerNode {
 	@Override
 	public Node greater(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		// TODO: use binary search here
+		// TODO: consider using binary search here
 		for (int i = 0; i < noOfChildren; i++) {
 			if (keys[i] > partialKey) {
 				return child[i];
@@ -181,7 +165,7 @@ class Node16 extends InnerNode {
 	@Override
 	public Node lesser(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		// TODO: use binary search here
+		// TODO: consider using binary search here
 		for (int i = noOfChildren - 1; i >= 0; i--) {
 			if (keys[i] < partialKey) {
 				return child[i];

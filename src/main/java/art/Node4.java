@@ -1,7 +1,5 @@
 package art;
 
-import java.util.Arrays;
-
 class Node4 extends InnerNode {
 
 	// private static final Logger log = LoggerFactory.getLogger(Node4.class);
