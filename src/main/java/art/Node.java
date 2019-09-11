@@ -18,6 +18,7 @@ package art;
  	These exceptions are for the programmer (who is working on this code) to know that the APIs are not being used correctly.
  	All of them indicate programmer errors.
  */
+// TODO: remove exceptions and add assertions (-ea)
 
 interface Node {
 	/**

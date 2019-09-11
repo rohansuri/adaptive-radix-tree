@@ -6,22 +6,27 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
-import org.junit.Assert;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class Node4UnitTest {
 
 	@Test
+	// not needed
 	public void testEmptyNode() {
 		Node4 node4 = new Node4();
-		Assert.assertEquals(0, node4.noOfChildren);
-		Assert.assertEquals(4, node4.getKeys().length);
-		Assert.assertEquals(4, node4.getChild().length);
+		assertEquals(0, node4.noOfChildren);
+		assertEquals(4, node4.getKeys().length);
+		assertEquals(4, node4.getChild().length);
 	}
 
 
 	@Test
+	// done
 	public void testAddPartialKey() {
 		Node4 node4 = new Node4();
 		Node children[] = new Node[Node4.NODE_SIZE];
@@ -33,8 +38,8 @@ public class Node4UnitTest {
 			node4.addChild(partialKeys[i], child);
 
 			// assert up links created
-			Assert.assertEquals(node4, child.parent());
-			Assert.assertEquals(partialKeys[i], child.uplinkKey());
+			assertEquals(node4, child.parent());
+			assertEquals(partialKeys[i], child.uplinkKey());
 
 			children[i] = child;
 			// node4 stores all partialKeys as unsigned
@@ -43,19 +48,20 @@ public class Node4UnitTest {
 
 		// assert all partial key mappings exist
 		// and in the expected bitwise lexicographic sorted order
-		Assert.assertEquals(Node4.NODE_SIZE, node4.noOfChildren);
+		assertEquals(Node4.NODE_SIZE, node4.noOfChildren);
 		for (int i = 0; i < Node4.NODE_SIZE; i++) {
-			Assert.assertEquals(children[i], node4.findChild(partialKeys[i]));
-			Assert.assertEquals(children[i], node4.getChild()[i]);
-			Assert.assertEquals(storedPartialKeys[i], node4.getKeys()[i]);
+			assertEquals(children[i], node4.findChild(partialKeys[i]));
+			assertEquals(children[i], node4.getChild()[i]);
+			assertEquals(storedPartialKeys[i], node4.getKeys()[i]);
 		}
 	}
 
 	private void testFindForNonExistentPartialKey(Node4 node4, byte partialKey) {
-		Assert.assertNull(node4.findChild(partialKey));
+		assertNull(node4.findChild(partialKey));
 	}
 
 	@Test
+	// tested in remove
 	public void testFindForNonExistentPartialKey() {
 		Node4 node4 = new Node4();
 		byte partialKey = -1;
@@ -66,17 +72,18 @@ public class Node4UnitTest {
 
 	private void testAddingTheSamePartialKeyAgain(Node4 node4, byte partialKey) {
 		Node child = Mockito.mock(AbstractNode.class);
-		Assert.assertTrue(node4.addChild(partialKey, child));
+		assertTrue(node4.addChild(partialKey, child));
 		// adding the same partial key would throw an exception
 		try {
 			node4.addChild(partialKey, child);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
 	}
 
 	@Test
+	// not required since we'll put assert instead of exceptions
 	public void testAddingTheSamePartialKeyAgain() {
 		Node4 node4 = new Node4();
 		byte partialKey = 1;
@@ -92,15 +99,15 @@ public class Node4UnitTest {
 		Node child = Mockito.mock(AbstractNode.class);
 
 		// add till capacity
-		Assert.assertTrue(node4.addChild((byte) 1, child));
-		Assert.assertTrue(node4.addChild((byte) 2, child));
-		Assert.assertTrue(node4.addChild((byte) -3, child));
-		Assert.assertTrue(node4.addChild((byte) -4, child));
-		Assert.assertEquals(4, node4.noOfChildren);
+		assertTrue(node4.addChild((byte) 1, child));
+		assertTrue(node4.addChild((byte) 2, child));
+		assertTrue(node4.addChild((byte) -3, child));
+		assertTrue(node4.addChild((byte) -4, child));
+		assertEquals(4, node4.noOfChildren);
 
 		// noOfChildren 4 reached, now adds will fail
-		Assert.assertFalse(node4.addChild((byte) 5, child));
-		Assert.assertFalse(node4.addChild((byte) -6, child));
+		assertFalse(node4.addChild((byte) 5, child));
+		assertFalse(node4.addChild((byte) -6, child));
 
 	}
 
@@ -119,43 +126,43 @@ public class Node4UnitTest {
 			storedPartialKeys[i] = BinaryComparableUtils.unsigned(partialKeys[i]);
 		}
 
-		Assert.assertTrue(node4.isFull());
+		assertTrue(node4.isFull());
 
 		Node node = node4.grow();
 		// assert we grow into next larger node type 16
-		Assert.assertTrue(node instanceof Node16);
+		assertTrue(node instanceof Node16);
 		Node16 node16 = (Node16) node;
 
 		// assert all partial key mappings exist
 		// and in the same sorted order
-		Assert.assertEquals(Node4.NODE_SIZE, node16.noOfChildren);
+		assertEquals(Node4.NODE_SIZE, node16.noOfChildren);
 		for (int i = 0; i < Node4.NODE_SIZE; i++) {
-			Assert.assertEquals(children[i], node16.findChild(partialKeys[i]));
-			Assert.assertEquals(children[i], node16.getChild()[i]);
+			assertEquals(children[i], node16.findChild(partialKeys[i]));
+			assertEquals(children[i], node16.getChild()[i]);
 
 			// we test Node16's order here, since the ctor of Node16 is a copy of Node4's keys, children
 			// it's not noOfChildren times addChild
-			Assert.assertEquals(storedPartialKeys[i], node16.getKeys()[i]);
+			assertEquals(storedPartialKeys[i], node16.getKeys()[i]);
 		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testGrowBeforeFull() {
 		Node4 node4 = new Node4();
-		node4.grow();
+		Assertions.assertThrows(IllegalStateException.class, node4::grow);
 	}
 
 	private void testReplace(Node4 node4, byte partialKey) {
 		AbstractNode child1 = Mockito.spy(AbstractNode.class);
 		AbstractNode child2 = Mockito.spy(AbstractNode.class);
 		node4.addChild(partialKey, child1);
-		Assert.assertEquals(child1, node4.findChild(partialKey));
+		assertEquals(child1, node4.findChild(partialKey));
 		node4.replace(partialKey, child2);
-		Assert.assertEquals(child2, node4.findChild(partialKey));
+		assertEquals(child2, node4.findChild(partialKey));
 
 		// assert up links
-		Assert.assertEquals(node4, child2.parent());
-		Assert.assertEquals(partialKey, child2.uplinkKey());
+		assertEquals(node4, child2.parent());
+		assertEquals(partialKey, child2.uplinkKey());
 	}
 
 	@Test
@@ -168,12 +175,12 @@ public class Node4UnitTest {
 	}
 
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testReplaceForNonExistentPartialKey() {
 		Node4 node4 = new Node4();
 		Node child1 = Mockito.mock(AbstractNode.class);
 		byte partialKey = 1;
-		node4.replace(partialKey, child1);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> node4.replace(partialKey, child1));
 	}
 
 	@Test
@@ -202,8 +209,8 @@ public class Node4UnitTest {
 			for (int j = 0; j <= i; j++) {
 				byte key = node4.getKeys()[j];
 				Node child = node4.getChild()[j];
-				Assert.assertEquals((byte) reversedStoredKeys.get(j), key);
-				Assert.assertEquals(reversedChildren.get(j), child);
+				assertEquals((byte) reversedStoredKeys.get(j), key);
+				assertEquals(reversedChildren.get(j), child);
 			}
 		}
 	}
@@ -229,8 +236,8 @@ public class Node4UnitTest {
 			for (int j = 0; j <= i; j++) {
 				byte key = node4.getKeys()[j];
 				Node child = node4.getChild()[j];
-				Assert.assertEquals(storedKeys[j], key);
-				Assert.assertEquals(children[j], child);
+				assertEquals(storedKeys[j], key);
+				assertEquals(children[j], child);
 			}
 		}
 	}
@@ -246,19 +253,19 @@ public class Node4UnitTest {
 		node4.addChild(partialKey1, child1);
 		node4.addChild(partialKey2, child2);
 
-		Assert.assertNotNull(node4.findChild(partialKey1));
+		assertNotNull(node4.findChild(partialKey1));
 		node4.removeChild(partialKey1);
-		Assert.assertNull(node4.findChild(partialKey1));
-		Assert.assertEquals(1, node4.noOfChildren);
+		assertNull(node4.findChild(partialKey1));
+		assertEquals(1, node4.noOfChildren);
 
-		Assert.assertNotNull(node4.findChild(partialKey2));
+		assertNotNull(node4.findChild(partialKey2));
 		node4.removeChild(partialKey2);
-		Assert.assertNull(node4.findChild(partialKey2));
-		Assert.assertEquals(0, node4.noOfChildren);
+		assertNull(node4.findChild(partialKey2));
+		assertEquals(0, node4.noOfChildren);
 
 		// assert up link removed
-		Assert.assertNull(child1.parent());
-		Assert.assertNull(child2.parent());
+		assertNull(child1.parent());
+		assertNull(child2.parent());
 	}
 
 	@Test
@@ -267,7 +274,7 @@ public class Node4UnitTest {
 		byte partialKey = 1;
 		try {
 			node4.removeChild(partialKey);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
@@ -275,7 +282,7 @@ public class Node4UnitTest {
 		partialKey = -1;
 		try {
 			node4.removeChild(partialKey);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
@@ -309,12 +316,12 @@ public class Node4UnitTest {
 			for (int j = 0; j < node4.noOfChildren; j++) {
 				byte key = node4.getKeys()[j];
 				Node child = node4.getChild()[j];
-				Assert.assertEquals(storedKeys[j+i+1], key);
-				Assert.assertEquals(children[j+i+1], child);
+				assertEquals(storedKeys[j + i + 1], key);
+				assertEquals(children[j + i + 1], child);
 			}
 		}
 
-		Assert.assertEquals(0, node4.noOfChildren);
+		assertEquals(0, node4.noOfChildren);
 	}
 
 	@Test
@@ -349,11 +356,11 @@ public class Node4UnitTest {
 			for (int j = 0; j < node4.noOfChildren; j++) {
 				byte key = node4.getKeys()[j];
 				Node child = node4.getChild()[j];
-				Assert.assertEquals((byte) reversedStoredKeys.get(j), key);
-				Assert.assertEquals(reversedChildren.get(j), child);
+				assertEquals((byte) reversedStoredKeys.get(j), key);
+				assertEquals(reversedChildren.get(j), child);
 			}
 		}
 
-		Assert.assertEquals(0, node4.noOfChildren);
+		assertEquals(0, node4.noOfChildren);
 	}
 }

@@ -7,9 +7,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class ARTIntegerTests {
 	@Test
@@ -20,7 +19,7 @@ public class ARTIntegerTests {
 		byte i = Byte.MIN_VALUE;
 		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(i, value));
+			assertNull(art.put(i, value));
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
@@ -30,7 +29,7 @@ public class ARTIntegerTests {
 		i = Byte.MIN_VALUE;
 		do {
 			String value = String.valueOf(i);
-			Assert.assertTrue(values.contains(value));
+			assertTrue(values.contains(value));
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
@@ -40,11 +39,11 @@ public class ARTIntegerTests {
 		do {
 			String value = String.valueOf(i);
 			values.remove(value);
-			Assert.assertFalse(values.contains(value));
+			assertFalse(values.contains(value));
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
-		Assert.assertEquals(0, values.size());
+		assertEquals(0, values.size());
 	}
 
 	@Test
@@ -55,7 +54,7 @@ public class ARTIntegerTests {
 		byte i = Byte.MIN_VALUE;
 		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(i, value));
+			assertNull(art.put(i, value));
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
@@ -63,7 +62,7 @@ public class ARTIntegerTests {
 		i = Byte.MAX_VALUE;
 		Iterator<Byte> it = art.descendingKeyIterator();
 		while (it.hasNext()) {
-			Assert.assertEquals(i, (byte) it.next());
+			assertEquals(i, (byte) it.next());
 			i--;
 		}
 	}
@@ -78,7 +77,7 @@ public class ARTIntegerTests {
 		byte i = Byte.MIN_VALUE;
 		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(i, value));
+			assertNull(art.put(i, value));
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
@@ -88,14 +87,14 @@ public class ARTIntegerTests {
 		Iterator<String> it = art.values().iterator();
 		while (it.hasNext()) {
 			String value = it.next();
-			Assert.assertEquals(String.valueOf(i), value);
+			assertEquals(String.valueOf(i), value);
 			it.remove();
 			i++;
 			if (i == Byte.MIN_VALUE) {
 				break;
 			}
 			value = String.valueOf(i);
-			Assert.assertEquals(value, art.get(i));
+			assertEquals(value, art.get(i));
 		}
 	}
 
@@ -107,7 +106,7 @@ public class ARTIntegerTests {
 		byte i = Byte.MIN_VALUE;
 		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(i, value));
+			assertNull(art.put(i, value));
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
@@ -117,14 +116,14 @@ public class ARTIntegerTests {
 		Iterator<Map.Entry<Byte, String>> it = art.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<Byte, String> entry = it.next();
-			Assert.assertEquals(i, (byte) entry.getKey());
+			assertEquals(i, (byte) entry.getKey());
 			it.remove();
 			i++;
 			if (i == Byte.MIN_VALUE) {
 				break;
 			}
 			String value = String.valueOf(i);
-			Assert.assertEquals(value, art.get(i));
+			assertEquals(value, art.get(i));
 		}
 	}
 
@@ -138,53 +137,53 @@ public class ARTIntegerTests {
 		do {
 			// floor test
 			if (i != Byte.MIN_VALUE) {
-				Assert.assertEquals(i - 1, (byte) art.floorKey(i));
+				assertEquals(i - 1, (byte) art.floorKey(i));
 			}
 			else {
-				Assert.assertNull(art.floorKey(i));
+				assertNull(art.floorKey(i));
 			}
 
 			String value = String.valueOf(i);
-			Assert.assertFalse(art.containsKey(i));
-			Assert.assertFalse(art.containsValue(value));
-			Assert.assertNull(art.put(i, value));
+			assertFalse(art.containsKey(i));
+			assertFalse(art.containsValue(value));
+			assertNull(art.put(i, value));
 			expectedSize++;
-			Assert.assertEquals(value, art.get(i));
-			Assert.assertEquals(expectedSize, art.size());
-			Assert.assertTrue(art.containsKey(i));
-			Assert.assertTrue(art.containsValue(value));
+			assertEquals(value, art.get(i));
+			assertEquals(expectedSize, art.size());
+			assertTrue(art.containsKey(i));
+			assertTrue(art.containsValue(value));
 
 			// lowerKey test
 			if (i != Byte.MIN_VALUE) {
-				Assert.assertEquals(i - 1, (byte) art.lowerKey(i));
+				assertEquals(i - 1, (byte) art.lowerKey(i));
 			}
 			else {
-				Assert.assertNull(art.lowerKey(i));
+				assertNull(art.lowerKey(i));
 			}
 			i++;
 		}
 		while (i != Byte.MIN_VALUE);
 
 		Map.Entry<Byte, String> firstEntry = art.firstEntry();
-		Assert.assertEquals(String.valueOf(Byte.MIN_VALUE), firstEntry.getValue());
-		Assert.assertEquals((Byte) Byte.MIN_VALUE, firstEntry.getKey());
-		Assert.assertEquals((Byte) Byte.MIN_VALUE, art.firstKey());
+		assertEquals(String.valueOf(Byte.MIN_VALUE), firstEntry.getValue());
+		assertEquals((Byte) Byte.MIN_VALUE, firstEntry.getKey());
+		assertEquals((Byte) Byte.MIN_VALUE, art.firstKey());
 
 		Map.Entry<Byte, String> lastEntry = art.lastEntry();
-		Assert.assertEquals(String.valueOf(Byte.MAX_VALUE), lastEntry.getValue());
-		Assert.assertEquals((Byte) Byte.MAX_VALUE, lastEntry.getKey());
-		Assert.assertEquals((Byte) Byte.MAX_VALUE, art.lastKey());
+		assertEquals(String.valueOf(Byte.MAX_VALUE), lastEntry.getValue());
+		assertEquals((Byte) Byte.MAX_VALUE, lastEntry.getKey());
+		assertEquals((Byte) Byte.MAX_VALUE, art.lastKey());
 
 		// assert parent of root is null
 		Field root = art.getClass().getDeclaredField("root");
 		root.setAccessible(true);
-		Assert.assertNull(((AbstractNode) root.get(art)).parent());
+		assertNull(((AbstractNode) root.get(art)).parent());
 
 
 		// test sorted order iteration
 		i = Byte.MIN_VALUE;
 		for (Map.Entry<Byte, String> entry : art.entrySet()) {
-			Assert.assertEquals(i, (byte) entry.getKey());
+			assertEquals(i, (byte) entry.getKey());
 			i++;
 		}
 
@@ -196,35 +195,35 @@ public class ARTIntegerTests {
 			// higherKey test
 			if (i != Byte.MAX_VALUE) {
 				try {
-					Assert.assertEquals(i + 1, (byte) art.higherKey(i));
+					assertEquals(i + 1, (byte) art.higherKey(i));
 				}
 				catch (NullPointerException e) {
 					System.out.println(i);
-					Assert.fail();
+					fail();
 				}
 			}
 			else {
-				Assert.assertNull(art.higherKey(i));
+				assertNull(art.higherKey(i));
 			}
 
 			String value = String.valueOf(i);
-			Assert.assertEquals(value, art.remove(i));
+			assertEquals(value, art.remove(i));
 			expectedSize--;
-			Assert.assertNull(art.get(i));
-			Assert.assertEquals(expectedSize, art.size());
+			assertNull(art.get(i));
+			assertEquals(expectedSize, art.size());
 
 			// ceil test
 			if (i != Byte.MAX_VALUE) {
-				Assert.assertEquals(i + 1, (byte) art.ceilingKey(i));
+				assertEquals(i + 1, (byte) art.ceilingKey(i));
 			}
 			else {
-				Assert.assertNull(art.ceilingKey(i));
+				assertNull(art.ceilingKey(i));
 			}
 
 			// others should exist
 			for (byte j = ++i; j != Byte.MIN_VALUE; j++) {
 				value = String.valueOf(j);
-				Assert.assertEquals(value, art.get(j));
+				assertEquals(value, art.get(j));
 			}
 
 		}
@@ -257,10 +256,10 @@ public class ARTIntegerTests {
 		int expectedSize = 0;
 		do {
 			String value = String.valueOf(i);
-			Assert.assertNull(art.put(i, value));
-			Assert.assertEquals(value, art.get(i));
+			assertNull(art.put(i, value));
+			assertEquals(value, art.get(i));
 			expectedSize++;
-			Assert.assertEquals(expectedSize, art.size());
+			assertEquals(expectedSize, art.size());
 			i++;
 		}
 		while (i != Short.MIN_VALUE);
@@ -269,10 +268,10 @@ public class ARTIntegerTests {
 		i = Short.MIN_VALUE;
 		do {
 			String value = String.valueOf(i);
-			Assert.assertEquals(value, art.remove(i));
-			Assert.assertNull(art.get(i));
+			assertEquals(value, art.remove(i));
+			assertNull(art.get(i));
 			expectedSize--;
-			Assert.assertEquals(expectedSize, art.size());
+			assertEquals(expectedSize, art.size());
 			i++;
 		}
 		while (i != Short.MIN_VALUE);
@@ -293,21 +292,21 @@ public class ARTIntegerTests {
 		pc(l, ByteBuffer.allocate(level), 0, level);
 		int expectedSize = 0;
 		for (int key : l) {
-			Assert.assertNull(art.put(key, key));
+			assertNull(art.put(key, key));
 			expectedSize++;
-			Assert.assertEquals(expectedSize, art.size());
+			assertEquals(expectedSize, art.size());
 		}
 
 		// get all
 		for(int key: l){
-			Assert.assertEquals(key, (int)art.get(key));
+			assertEquals(key, (int)art.get(key));
 		}
 
 		for (int i = 0; i < l.size(); i++) {
 			int expected = l.get(i);
-			Assert.assertEquals(expected, (int) art.remove(expected));
+			assertEquals(expected, (int) art.remove(expected));
 			expectedSize--;
-			Assert.assertEquals(expectedSize, art.size());
+			assertEquals(expectedSize, art.size());
 		}
 	}
 

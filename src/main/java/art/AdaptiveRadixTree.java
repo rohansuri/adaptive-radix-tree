@@ -13,8 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 
-import javax.annotation.Nonnull;
-
 // document that we don't allow null keys
 // check which methods of TreeMap throw NPE
 // we throw there too
@@ -22,7 +20,7 @@ import javax.annotation.Nonnull;
 public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements NavigableMap<K, V> {
 	private final BinaryComparable<K> binaryComparable;
 	private transient EntrySet<K, V> entrySet;
-	private transient NavigableMap<K,V> descendingMap;
+	private transient NavigableMap<K, V> descendingMap;
 	private transient KeySet<K> navigableKeySet;
 	private transient Collection<V> values;
 	private transient int size = 0;
@@ -51,7 +49,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private Node root;
 
 	public V put(K key, V value) {
-		if(key == null){
+		if (key == null) {
 			throw new NullPointerException();
 		}
 		byte[] bytes = binaryComparable.get(key);
@@ -70,25 +68,25 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	// but it ultimately uses the successor calls to iterate.
 	@Override
 	public boolean containsValue(Object value) {
-		for (LeafNode<K,V> e = getFirstEntry(); e != null; e = successor(e))
+		for (LeafNode<K, V> e = getFirstEntry(); e != null; e = successor(e))
 			if (valEquals(value, e.getValue()))
 				return true;
 		return false;
 	}
 
 	// Note: taken from TreeMap
-	public Map.Entry<K,V> pollFirstEntry() {
-		LeafNode<K,V> p = getFirstEntry();
-		Map.Entry<K,V> result = exportEntry(p);
+	public Map.Entry<K, V> pollFirstEntry() {
+		LeafNode<K, V> p = getFirstEntry();
+		Map.Entry<K, V> result = exportEntry(p);
 		if (p != null)
 			deleteEntry(p);
 		return result;
 	}
 
 	// Note: taken from TreeMap
-	public Map.Entry<K,V> pollLastEntry() {
-		LeafNode<K,V> p = getLastEntry();
-		Map.Entry<K,V> result = exportEntry(p);
+	public Map.Entry<K, V> pollLastEntry() {
+		LeafNode<K, V> p = getLastEntry();
+		Map.Entry<K, V> result = exportEntry(p);
 		if (p != null)
 			deleteEntry(p);
 		return result;
@@ -128,7 +126,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	@Override
 	public V get(Object key) {
 		LeafNode<K, V> entry = getEntry(key);
-		return (entry==null ? null : entry.getValue());
+		return (entry == null ? null : entry.getValue());
 	}
 
 	/**
@@ -157,7 +155,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public V remove(Object key) {
-		LeafNode<K,V> p = getEntry(key);
+		LeafNode<K, V> p = getEntry(key);
 		if (p == null)
 			return null;
 		V oldValue = p.getValue();
@@ -596,29 +594,29 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> lowerEntry(K key) {
-		return exportEntry(getLowerEntry( key));
+		return exportEntry(getLowerEntry(key));
 	}
 
 	@Override
 	public K lowerKey(K key) {
-		return keyOrNull(getLowerEntry( key));
+		return keyOrNull(getLowerEntry(key));
 	}
 
 	@Override
 	public Entry<K, V> floorEntry(K key) {
-		return exportEntry(getFloorEntry( key));
+		return exportEntry(getFloorEntry(key));
 	}
 
 	@Override
 	public K floorKey(K key) {
-		return keyOrNull(getFloorEntry( key));
+		return keyOrNull(getFloorEntry(key));
 	}
 
-	LeafNode<K, V> getLowerEntry(K k){
+	LeafNode<K, V> getLowerEntry(K k) {
 		return getLowerOrFloorEntry(true, k);
 	}
 
-	LeafNode<K, V> getFloorEntry(K k){
+	LeafNode<K, V> getFloorEntry(K k) {
 		return getLowerOrFloorEntry(false, k);
 	}
 
@@ -670,12 +668,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return exportEntry(getCeilingEntry(key));
 	}
 
-	int compare(K k1, byte[] k2Bytes){
+	int compare(K k1, byte[] k2Bytes) {
 		byte[] k1Bytes = binaryComparable.get(k1);
 		return compare(k1Bytes, 0, k1Bytes.length, k2Bytes, 0, k2Bytes.length);
 	}
 
-	int compare(byte[] k1Bytes, K k2){
+	int compare(byte[] k1Bytes, K k2) {
 		byte[] k2Bytes = binaryComparable.get(k2);
 		return compare(k1Bytes, 0, k1Bytes.length, k2Bytes, 0, k2Bytes.length);
 	}
@@ -744,11 +742,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return (e == null) ? null : e.getKey();
 	}
 
-	LeafNode<K, V> getHigherEntry(K k){
+	LeafNode<K, V> getHigherEntry(K k) {
 		return getHigherOrCeilEntry(false, k);
 	}
 
-	LeafNode<K, V> getCeilingEntry(K k){
+	LeafNode<K, V> getCeilingEntry(K k) {
 		return getHigherOrCeilEntry(true, k);
 	}
 
@@ -824,7 +822,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public Entry<K, V> higherEntry(K key) {
-		return exportEntry(getHigherEntry( key));
+		return exportEntry(getHigherEntry(key));
 	}
 
 	@Override
@@ -876,24 +874,25 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@Override
-	public NavigableMap<K,V> subMap(K fromKey, boolean fromInclusive,
-			K toKey,   boolean toInclusive) {
+	public NavigableMap<K, V> subMap(K fromKey, boolean fromInclusive,
+			K toKey, boolean toInclusive) {
 		return new AscendingSubMap<>(this,
 				false, fromKey, fromInclusive,
-				false, toKey,   toInclusive);
+				false, toKey, toInclusive);
 	}
+
 	@Override
-	public NavigableMap<K,V> headMap(K toKey, boolean inclusive) {
+	public NavigableMap<K, V> headMap(K toKey, boolean inclusive) {
 		return new AscendingSubMap<>(this,
-				true,  null,  true,
+				true, null, true,
 				false, toKey, inclusive);
 	}
 
 	@Override
-	public NavigableMap<K,V> tailMap(K fromKey, boolean inclusive) {
+	public NavigableMap<K, V> tailMap(K fromKey, boolean inclusive) {
 		return new AscendingSubMap<>(this,
 				false, fromKey, inclusive,
-				true,  null,    true);
+				true, null, true);
 	}
 
 	@Override
@@ -903,25 +902,24 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	// TODO: why does comparator return ? super K?
 	// TODO: rename binaryComparable to binaryComparator?
-	public BinaryComparable<K> binaryComparator(){
+	public BinaryComparable<K> binaryComparator() {
 		return binaryComparable;
 	}
 
 	@Override
-	@Nonnull
-	public SortedMap<K,V> subMap(K fromKey, K toKey) {
+	public SortedMap<K, V> subMap(K fromKey, K toKey) {
 		return subMap(fromKey, true, toKey, false);
 	}
 
 	@Override
-	@Nonnull
-	public SortedMap<K,V> headMap(K toKey) {
+
+	public SortedMap<K, V> headMap(K toKey) {
 		return headMap(toKey, false);
 	}
 
 	@Override
-	@Nonnull
-	public SortedMap<K,V> tailMap(K fromKey) {
+
+	public SortedMap<K, V> tailMap(K fromKey) {
 		return tailMap(fromKey, true);
 	}
 
@@ -1011,14 +1009,14 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 * Note: Taken from TreeMap
 	 */
 	static boolean valEquals(Object o1, Object o2) {
-		return (o1==null ? o2==null : o1.equals(o2));
+		return (o1 == null ? o2 == null : o1.equals(o2));
 	}
 
 	Iterator<Map.Entry<K, V>> entryIterator() {
 		return new EntryIterator<>(this, getFirstEntry());
 	}
 
-	Iterator<V> valueIterator(){
+	Iterator<V> valueIterator() {
 		return new ValueIterator<>(this, getFirstEntry());
 	}
 

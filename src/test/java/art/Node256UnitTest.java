@@ -1,14 +1,16 @@
 package art;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class Node256UnitTest {
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testUnderCapacityCreation() {
 		Node48 node48 = Node48UnitTest.createNode48();
-		Node256 node256 = new Node256(node48);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> new Node256(node48));
 	}
 
 	@Test
@@ -46,10 +48,10 @@ public class Node256UnitTest {
 		for (int i = 0; i < Node256.NODE_SIZE; i++) {
 			int keyIndex = node48.getKeyIndex()[i];
 			if (keyIndex == Node48.ABSENT) {
-				Assert.assertNull(node256.getChild()[i]);
+				assertNull(node256.getChild()[i]);
 			}
 			else {
-				Assert.assertEquals(node48.getChild()[keyIndex], node256.getChild()[i]);
+				assertEquals(node48.getChild()[keyIndex], node256.getChild()[i]);
 			}
 		}
 	}
@@ -93,38 +95,38 @@ public class Node256UnitTest {
 		Node256 node256 = createNode256();
 		byte partialKey = 25;
 		AbstractNode child = Mockito.spy(AbstractNode.class);
-		Assert.assertTrue(node256.addChild(partialKey, child));
-		Assert.assertEquals(49, node256.noOfChildren);
-		Assert.assertEquals(child, node256.findChild(partialKey));
+		assertTrue(node256.addChild(partialKey, child));
+		assertEquals(49, node256.noOfChildren);
+		assertEquals(child, node256.findChild(partialKey));
 
 		// assert up link
-		Assert.assertEquals(node256, child.parent());
-		Assert.assertEquals(partialKey, child.uplinkKey());
+		assertEquals(node256, child.parent());
+		assertEquals(partialKey, child.uplinkKey());
 
 		// assert correct internal structure
 		int keyIndex = Byte.toUnsignedInt(partialKey);
-		Assert.assertEquals(child, node256.getChild()[keyIndex]);
+		assertEquals(child, node256.getChild()[keyIndex]);
 
 		partialKey = -25;
 		child = Mockito.spy(AbstractNode.class);
-		Assert.assertTrue(node256.addChild(partialKey, child));
-		Assert.assertEquals(50, node256.noOfChildren);
-		Assert.assertEquals(child, node256.findChild(partialKey));
+		assertTrue(node256.addChild(partialKey, child));
+		assertEquals(50, node256.noOfChildren);
+		assertEquals(child, node256.findChild(partialKey));
 
 		// assert up link
-		Assert.assertEquals(node256, child.parent());
-		Assert.assertEquals(partialKey, child.uplinkKey());
+		assertEquals(node256, child.parent());
+		assertEquals(partialKey, child.uplinkKey());
 
 		// assert correct internal structure even for negative bytes
 		keyIndex = Byte.toUnsignedInt(partialKey);
-		Assert.assertEquals(child, node256.getChild()[keyIndex]);
+		assertEquals(child, node256.getChild()[keyIndex]);
 	}
 
 	@Test
 	public void testFindForNonExistentPartialKey() {
 		Node256 node256 = createNode256();
-		Assert.assertNull(node256.findChild((byte) 25));
-		Assert.assertNull(node256.findChild((byte) -25));
+		assertNull(node256.findChild((byte) 25));
+		assertNull(node256.findChild((byte) -25));
 	}
 
 	@Test
@@ -133,14 +135,14 @@ public class Node256UnitTest {
 		Node child = Mockito.mock(AbstractNode.class);
 		try {
 			node256.addChild((byte) 1, child);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
 
 		try {
 			node256.addChild((byte) -1, child);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
@@ -154,26 +156,26 @@ public class Node256UnitTest {
 		// add till capacity
 		for (int i = Node48.NODE_SIZE / 2 + 1; i <= Node256.NODE_SIZE / 2; i++) {
 			if (i == Node256.NODE_SIZE / 2) {
-				Assert.assertTrue(node256.addChild((byte) 0, child));
-				Assert.assertTrue(node256.addChild((byte) -i, child));
+				assertTrue(node256.addChild((byte) 0, child));
+				assertTrue(node256.addChild((byte) -i, child));
 			}
 			else {
-				Assert.assertTrue(node256.addChild((byte) i, child));
-				Assert.assertTrue(node256.addChild((byte) -i, child));
+				assertTrue(node256.addChild((byte) i, child));
+				assertTrue(node256.addChild((byte) -i, child));
 			}
 		}
-		Assert.assertTrue(node256.isFull());
-		Assert.assertEquals(Node256.NODE_SIZE, node256.noOfChildren);
+		assertTrue(node256.isFull());
+		assertEquals(Node256.NODE_SIZE, node256.noOfChildren);
 
 		// noOfChildren 256 reached, now adds will fail
-		Assert.assertFalse(node256.addChild((byte) 129, child));
-		Assert.assertFalse(node256.addChild((byte) -129, child));
+		assertFalse(node256.addChild((byte) 129, child));
+		assertFalse(node256.addChild((byte) -129, child));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testGrowIsUnsupported() {
 		Node256 node256 = createNode256();
-		node256.grow();
+		Assertions.assertThrows(IllegalStateException.class, node256::grow);
 	}
 
 	@Test
@@ -185,33 +187,33 @@ public class Node256UnitTest {
 		// assert the same child index position is updated with new child
 		int keyIndex = Byte.toUnsignedInt(partialKey);
 		node256.replace(partialKey, newChild);
-		Assert.assertEquals(newChild, node256.findChild(partialKey));
-		Assert.assertEquals(newChild, node256.getChild()[keyIndex]);
+		assertEquals(newChild, node256.findChild(partialKey));
+		assertEquals(newChild, node256.getChild()[keyIndex]);
 
 		// assert up link
-		Assert.assertEquals(node256, newChild.parent());
-		Assert.assertEquals(partialKey, newChild.uplinkKey());
-		Assert.assertNull(oldChild.parent());
+		assertEquals(node256, newChild.parent());
+		assertEquals(partialKey, newChild.uplinkKey());
+		assertNull(oldChild.parent());
 
 		partialKey = -1;
 		oldChild = (AbstractNode) node256.findChild(partialKey);
 		newChild = Mockito.spy(AbstractNode.class);
 		keyIndex = Byte.toUnsignedInt(partialKey);
 		node256.replace(partialKey, newChild);
-		Assert.assertEquals(newChild, node256.findChild(partialKey));
-		Assert.assertEquals(newChild, node256.getChild()[keyIndex]);
+		assertEquals(newChild, node256.findChild(partialKey));
+		assertEquals(newChild, node256.getChild()[keyIndex]);
 
 		// assert up link
-		Assert.assertEquals(node256, newChild.parent());
-		Assert.assertEquals(partialKey, newChild.uplinkKey());
-		Assert.assertNull(oldChild.parent());
+		assertEquals(node256, newChild.parent());
+		assertEquals(partialKey, newChild.uplinkKey());
+		assertNull(oldChild.parent());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testReplaceForNonExistentPartialKey() {
 		Node256 node256 = createNode256();
 		Node child = Mockito.mock(AbstractNode.class);
-		node256.replace((byte) 25, child);
+		Assertions.assertThrows(IllegalArgumentException.class, ()->node256.replace((byte) 25, child));
 	}
 
 	@Test
@@ -225,27 +227,27 @@ public class Node256UnitTest {
 		node256.addChild(partialKey1, child1);
 		node256.addChild(partialKey2, child2);
 
-		Assert.assertEquals(50, node256.noOfChildren);
-		Assert.assertEquals(child1, node256.findChild(partialKey1));
+		assertEquals(50, node256.noOfChildren);
+		assertEquals(child1, node256.findChild(partialKey1));
 		int keyIndex = Byte.toUnsignedInt(partialKey1);
 		node256.removeChild(partialKey1);
-		Assert.assertNull(node256.findChild(partialKey1));
-		Assert.assertEquals(49, node256.noOfChildren);
+		assertNull(node256.findChild(partialKey1));
+		assertEquals(49, node256.noOfChildren);
 		// assert internal structure
-		Assert.assertNull(node256.getChild()[keyIndex]);
+		assertNull(node256.getChild()[keyIndex]);
 
-		Assert.assertEquals(child2, node256.findChild(partialKey2));
+		assertEquals(child2, node256.findChild(partialKey2));
 		keyIndex = Byte.toUnsignedInt(partialKey2);
 		node256.removeChild(partialKey2);
-		Assert.assertNull(node256.findChild(partialKey2));
-		Assert.assertEquals(48, node256.noOfChildren);
+		assertNull(node256.findChild(partialKey2));
+		assertEquals(48, node256.noOfChildren);
 
 		// assert internal structure
-		Assert.assertNull(node256.getChild()[keyIndex]);
+		assertNull(node256.getChild()[keyIndex]);
 
 		// assert up link
-		Assert.assertNull(child1.parent());
-		Assert.assertNull(child2.parent());
+		assertNull(child1.parent());
+		assertNull(child2.parent());
 	}
 
 	@Test
@@ -254,14 +256,14 @@ public class Node256UnitTest {
 		byte partialKey = 25;
 		try {
 			node256.removeChild(partialKey);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
 		partialKey = -25;
 		try {
 			node256.removeChild(partialKey);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}

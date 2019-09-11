@@ -8,8 +8,11 @@ import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
-import org.junit.Assert;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class Node16UnitTest {
@@ -26,10 +29,10 @@ public class Node16UnitTest {
 		return node4;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testUnderCapacityCreation() {
 		Node4 node4 = new Node4();
-		Node16 node16 = new Node16(node4);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> new Node16(node4));
 	}
 
 	@Test
@@ -46,10 +49,10 @@ public class Node16UnitTest {
 		}
 
 		Node16 node16 = new Node16(node4);
-		Assert.assertEquals(Node4.NODE_SIZE, node16.noOfChildren);
+		assertEquals(Node4.NODE_SIZE, node16.noOfChildren);
 		for (int i = 0; i < Node4.NODE_SIZE; i++) {
-			Assert.assertEquals(storedKeys[i], node16.getKeys()[i]);
-			Assert.assertEquals(children[i], node16.getChild()[i]);
+			assertEquals(storedKeys[i], node16.getKeys()[i]);
+			assertEquals(children[i], node16.getChild()[i]);
 		}
 	}
 
@@ -60,24 +63,24 @@ public class Node16UnitTest {
 
 		Node16 node16 = createNode16();
 		AbstractNode child = Mockito.spy(AbstractNode.class);
-		Assert.assertTrue(node16.addChild(partialKey, child));
-		Assert.assertEquals(5, node16.noOfChildren);
-		Assert.assertEquals(child, node16.findChild(partialKey));
+		assertTrue(node16.addChild(partialKey, child));
+		assertEquals(5, node16.noOfChildren);
+		assertEquals(child, node16.findChild(partialKey));
 
 		// assert up links
-		Assert.assertEquals(node16, child.parent());
-		Assert.assertEquals(partialKey, child.uplinkKey());
+		assertEquals(node16, child.parent());
+		assertEquals(partialKey, child.uplinkKey());
 
 		// assert inserted at correct position
-		Assert.assertEquals(storedKey, node16.getKeys()[2]);
-		Assert.assertEquals(child, node16.getChild()[2]);
+		assertEquals(storedKey, node16.getKeys()[2]);
+		assertEquals(child, node16.getChild()[2]);
 	}
 
 	@Test
 	public void testFindForNonExistentPartialKey() {
 		Node16 node16 = createNode16();
-		Assert.assertNull(node16.findChild((byte) 3));
-		Assert.assertNull(node16.findChild((byte) -3));
+		assertNull(node16.findChild((byte) 3));
+		assertNull(node16.findChild((byte) -3));
 	}
 
 	@Test
@@ -86,14 +89,14 @@ public class Node16UnitTest {
 		Node child = Mockito.mock(AbstractNode.class);
 		try {
 			node16.addChild((byte) 1, child);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
 
 		try {
 			node16.addChild((byte) -1, child);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
@@ -106,14 +109,14 @@ public class Node16UnitTest {
 
 		// add till capacity
 		for (int i = Node4.NODE_SIZE / 2 + 1; i <= Node16.NODE_SIZE / 2; i++) {
-			Assert.assertTrue(node16.addChild((byte) i, child));
-			Assert.assertTrue(node16.addChild((byte) -i, child));
+			assertTrue(node16.addChild((byte) i, child));
+			assertTrue(node16.addChild((byte) -i, child));
 		}
-		Assert.assertEquals(Node16.NODE_SIZE, node16.noOfChildren);
+		assertEquals(Node16.NODE_SIZE, node16.noOfChildren);
 
 		// noOfChildren 16 reached, now adds will fail
-		Assert.assertFalse(node16.addChild((byte) 9, child));
-		Assert.assertFalse(node16.addChild((byte) -9, child));
+		assertFalse(node16.addChild((byte) 9, child));
+		assertFalse(node16.addChild((byte) -9, child));
 
 	}
 
@@ -134,11 +137,11 @@ public class Node16UnitTest {
 		for (byte i = Node4.NODE_SIZE / 2 + 1; i <= Node16.NODE_SIZE / 2; i++) {
 			Node child = Mockito.mock(AbstractNode.class);
 			children.put(i, child);
-			Assert.assertTrue(node16.addChild(i, child));
+			assertTrue(node16.addChild(i, child));
 
 			child = Mockito.mock(AbstractNode.class);
 			children.put((byte) -i, child);
-			Assert.assertTrue(node16.addChild((byte) -i, child));
+			assertTrue(node16.addChild((byte) -i, child));
 		}
 		return children;
 	}
@@ -148,36 +151,36 @@ public class Node16UnitTest {
 		Node16 node16 = createNode16();
 		Map<Byte, Node> children = fillNode16(node16);
 
-		Assert.assertTrue(node16.isFull());
+		assertTrue(node16.isFull());
 		Node node = node16.grow();
 		// assert we grow into next larger node type 48
-		Assert.assertTrue(node instanceof Node48);
+		assertTrue(node instanceof Node48);
 		Node48 node48 = (Node48) node;
 
 		// assert all partial key mappings exist
-		Assert.assertEquals(Node16.NODE_SIZE, node48.noOfChildren);
+		assertEquals(Node16.NODE_SIZE, node48.noOfChildren);
 		for (byte i = 1; i <= Node16.NODE_SIZE / 2; i++) {
-			Assert.assertEquals(children.get(i), node48.findChild(i));
-			Assert.assertEquals(children.get((byte) -i), node48.findChild((byte) -i));
+			assertEquals(children.get(i), node48.findChild(i));
+			assertEquals(children.get((byte) -i), node48.findChild((byte) -i));
 
 			// a bit of internal testing for Node48 here, that
 			// it's keyIndex is correctly set
-			Assert.assertNotEquals(Node48.ABSENT, node48.getKeyIndex()[i]);
-			Assert.assertNotEquals(Node48.ABSENT, node48.getKeyIndex()[Byte.toUnsignedInt(i)]);
+			assertNotEquals(Node48.ABSENT, node48.getKeyIndex()[i]);
+			assertNotEquals(Node48.ABSENT, node48.getKeyIndex()[Byte.toUnsignedInt(i)]);
 
 			// Node48's ctor copies the children into first 16 free slots
 			// which for a newly created Node48 would be the first 16 itself.
 			// That's what we assert here.
 			// 1 to 8, -8 ... -1
-			Assert.assertEquals(children.get(i), node48.getChild()[i - 1]);
-			Assert.assertEquals(children.get((byte) -i), node48.getChild()[Node16.NODE_SIZE - i]);
+			assertEquals(children.get(i), node48.getChild()[i - 1]);
+			assertEquals(children.get((byte) -i), node48.getChild()[Node16.NODE_SIZE - i]);
 		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testGrowBeforeFull() {
 		Node16 node16 = createNode16();
-		node16.grow();
+		Assertions.assertThrows(IllegalStateException.class, node16::grow);
 	}
 
 	@Test
@@ -188,29 +191,29 @@ public class Node16UnitTest {
 		AbstractNode oldChild = (AbstractNode) node16.findChild(partialKey);
 		AbstractNode newChild = Mockito.spy(AbstractNode.class);
 		node16.replace(partialKey, newChild);
-		Assert.assertEquals(newChild, node16.findChild(partialKey));
+		assertEquals(newChild, node16.findChild(partialKey));
 
 		// assert up links
-		Assert.assertEquals(node16, newChild.parent());
-		Assert.assertEquals(partialKey, newChild.uplinkKey());
-		Assert.assertNull(oldChild.parent());
+		assertEquals(node16, newChild.parent());
+		assertEquals(partialKey, newChild.uplinkKey());
+		assertNull(oldChild.parent());
 
 		partialKey = -1;
 		oldChild = (AbstractNode) node16.findChild(partialKey);
 		newChild = Mockito.spy(AbstractNode.class);
 		node16.replace(partialKey, newChild);
-		Assert.assertEquals(newChild, node16.findChild(partialKey));
+		assertEquals(newChild, node16.findChild(partialKey));
 
-		Assert.assertEquals(node16, newChild.parent());
-		Assert.assertEquals(partialKey, newChild.uplinkKey());
-		Assert.assertNull(oldChild.parent());
+		assertEquals(node16, newChild.parent());
+		assertEquals(partialKey, newChild.uplinkKey());
+		assertNull(oldChild.parent());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testReplaceForNonExistentPartialKey() {
 		Node16 node16 = createNode16();
 		Node child5 = Mockito.mock(AbstractNode.class);
-		node16.replace((byte) 5, child5);
+		Assertions.assertThrows(IllegalArgumentException.class, () -> node16.replace((byte) 5, child5));
 	}
 
 	// TODO: add a testSubsequentAddChildCallsMaintainOrder_Middle test
@@ -253,8 +256,8 @@ public class Node16UnitTest {
 				Node child = node16.getChild()[j];
 				// System.out.println(BinaryComparableUtils.signed(reversedStoredKeys.get(j)));
 				// System.out.println(BinaryComparableUtils.signed(key));
-				Assert.assertEquals((byte) reversedStoredKeys.get(j), key);
-				Assert.assertEquals(reversedChildren.get(j), child);
+				assertEquals((byte) reversedStoredKeys.get(j), key);
+				assertEquals(reversedChildren.get(j), child);
 			}
 		}
 	}
@@ -291,8 +294,8 @@ public class Node16UnitTest {
 			for (int j = 0; j <= i; j++) {
 				byte key = node16.getKeys()[j];
 				Node child = node16.getChild()[j];
-				Assert.assertEquals(storedKeys[j], key);
-				Assert.assertEquals(children[j], child);
+				assertEquals(storedKeys[j], key);
+				assertEquals(children[j], child);
 			}
 		}
 	}
@@ -308,19 +311,19 @@ public class Node16UnitTest {
 		node16.addChild(partialKey1, child1);
 		node16.addChild(partialKey2, child2);
 
-		Assert.assertEquals(6, node16.noOfChildren);
-		Assert.assertEquals(child1, node16.findChild(partialKey1));
+		assertEquals(6, node16.noOfChildren);
+		assertEquals(child1, node16.findChild(partialKey1));
 		node16.removeChild(partialKey1);
-		Assert.assertNull(node16.findChild(partialKey1));
-		Assert.assertEquals(5, node16.noOfChildren);
+		assertNull(node16.findChild(partialKey1));
+		assertEquals(5, node16.noOfChildren);
 
-		Assert.assertEquals(child2, node16.findChild(partialKey2));
+		assertEquals(child2, node16.findChild(partialKey2));
 		node16.removeChild(partialKey2);
-		Assert.assertNull(node16.findChild(partialKey2));
-		Assert.assertEquals(4, node16.noOfChildren);
+		assertNull(node16.findChild(partialKey2));
+		assertEquals(4, node16.noOfChildren);
 
-		Assert.assertNull(child1.parent());
-		Assert.assertNull(child2.parent());
+		assertNull(child1.parent());
+		assertNull(child2.parent());
 	}
 
 	@Test
@@ -329,14 +332,14 @@ public class Node16UnitTest {
 		byte partialKey = 5;
 		try {
 			node16.removeChild(partialKey);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
 		partialKey = -5;
 		try {
 			node16.removeChild(partialKey);
-			Assert.fail();
+			fail();
 		}
 		catch (IllegalArgumentException e) {
 		}
@@ -382,12 +385,12 @@ public class Node16UnitTest {
 			for (int j = 0; j < node16.noOfChildren; j++) {
 				byte key = node16.getKeys()[j];
 				Node child = node16.getChild()[j];
-				Assert.assertEquals(storedKeys[j + i + 1], key);
-				Assert.assertEquals(children[j + i + 1], child);
+				assertEquals(storedKeys[j + i + 1], key);
+				assertEquals(children[j + i + 1], child);
 			}
 		}
 
-		Assert.assertEquals(0, node16.noOfChildren);
+		assertEquals(0, node16.noOfChildren);
 	}
 
 	@Test
@@ -434,11 +437,11 @@ public class Node16UnitTest {
 			for (int j = 0; j < node16.noOfChildren; j++) {
 				byte key = node16.getKeys()[j];
 				Node child = node16.getChild()[j];
-				Assert.assertEquals((byte) reversedStoredKeys.get(j), key);
-				Assert.assertEquals(reversedChildren.get(j), child);
+				assertEquals((byte) reversedStoredKeys.get(j), key);
+				assertEquals(reversedChildren.get(j), child);
 			}
 		}
 
-		Assert.assertEquals(0, node16.noOfChildren);
+		assertEquals(0, node16.noOfChildren);
 	}
 }

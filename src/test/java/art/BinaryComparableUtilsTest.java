@@ -3,8 +3,9 @@ package art;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 public class BinaryComparableUtilsTest {
 
@@ -22,9 +23,9 @@ public class BinaryComparableUtilsTest {
 		String s = new String(new byte[] {0}); // null
 		byte[] bytes = BinaryComparables.UTF8.get(s);
 		int terminatorLen = BinaryComparableUtils.TERMINATOR.length;
-		Assert.assertEquals(s.length() + terminatorLen + 1, bytes.length);
+		assertEquals(s.length() + terminatorLen + 1, bytes.length);
 		byte[] expected = new byte[] {0, 1, 0, 0};
-		Assert.assertArrayEquals(expected, bytes);
+		assertArrayEquals(expected, bytes);
 	}
 
 	@Test
@@ -33,19 +34,19 @@ public class BinaryComparableUtilsTest {
 		byte[] bytes = BinaryComparables.UTF8.get(s);
 		int terminatorLen = BinaryComparableUtils.TERMINATOR.length;
 		// 3 because of the three "1" bytes added for each of the nulls
-		Assert.assertEquals(s.length() + terminatorLen + 4, bytes.length);
+		assertEquals(s.length() + terminatorLen + 4, bytes.length);
 		byte[] expected = new byte[] {0, 1, 76, 0, 1, 69, 0, 1, 79, 0, 1, 0, 0};
-		Assert.assertArrayEquals(expected, bytes);
+		assertArrayEquals(expected, bytes);
 	}
 
 	private void assertArray(String s) {
 		int terminatorLen = BinaryComparableUtils.TERMINATOR.length;
 		byte[] bytes = BinaryComparables.UTF8.get(s);
-		Assert.assertEquals(s.length() + terminatorLen, bytes.length);
+		assertEquals(s.length() + terminatorLen, bytes.length);
 		ByteArrayOutputStream expected = new ByteArrayOutputStream(s.length() + terminatorLen);
 		expected.write(s.getBytes(StandardCharsets.US_ASCII), 0, s.length());
 		expected.write(BinaryComparableUtils.TERMINATOR, 0, terminatorLen);
-		Assert.assertArrayEquals(expected.toByteArray(), bytes);
+		assertArrayEquals(expected.toByteArray(), bytes);
 	}
 
 	/*
@@ -76,11 +77,11 @@ public class BinaryComparableUtilsTest {
 	public void testInterpretUnsigned() {
 		// forget the byte being supplied to unsigned method
 		// think of the lexicographic bit representation
-		Assert.assertTrue((byte) 0 == BinaryComparableUtils.unsigned((byte) -128)); // 1000 0000
-		Assert.assertTrue((byte) 127 == BinaryComparableUtils.unsigned((byte) -1)); // 1111 1111
-		Assert.assertTrue((byte) -128 == BinaryComparableUtils.unsigned((byte) 0)); // 0000 0000
-		Assert.assertTrue((byte) -127 == BinaryComparableUtils.unsigned((byte) 1)); // 0000 0001
-		Assert.assertTrue((byte) -1 == BinaryComparableUtils.unsigned((byte) 127)); // 0111 1111
-		Assert.assertTrue((byte) 1 == BinaryComparableUtils.unsigned((byte) -127)); // 1000 0001
+		assertTrue((byte) 0 == BinaryComparableUtils.unsigned((byte) -128)); // 1000 0000
+		assertTrue((byte) 127 == BinaryComparableUtils.unsigned((byte) -1)); // 1111 1111
+		assertTrue((byte) -128 == BinaryComparableUtils.unsigned((byte) 0)); // 0000 0000
+		assertTrue((byte) -127 == BinaryComparableUtils.unsigned((byte) 1)); // 0000 0001
+		assertTrue((byte) -1 == BinaryComparableUtils.unsigned((byte) 127)); // 0111 1111
+		assertTrue((byte) 1 == BinaryComparableUtils.unsigned((byte) -127)); // 1000 0001
 	}
 }

@@ -1,7 +1,7 @@
 package playground;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class AlwaysUnsignedInterpretation {
 	/*
@@ -25,12 +25,12 @@ public class AlwaysUnsignedInterpretation {
 	public void testForNode4() { // still stored as byte so range available -128 to 127
 		byte largestLexicoWise = (byte) 0b11111111;
 		byte smallestLexicoWise = (byte) 0b00000000;
-		Assert.assertTrue(smallestLexicoWise > largestLexicoWise);
-		Assert.assertTrue(Byte.toUnsignedInt(largestLexicoWise) > Byte.toUnsignedInt(smallestLexicoWise));
+		assertTrue(smallestLexicoWise > largestLexicoWise);
+		assertTrue(Byte.toUnsignedInt(largestLexicoWise) > Byte.toUnsignedInt(smallestLexicoWise));
 
 		byte x = storeAsUnsignedInNode4(largestLexicoWise);
 		byte y = storeAsUnsignedInNode4(smallestLexicoWise);
-		Assert.assertTrue(x > y);
+		assertTrue(x > y);
 
 		System.out.println("largestLexicoWise = " + largestLexicoWise);
 		System.out.println("largestLexicoWise after flip = " + x);
@@ -46,11 +46,11 @@ public class AlwaysUnsignedInterpretation {
 	public void testForNode48() { // integer indexed, so range 0 to 255
 		byte largestLexicoWise = (byte) 0b11111111;
 		byte smallestLexicoWise = (byte) 0b00000000;
-		Assert.assertTrue(smallestLexicoWise > largestLexicoWise);
+		assertTrue(smallestLexicoWise > largestLexicoWise);
 
 		int x = storeAsUnsignedInNode48(largestLexicoWise);
 		int y = storeAsUnsignedInNode48(smallestLexicoWise);
-		Assert.assertTrue(x > y);
+		assertTrue(x > y);
 
 		System.out.println("largestLexicoWise = " + largestLexicoWise);
 		System.out.println("largestLexicoWise after flip = " + x); // 255

@@ -25,16 +25,14 @@ jmh {
 dependencies {
 
 	// for research, comparing performance, etc
-	implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
-	testImplementation group: 'com.ibm.icu', name: 'icu4j', version: '64.2'
-
-	// This dependency is used internally, and not exposed to consumers on their own compile classpath.
-	implementation 'com.google.guava:guava:23.0'
-	// implementation 'ch.qos.logback:logback-classic:1.2.3'
-
+	testCompile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
+	testCompile group: 'com.ibm.icu', name: 'icu4j', version: '64.2'
 	// Use JUnit test framework
-	testImplementation 'junit:junit:4.12'
+	testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.26.0'
+	testCompile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+
 
 	jmh group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 }
@@ -50,6 +48,8 @@ test {
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
 	}
+
+	useJUnitPlatform()
 
 	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }

@@ -1,7 +1,8 @@
 package playground;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SignedInterpretation {
 	/*
@@ -24,7 +25,7 @@ public class SignedInterpretation {
 	public void testNode4(){
 		byte storeSmallest = Byte.MIN_VALUE;
 		byte storeLargest = Byte.MAX_VALUE;
-		Assert.assertTrue(storeSmallest < storeLargest);
+		assertTrue(storeSmallest < storeLargest);
 
 		// convert to unsigned, a one time initial thing
 		byte unsignedSmallest = (byte)(storeSmallest ^ BYTE_SHIFT);
@@ -33,14 +34,14 @@ public class SignedInterpretation {
 		// store as unsigned in node4
 		byte x = AlwaysUnsignedInterpretation.storeAsUnsignedInNode4(unsignedLargest);
 		byte y = AlwaysUnsignedInterpretation.storeAsUnsignedInNode4(unsignedSmallest);
-		Assert.assertTrue(y < x);
+		assertTrue(y < x);
 	}
 
 	@Test
 	public void testNode48(){
 		byte storeSmallest = Byte.MIN_VALUE;
 		byte storeLargest = Byte.MAX_VALUE;
-		Assert.assertTrue(storeSmallest < storeLargest);
+		assertTrue(storeSmallest < storeLargest);
 
 		// convert to unsigned, a one time initial thing
 		byte unsignedSmallest = (byte)(storeSmallest ^ BYTE_SHIFT);
@@ -48,6 +49,6 @@ public class SignedInterpretation {
 
 		int x = AlwaysUnsignedInterpretation.storeAsUnsignedInNode48(unsignedSmallest);
 		int y = AlwaysUnsignedInterpretation.storeAsUnsignedInNode48(unsignedLargest);
-		Assert.assertTrue(y > x);
+		assertTrue(y > x);
 	}
 }
