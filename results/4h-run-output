@@ -38,7 +38,7 @@ WARNING: All illegal access operations will be denied in a future release
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = SPARSE, mapType = HASH_MAP, size = 16000000)
 
 # Run progress: 0.00% complete, ETA 02:55:00
@@ -122,7 +122,7 @@ Iteration   5: 8516338184.500 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   8595310802.340 ±(99.9%) 55890574.620 ns/op [Average]
   (min, avg, max) = (8399737382.500, 8595310802.340, 8786559692.000), stdev = 74612318.074
   CI (99.9%): [8539420227.720, 8651201376.960] (assumes normal distribution)
@@ -137,7 +137,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = SPARSE, mapType = ART, size = 16000000)
 
 # Run progress: 4.76% complete, ETA 05:09:32
@@ -221,7 +221,7 @@ Iteration   5: 525744590.600 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   527017687.790 ±(99.9%) 1680146.140 ns/op [Average]
   (min, avg, max) = (523718309.600, 527017687.790, 530550693.211), stdev = 2242947.027
   CI (99.9%): [525337541.650, 528697833.930] (assumes normal distribution)
@@ -236,7 +236,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = SPARSE, mapType = TREE_MAP, size = 16000000)
 
 # Run progress: 9.52% complete, ETA 03:55:43
@@ -320,7 +320,7 @@ Iteration   5: 32294700628.000 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   31821785460.400 ±(99.9%) 424440807.738 ns/op [Average]
   (min, avg, max) = (30816726174.000, 31821785460.400, 33275003734.000), stdev = 566616334.976
   CI (99.9%): [31397344652.662, 32246226268.138] (assumes normal distribution)
@@ -335,7 +335,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = DENSE_SORTED, mapType = HASH_MAP, size = 16000000)
 
 # Run progress: 14.29% complete, ETA 05:15:58
@@ -419,7 +419,7 @@ Iteration   5: 1482388061.286 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   1517325921.794 ±(99.9%) 28339943.587 ns/op [Average]
   (min, avg, max) = (1464634180.714, 1517325921.794, 1625790128.429), stdev = 37833013.876
   CI (99.9%): [1488985978.207, 1545665865.381] (assumes normal distribution)
@@ -434,7 +434,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = DENSE_SORTED, mapType = ART, size = 16000000)
 
 # Run progress: 19.05% complete, ETA 04:21:36
@@ -518,7 +518,7 @@ Iteration   5: 525882478.450 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   528990394.235 ±(99.9%) 3159569.066 ns/op [Average]
   (min, avg, max) = (525562124.200, 528990394.235, 538269470.316), stdev = 4217934.307
   CI (99.9%): [525830825.169, 532149963.300] (assumes normal distribution)
@@ -533,7 +533,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = DENSE_SORTED, mapType = TREE_MAP, size = 16000000)
 
 # Run progress: 23.81% complete, ETA 03:44:11
@@ -617,7 +617,7 @@ Iteration   5: 3429460351.333 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   3495493889.960 ±(99.9%) 53487985.634 ns/op [Average]
   (min, avg, max) = (3373208691.667, 3495493889.960, 3698107924.667), stdev = 71404930.518
   CI (99.9%): [3442005904.326, 3548981875.594] (assumes normal distribution)
@@ -632,7 +632,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = DENSE_SHUFFLE, mapType = HASH_MAP, size = 16000000)
 
 # Run progress: 28.57% complete, ETA 03:17:36
@@ -716,7 +716,7 @@ Iteration   5: 6577803266.000 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   6718519971.460 ±(99.9%) 225553156.274 ns/op [Average]
   (min, avg, max) = (6258545789.000, 6718519971.460, 7267177781.500), stdev = 301107010.495
   CI (99.9%): [6492966815.186, 6944073127.734] (assumes normal distribution)
@@ -731,7 +731,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = DENSE_SHUFFLE, mapType = ART, size = 16000000)
 
 # Run progress: 33.33% complete, ETA 03:01:22
@@ -815,7 +815,7 @@ Iteration   5: 532109751.684 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   529724472.798 ±(99.9%) 1294132.551 ns/op [Average]
   (min, avg, max) = (527506547.895, 529724472.798, 533136472.158), stdev = 1727629.930
   CI (99.9%): [528430340.247, 531018605.349] (assumes normal distribution)
@@ -830,7 +830,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Insert.integer
+# Benchmark: Insert.integer
 # Parameters: (distributionType = DENSE_SHUFFLE, mapType = TREE_MAP, size = 16000000)
 
 # Run progress: 38.10% complete, ETA 02:41:16
@@ -914,7 +914,7 @@ Iteration   5: 36014692626.000 ns/op
 > Task :jmh
 
 
-Result "art.Insert.integer":
+Result "Insert.integer":
   36374716705.240 ±(99.9%) 703960711.953 ns/op [Average]
   (min, avg, max) = (34856462225.000, 36374716705.240, 38237081272.000), stdev = 939767409.972
   CI (99.9%): [35670755993.287, 37078677417.193] (assumes normal distribution)
@@ -929,7 +929,7 @@ Result "art.Insert.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = SPARSE, mapType = HASH_MAP, size = 65000)
 
 # Run progress: 42.86% complete, ETA 02:53:30
@@ -1013,7 +1013,7 @@ Iteration   5: 1988664.209 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   1978076.958 ±(99.9%) 18200.413 ns/op [Average]
   (min, avg, max) = (1944258.603, 1978076.958, 2034870.168), stdev = 24297.031
   CI (99.9%): [1959876.545, 1996277.371] (assumes normal distribution)
@@ -1028,7 +1028,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = SPARSE, mapType = HASH_MAP, size = 16000000)
 
 # Run progress: 47.62% complete, ETA 02:32:20
@@ -1112,7 +1112,7 @@ Iteration   5: 2908557268.250 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   2853051503.670 ±(99.9%) 42368615.922 ns/op [Average]
   (min, avg, max) = (2729425326.500, 2853051503.670, 2959687845.500), stdev = 56560890.080
   CI (99.9%): [2810682887.748, 2895420119.592] (assumes normal distribution)
@@ -1127,7 +1127,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = SPARSE, mapType = ART, size = 65000)
 
 # Run progress: 52.38% complete, ETA 02:16:07
@@ -1211,7 +1211,7 @@ Iteration   5: 727736.275 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   713637.658 ±(99.9%) 9954.319 ns/op [Average]
   (min, avg, max) = (698503.122, 713637.658, 730177.796), stdev = 13288.730
   CI (99.9%): [703683.339, 723591.976] (assumes normal distribution)
@@ -1226,7 +1226,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = SPARSE, mapType = ART, size = 16000000)
 
 # Run progress: 57.14% complete, ETA 01:58:34
@@ -1310,7 +1310,7 @@ Iteration   5: 171610617.034 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   171581233.902 ±(99.9%) 447974.683 ns/op [Average]
   (min, avg, max) = (170781586.169, 171581233.902, 173096431.655), stdev = 598033.385
   CI (99.9%): [171133259.219, 172029208.585] (assumes normal distribution)
@@ -1325,7 +1325,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = SPARSE, mapType = TREE_MAP, size = 65000)
 
 # Run progress: 61.90% complete, ETA 01:43:02
@@ -1409,7 +1409,7 @@ Iteration   5: 17122596.986 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   16802370.334 ±(99.9%) 174007.725 ns/op [Average]
   (min, avg, max) = (16331555.773, 16802370.334, 17388902.823), stdev = 232295.335
   CI (99.9%): [16628362.609, 16976378.059] (assumes normal distribution)
@@ -1424,7 +1424,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = SPARSE, mapType = TREE_MAP, size = 16000000)
 
 # Run progress: 66.67% complete, ETA 01:27:54
@@ -1508,7 +1508,7 @@ Iteration   5: 31751557438.000 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   31477183189.000 ±(99.9%) 572280430.407 ns/op [Average]
   (min, avg, max) = (30589661125.000, 31477183189.000, 32930840819.000), stdev = 763978001.513
   CI (99.9%): [30904902758.593, 32049463619.407] (assumes normal distribution)
@@ -1523,7 +1523,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = DENSE, mapType = HASH_MAP, size = 65000)
 
 # Run progress: 71.43% complete, ETA 01:22:23
@@ -1607,7 +1607,7 @@ Iteration   5: 685244.859 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   698614.995 ±(99.9%) 24772.529 ns/op [Average]
   (min, avg, max) = (656884.653, 698614.995, 775763.201), stdev = 33070.617
   CI (99.9%): [673842.467, 723387.524] (assumes normal distribution)
@@ -1622,7 +1622,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = DENSE, mapType = HASH_MAP, size = 16000000)
 
 # Run progress: 76.19% complete, ETA 01:06:59
@@ -1706,7 +1706,7 @@ Iteration   5: 308950253.848 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   314843321.880 ±(99.9%) 5856765.148 ns/op [Average]
   (min, avg, max) = (307608507.606, 314843321.880, 330768114.677), stdev = 7818613.909
   CI (99.9%): [308986556.732, 320700087.028] (assumes normal distribution)
@@ -1721,7 +1721,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = DENSE, mapType = ART, size = 65000)
 
 # Run progress: 80.95% complete, ETA 00:52:28
@@ -1805,7 +1805,7 @@ Iteration   5: 723972.161 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   721895.811 ±(99.9%) 20166.671 ns/op [Average]
   (min, avg, max) = (695250.526, 721895.811, 777238.927), stdev = 26921.928
   CI (99.9%): [701729.141, 742062.482] (assumes normal distribution)
@@ -1820,7 +1820,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = DENSE, mapType = ART, size = 16000000)
 
 # Run progress: 85.71% complete, ETA 00:38:33
@@ -1904,7 +1904,7 @@ Iteration   5: 172187884.610 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   171891412.317 ±(99.9%) 246222.756 ns/op [Average]
   (min, avg, max) = (171332895.153, 171891412.317, 172606038.103), stdev = 328700.334
   CI (99.9%): [171645189.562, 172137635.073] (assumes normal distribution)
@@ -1919,7 +1919,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = DENSE, mapType = TREE_MAP, size = 65000)
 
 # Run progress: 90.48% complete, ETA 00:25:15
@@ -2003,7 +2003,7 @@ Iteration   5: 5891833.485 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   5722709.461 ±(99.9%) 59088.224 ns/op [Average]
   (min, avg, max) = (5636112.596, 5722709.461, 5891833.485), stdev = 78881.089
   CI (99.9%): [5663621.237, 5781797.685] (assumes normal distribution)
@@ -2018,7 +2018,7 @@ Result "art.Lookup.integer":
 # Timeout: 10 min per iteration
 # Threads: 1 thread, will synchronize iterations
 # Benchmark mode: Average time, time/op
-# Benchmark: art.Lookup.integer
+# Benchmark: Lookup.integer
 # Parameters: (distributionType = DENSE, mapType = TREE_MAP, size = 16000000)
 
 # Run progress: 95.24% complete, ETA 00:12:24
@@ -2102,7 +2102,7 @@ Iteration   5: 1875405089.333 ns/op
 > Task :jmh
 
 
-Result "art.Lookup.integer":
+Result "Lookup.integer":
   1790165743.627 ±(99.9%) 42351477.638 ns/op [Average]
   (min, avg, max) = (1719185859.333, 1790165743.627, 1890402455.833), stdev = 56538010.961
   CI (99.9%): [1747814265.988, 1832517221.265] (assumes normal distribution)
