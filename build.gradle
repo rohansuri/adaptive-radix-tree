@@ -26,7 +26,11 @@ dependencies {
 
 	// for research, comparing performance, etc
 	testCompile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
+	testCompile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3', classifier: 'tests'
 	testCompile group: 'com.ibm.icu', name: 'icu4j', version: '64.2'
+	// testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-migrationsupport', version: '5.5.2'
+	testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.5.2'
+
 	// Use JUnit test framework
 	testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.26.0'

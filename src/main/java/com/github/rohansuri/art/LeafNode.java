@@ -119,6 +119,41 @@ class LeafNode<K, V> extends AbstractNode implements Map.Entry<K, V> {
 	public boolean isFull() {
 		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}
+
+	/**
+	 * Compares this <code>Map.Entry</code> with another <code>Map.Entry</code>.
+	 * <p>
+	 * Implemented per API documentation of {@link java.util.Map.Entry#equals(Object)}
+	 *
+	 * @param obj  the object to compare to
+	 * @return true if equal key and value
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Map.Entry)) {
+			return false;
+		}
+		final Map.Entry<?, ?> other = (Map.Entry<?, ?>) obj;
+		return
+				(getKey() == null ? other.getKey() == null : getKey().equals(other.getKey())) &&
+						(getValue() == null ? other.getValue() == null : getValue().equals(other.getValue()));
+	}
+
+	/**
+	 * Gets a hashCode compatible with the equals method.
+	 * <p>
+	 * Implemented per API documentation of {@link java.util.Map.Entry#hashCode()}
+	 *
+	 * @return a suitable hash code
+	 */
+	@Override
+	public int hashCode() {
+		return (getKey() == null ? 0 : getKey().hashCode()) ^
+				(getValue() == null ? 0 : getValue().hashCode());
+	}
 }
 
 
