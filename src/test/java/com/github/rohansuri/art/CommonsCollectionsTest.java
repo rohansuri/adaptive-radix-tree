@@ -12,6 +12,6 @@ public class CommonsCollectionsTest extends AbstractSortedMapTest {
 
 	@Override
 	public SortedMap makeObject() {
-		return new AdaptiveRadixTree<>(BinaryComparables.UTF8);
+		return new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
 	}
 }

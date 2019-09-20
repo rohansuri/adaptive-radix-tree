@@ -6,15 +6,39 @@ import java.nio.charset.StandardCharsets;
 
 import static com.github.rohansuri.art.BinaryComparableUtils.unsigned;
 
+// noninstantiable companion class
 public class BinaryComparables {
 
-	public static final BinaryComparable<Integer> INTEGER = (key) -> BinaryComparableUtils
+	private BinaryComparables() {
+	}
+
+	public static BinaryComparable<Integer> forInteger() {
+		return INTEGER;
+	}
+
+	public static BinaryComparable<Long> forLong() {
+		return LONG;
+	}
+
+	public static BinaryComparable<Short> forShort() {
+		return SHORT;
+	}
+
+	public static BinaryComparable<Byte> forByte() {
+		return BYTE;
+	}
+
+	public static BinaryComparable<String> forUTF8() {
+		return UTF8;
+	}
+
+	private static final BinaryComparable<Integer> INTEGER = (key) -> BinaryComparableUtils
 			.unsigned(ByteBuffer.allocate(Integer.BYTES).putInt(key).array());
-	public static final BinaryComparable<Long> LONG = (key) -> BinaryComparableUtils
+	private static final BinaryComparable<Long> LONG = (key) -> BinaryComparableUtils
 			.unsigned(ByteBuffer.allocate(Long.BYTES).putLong(key).array());
-	public static final BinaryComparable<Short> SHORT = (key) -> BinaryComparableUtils
+	private static final BinaryComparable<Short> SHORT = (key) -> BinaryComparableUtils
 			.unsigned(ByteBuffer.allocate(Short.BYTES).putShort(key).array());
-	public static final BinaryComparable<Byte> BYTE = (key) -> BinaryComparableUtils
+	private static final BinaryComparable<Byte> BYTE = (key) -> BinaryComparableUtils
 			.unsigned(ByteBuffer.allocate(Byte.BYTES).put(key).array());
 	/*
 	 extract from https://docs.oracle.com/javase/tutorial/i18n/text/collationintro.html:
@@ -35,5 +59,6 @@ public class BinaryComparables {
 	// to mark a key end (8 bytes spare) so that it works for all keys.
 	// It'll also simplify the Node implementations, since they no longer have to
 	// explicitly interpret everything as "unsigned"
-	public static final BinaryComparable<String> UTF8 = (key) -> BinaryComparableUtils.terminateUTF8(key.getBytes(StandardCharsets.UTF_8));
+	private static final BinaryComparable<String> UTF8 = (key) -> BinaryComparableUtils
+			.terminateUTF8(key.getBytes(StandardCharsets.UTF_8));
 }

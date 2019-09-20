@@ -21,7 +21,7 @@ public class BinaryComparableUtilsTest {
 	@Test
 	public void testTerminatorNullCase() {
 		String s = new String(new byte[] {0}); // null
-		byte[] bytes = BinaryComparables.UTF8.get(s);
+		byte[] bytes = BinaryComparables.forUTF8().get(s);
 		int terminatorLen = BinaryComparableUtils.TERMINATOR.length;
 		assertEquals(s.length() + terminatorLen + 1, bytes.length);
 		byte[] expected = new byte[] {0, 1, 0, 0};
@@ -31,7 +31,7 @@ public class BinaryComparableUtilsTest {
 	@Test
 	public void testTerminatorMultipleNullsCase() {
 		String s = new String(new byte[] {0, 76, 0, 69, 0, 79, 0}); // null, L, null, E, null, O, null
-		byte[] bytes = BinaryComparables.UTF8.get(s);
+		byte[] bytes = BinaryComparables.forUTF8().get(s);
 		int terminatorLen = BinaryComparableUtils.TERMINATOR.length;
 		// 3 because of the three "1" bytes added for each of the nulls
 		assertEquals(s.length() + terminatorLen + 4, bytes.length);
@@ -41,7 +41,7 @@ public class BinaryComparableUtilsTest {
 
 	private void assertArray(String s) {
 		int terminatorLen = BinaryComparableUtils.TERMINATOR.length;
-		byte[] bytes = BinaryComparables.UTF8.get(s);
+		byte[] bytes = BinaryComparables.forUTF8().get(s);
 		assertEquals(s.length() + terminatorLen, bytes.length);
 		ByteArrayOutputStream expected = new ByteArrayOutputStream(s.length() + terminatorLen);
 		expected.write(s.getBytes(StandardCharsets.US_ASCII), 0, s.length());

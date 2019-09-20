@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class ARTIntegerTests {
 	@Test
 	public void testDeletingAll8BitIntegersUsingValueCollection() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -48,7 +48,7 @@ public class ARTIntegerTests {
 
 	@Test
 	public void testDescendingIterator() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -71,7 +71,7 @@ public class ARTIntegerTests {
 	// in PrivateEntryIterator
 	@Test
 	public void testDeletingAll8BitIntegersUsingValueIterator() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -100,7 +100,7 @@ public class ARTIntegerTests {
 
 	@Test
 	public void testDeletingAll8BitIntegersUsingEntrySetIterator() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -129,7 +129,7 @@ public class ARTIntegerTests {
 
 	@Test
 	public void testInsertingAndDeletingAllInt8BitIntegers() throws ReflectiveOperationException {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.BYTE);
+		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
 		// insert all
 		byte i = Byte.MIN_VALUE;
@@ -238,7 +238,7 @@ public class ARTIntegerTests {
 	//  with prefix path length of 1 and then inserting others would cause it to grow
 	//	from Node4 -> ... -> Node256
 	public void testInsertingAndDeletingAllInt16BitIntegers() {
-		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparables.SHORT);
+		AdaptiveRadixTree<Short, String> art = new AdaptiveRadixTree<>(BinaryComparables.forShort());
 
 		/*
 			insert all
@@ -286,7 +286,7 @@ public class ARTIntegerTests {
 	 */
 	@Test
 	public void testInsertingAndDeleting32BitIntegers() {
-		AdaptiveRadixTree<Integer, Integer> art = new AdaptiveRadixTree<>(BinaryComparables.INTEGER);
+		AdaptiveRadixTree<Integer, Integer> art = new AdaptiveRadixTree<>(BinaryComparables.forInteger());
 		int level = 4;
 		List<Integer> l = new ArrayList<>(1 << level);
 		pc(l, ByteBuffer.allocate(level), 0, level);

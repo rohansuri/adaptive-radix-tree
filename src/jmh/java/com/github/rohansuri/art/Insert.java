@@ -1,5 +1,6 @@
 package com.github.rohansuri.art;
 
+import com.sun.source.tree.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
 
@@ -49,7 +50,7 @@ public class Insert {
 				supplier = () -> new HashMap<>();
 				break;
 			case ART:
-				supplier = () -> new AdaptiveRadixTree<>(BinaryComparables.INTEGER);
+				supplier = () -> new AdaptiveRadixTree<>(BinaryComparables.forInteger());
 				break;
 			case TREE_MAP:
 				supplier = () -> new TreeMap<>();

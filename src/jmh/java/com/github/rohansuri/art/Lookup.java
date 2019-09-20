@@ -1,5 +1,6 @@
 package com.github.rohansuri.art;
 
+import com.sun.source.tree.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
 
@@ -46,7 +47,7 @@ public class Lookup {
 				m = new HashMap<>();
 				break;
 			case ART:
-				m = new AdaptiveRadixTree<>(BinaryComparables.INTEGER);
+				m = new AdaptiveRadixTree<>(BinaryComparables.forInteger());
 				break;
 			case TREE_MAP:
 				m = new TreeMap<>();
