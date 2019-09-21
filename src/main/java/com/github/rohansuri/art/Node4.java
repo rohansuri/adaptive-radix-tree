@@ -2,8 +2,6 @@ package com.github.rohansuri.art;
 
 class Node4 extends InnerNode {
 
-	// private static final Logger log = LoggerFactory.getLogger(Node4.class);
-
 	static final int NODE_SIZE = 4;
 
 	private final Node[] child = new Node[NODE_SIZE];
@@ -70,7 +68,6 @@ class Node4 extends InnerNode {
 		}
 		keys[insertionPoint] = unsignedPartialKey;
 		this.child[insertionPoint] = child;
-		// log.trace("partialKey {} added at {}", unsignedPartialKey, insertionPoint);
 		noOfChildren++;
 		createUplink(this, child, partialKey);
 		return true;

@@ -43,9 +43,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		this.binaryComparable = binaryComparable;
 	}
 
-	// TODO: remove logs after sufficient testing
-	// private static final Logger log = LoggerFactory.getLogger(AdaptiveRadixTree.class);
-
 	private Node root;
 
 	public V put(K key, V value) {
@@ -115,7 +112,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if (root == null) {
 			// create leaf node and set root to that
 			root = new LeafNode<>(keyBytes, key, value);
-			// log.trace("Tree empty, creating lazily stored leaf node for key {} and making it root", Arrays.toString(keyBytes));
 			size = 1;
 			modCount++;
 			return null;
@@ -201,9 +197,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		while (true) {
 			if (node instanceof LeafNode) {
 				// match key to leaf
-				// TODO: this is where the complete matching can be optimized
-				// if we keep track of what parts of key have already matched
-				// because of optimistic path compression, it may not be necessary
+				// IDEA: this is where the complete matching can be optimized
+				// if we keep track of what parts of key have already matched.
+				// Because of optimistic path compression, it may not be necessary
 				// that at depth D, first D bytes of key and this leaf node totally match.
 				// but we could skip matching the pessimistic parts of the key
 				// also the parts of the key that were directly taken traversed over (findChild)
@@ -219,16 +215,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// and do findChild and continue search over that child.
 			// if incomplete match, then we return null.
 			if (!matchesCompressedPathCompletely((InnerNode) node, key, depth)) {
-				// log.trace("compressed path {} and key {} didn't match entirely", ((InnerNode) node).getValidPrefixKey(), key);
 				return null;
 			}
 
-			// log.trace("compressed path {} and key {} matched entirely", ((InnerNode) node).getValidPrefixKey(), key);
 			// complete match, continue search
 			depth = depth + ((InnerNode) node).prefixLen;
 			Node nextNode = node.findChild(key[depth]);
 			if (nextNode == null) {
-				// log.trace("no follow on child pointer for partialKey {}", key[depth]);
 				return null;
 			}
 			// set fields for next iteration
@@ -261,7 +254,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	private void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
-			// log.trace("replacing root");
 			root = replaceWith;
 			AbstractNode.replaceUplink(null, root);
 		}
@@ -272,10 +264,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// replace down link
-	// TODO: combine with other replace version?
 	private void replace(byte partialKey, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
-			// log.trace("replacing root");
 			root = replaceWith;
 			AbstractNode.replaceUplink(null, root);
 		}
@@ -292,7 +282,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				Node pathCompressedNode = createPathCompressedNodeAfterExpandLazyLeaf(leaf, keyBytes, key, value, depth);
 				if (pathCompressedNode == node) {
 					// key already exists
-					// log.trace("key already exists, replacing value");
 					V oldValue = leaf.getValue();
 					leaf.setValue(value);
 					return oldValue;
@@ -312,7 +301,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			so that means, when doing this we change our depths and jump to lower levels in the search tree.
 			again compressed paths can totally match --- easy then
 			differ at a point -- we do the same splitting and update the compressed path.
-			TODO: analyze if code be shared for this split?
+			QUES: can code be shared for this split?
 		 */
 
 			// compare with compressed path
@@ -342,7 +331,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		because even if we're left with X partial keys (each of 1 byte),
 		we're not going to branch down and create X new levels down the road.
 		Nope. We reduce the height of the tree by lazy expanding.
-		TODO: By keeping the left over part of the key in the leaf?
+		IDEA: Could we just keep the left over part of the key in the leaf?
 		We could use byte buffer to do this (for index manipulation).
 		The paper suggests storing complete key.
 		Let's see, we'll refactor if we face trouble later.
@@ -350,9 +339,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	*/
 	private void addChild(Node node, byte partialKey, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
 		Node leaf = new LeafNode<>(keyBytes, key, value);
-		// TODO: check isFull before calling addChild? to be consistent with paper?
+		// CLEANUP: check isFull before calling addChild? to be consistent with paper?
 		if (!node.addChild(partialKey, leaf)) {
-			// log.trace("growing node");
 			node = node.grow();
 			assert node.addChild(partialKey, leaf);
 
@@ -414,7 +402,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			node.prefixKeys[j] = node.prefixKeys[i];
 		}
 		node.prefixLen = node.prefixLen - lcp - 1;
-		// log.trace("updated compressed path {}", node.getValidPrefixKey());
 	}
 
 	private int matchCompressedPath(InnerNode node, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
@@ -426,7 +413,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			return depth;
 		}
 
-		// log.trace("depth before lcp {}", depth);
 		// match pessimistic compressed path
 		int lcp = 0;
 		// it is important to have both prefixLen and prefixKeys.Length checks
@@ -435,8 +421,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// therefore we need to constraint with both when matching for pessimistic compressed path
 		for (; lcp < node.prefixLen && depth < keyBytes.length && lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
-
-		// log.trace("LCP of key {} and compressed path {} is {}", Arrays.toString(keyBytes), Arrays.toString(node.getValidPrefixKey()), lcp);
 
 		// can lcp be 0? yes
 		// consider BAZ, BAR already inserted
@@ -451,11 +435,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// purpose of pessimistic prefixKeys match is to serve as safety net and early return.
 
 		if (lcp <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && lcp == node.prefixLen) {
-			// log.trace("pessimistic match");
 			return depth;
 		}
 		else if (lcp == InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
-			// log.trace("optimistic match");
 			return depth + (node.prefixLen - InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		}
 		else {
@@ -472,13 +454,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// BAR, BAZ inserted, now inserting BOZ
 
 		int initialDepth = depth - lcp;
-		// log.trace("initial depth calculated {}", initialDepth);
 
 		// create new lazy leaf node for unmatched key?
-		// TODO: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
+		// IDEA: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
 		LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
-
-		// log.trace("Entire compressed path didn't match, branching out on partialKey {} and {}", new String(new byte[] {keyBytes[depth]}), new String(new byte[] {node.prefixKeys[depth]}));
 
 		// new node with updated prefix len, compressed path
 		Node4 branchOut = new Node4();
@@ -487,11 +466,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		System.arraycopy(keyBytes, initialDepth, branchOut.prefixKeys, 0, lcp);
 		branchOut.addChild(keyBytes[depth], leafNode);
 		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
-		// log.trace("added follow on pointer for partialKey {}", keyBytes[depth]);
-		// log.trace("added follow on pointer for partialKey {}", node.prefixKeys[lcp]);
-		// log.trace("new node contains following keys {}", Arrays.toString(branchOut.getKeys()));
-
-		// log.trace("Branched out node's prefixLen {}, prefixKey {}", branchOut.prefixLen, new String(branchOut.getValidPrefixKey()));
 
 		// remove lcp common prefix key from "this" node
 		updateCompressedPath(node, lcp);
@@ -507,19 +481,14 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private void addTwoLazyLeavesToPathCompressedNode(LeafNode leaf, int lcp, byte[] keyBytes, Node4 pathCompressedNode, int depth, K key, V value) {
 		// reuse current leaf node
 		byte differ = leaf.getKeyBytes()[depth + lcp];
-		// TODO: can depth + lcp be greater than leaf.getKey()'s length?
-		// shouldn't be? else that'd mean one is a prefix of the other?
-		// but we said that shouldn't be the case?
-		// and input itself should have a separating character? 0 byte ASCII for strings for example?
-		// we should give a string parameterized put? that adds a 0 ourselves?
-		// but then to give it back as a string
-		// we will have to use generics. so that caller can stay type safe
-		// and doesn't have to do the work of turning null terminated bytes into String again
+		// depth + lcp cannot be greater than leaf.getKey()'s length.
+		// else that'd mean one is a prefix of the other.
+		// but BinaryComparable ensures keys will never be prefixes of each other.
 
 		pathCompressedNode
 				.addChild(differ, leaf); // partialKey is the first differing partialKey between the new Node and leaf node
 
-		// TODO: optimisation, leaf nodes keep track of at what depth they got lazy stored
+		// IDEA: optimisation, leaf nodes keep track of at what depth they got lazy stored
 		// arrays are references in Java, then this would give us no benefit
 		// in terms of storage.
 		// but in terms of final leaf node level key comparison (search)
@@ -544,7 +513,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 		}
 		pathCompressedNode.prefixLen = lcp;
-		// log.trace("longest common prefix between new key {} and lazily stored leaf {} is {}", Arrays.toString(key), Arrays.toString(node.getKeyBytes()), lcp);
 		return lcp;
 	}
 
@@ -650,7 +618,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			depth += ((InnerNode) node).prefixLen;
 			Node child = node.findChild(key[depth]);
 			if (child == null) { // same child not found, can we find a lesser child at this node level itself?
-				// TODO: Node could also support a floor(partialKey) in this case to combine the findChild + lesser
+				// CLEANUP: Node could also support a floor(partialKey) in this case to combine the findChild + lesser
 				Node lesser = node.lesser(key[depth]);
 				if (lesser != null) {
 					return getLastEntry(lesser);
@@ -698,11 +666,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	// TODO: rather than using depth, refactor to use node.parentKey() i.e. reuse successor(...) method
+	// CLEANUP: rather than using depth, refactor to use node.parentKey() i.e. reuse successor(...) method
 	private LeafNode<K, V> goUpAndFindGreater(int depth, Node node, byte[] key) {
 		while ((node = node.parent()) != null) { // while you don't reach the root node
 			depth--;
-			// log.info("finding greater for partialKey {} on level {}", key[depth], depth);
 			Node next = node.greater(key[depth]);
 			if (next != null) {
 				// found a next, return first leaf
@@ -717,7 +684,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private LeafNode<K, V> goUpAndFindLesser(int depth, Node node, byte[] key) {
 		while ((node = node.parent()) != null) { // while you don't reach the root node
 			depth--;
-			// log.info("finding lesser for partialKey {} on level {}", key[depth], depth);
 			Node lesser = node.lesser(key[depth]);
 			if (lesser != null) {
 				// found a lesser, return last leaf
@@ -807,7 +773,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			depth += ((InnerNode) node).prefixLen;
 			Node child = node.findChild(key[depth]);
 			if (child == null) { // same child not found, can we find a greater child at this node level itself?
-				// TODO: Node could also support a ceil(partialKey) in this case to combine the findChild + next
+				// CLEANUP: Node could also support a ceil(partialKey) in this case to combine the findChild + next
 				Node next = node.greater(key[depth]);
 				if (next != null) {
 					return getFirstEntry(next);
