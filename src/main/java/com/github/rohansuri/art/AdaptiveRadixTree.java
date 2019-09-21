@@ -37,9 +37,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	// TODO: offer a bulk create constructor
 
 	public AdaptiveRadixTree(BinaryComparable<K> binaryComparable) {
-		// TODO: null check for this, then key should implement bytes() method
+		// TODO: allow keys themselves to be BinaryComparable
 		Objects.requireNonNull(binaryComparable, "Specifying a BinaryComparable is necessary. Support for having keys themselves"
-				+ " being BinaryComparable i.e. sporting a bytes() method will come soon.");
+				+ " being BinaryComparable will come soon.");
 		this.binaryComparable = binaryComparable;
 	}
 
@@ -895,14 +895,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				true, null, true);
 	}
 
+	// QUES: why does comparator return ? super K?
 	@Override
 	public Comparator<? super K> comparator() {
 		return null;
 	}
 
-	// TODO: why does comparator return ? super K?
-	// TODO: rename binaryComparable to binaryComparator?
-	public BinaryComparable<K> binaryComparator() {
+	public BinaryComparable<K> binaryComparable() {
 		return binaryComparable;
 	}
 

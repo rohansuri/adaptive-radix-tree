@@ -184,8 +184,8 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			boolean fromStart, K lo, boolean loInclusive,
 			boolean toEnd, K hi, boolean hiInclusive) {
 		// equivalent to type check in TreeMap
-		this.loBytes = m.binaryComparator().get(lo);
-		this.hiBytes = m.binaryComparator().get(hi);
+		this.loBytes = m.binaryComparable().get(lo);
+		this.hiBytes = m.binaryComparable().get(hi);
 		if (!fromStart && !toEnd) {
 			if (m.compare(loBytes, 0, loBytes.length, hiBytes, 0, hiBytes.length) > 0)
 				throw new IllegalArgumentException("fromKey > toKey");
