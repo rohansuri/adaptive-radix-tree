@@ -14,13 +14,14 @@ import org.junit.jupiter.api.Test;
 public class ARTIntegerTest extends AbstractSortedMapTest {
 
 	private final List<Integer> sampleKeys;
+	private static final int LAST_LEVEL = 55;
 
 	public ARTIntegerTest(String testName) {
 		super(testName);
 		int level = 4;
 		sampleKeys = new ArrayList<>();
 		permute(sampleKeys, ByteBuffer.allocate(level), 0, level);
-		assertEquals(2 * 2 * 2 * 256, sampleKeys.size());
+		assertEquals(2 * 2 * 2 * LAST_LEVEL, sampleKeys.size());
 	}
 
 	/*
@@ -46,7 +47,7 @@ public class ARTIntegerTest extends AbstractSortedMapTest {
 			return;
 		}
 
-		int choices = currLevel == maxLevel - 1 ? 256 : 2;
+		int choices = currLevel == maxLevel - 1 ? LAST_LEVEL : 2;
 		for (int i = 0; i < choices; i++) {
 			num.put((byte) i);
 			permute(l, num, currLevel + 1, maxLevel);
