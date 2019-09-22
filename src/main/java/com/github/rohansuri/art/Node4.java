@@ -15,9 +15,7 @@ class Node4 extends InnerNode {
 
 	Node4(Node16 node16) {
 		super(node16);
-		if (!node16.shouldShrink()) {
-			throw new IllegalArgumentException("Given Node16 hasn't crossed shrinking threshold yet");
-		}
+		assert node16.shouldShrink();
 		byte[] keys = node16.getKeys();
 		Node[] child = node16.getChild();
 		System.arraycopy(keys, 0, this.keys, 0, node16.noOfChildren);
@@ -53,15 +51,10 @@ class Node4 extends InnerNode {
 			if (keys[insertionPoint] > unsignedPartialKey) {
 				break;
 			}
-			else if (keys[insertionPoint] == unsignedPartialKey) {
-				throw new IllegalArgumentException("Cannot insert partial key " + BinaryComparableUtils
-						.signed(unsignedPartialKey) + " that already exists in Node. "
-						+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
-			}
+			assert keys[insertionPoint] != unsignedPartialKey : "Cannot insert partial key that already exists";
 		}
 		// shift elements from this point to right by one place
 		// noOfChildren here would never be == Node_SIZE (since we have isFull() check)
-		assert insertionPoint <= noOfChildren;
 		for (int i = noOfChildren; i > insertionPoint; i--) {
 			keys[i] = keys[i - 1];
 			this.child[i] = this.child[i - 1];
@@ -83,10 +76,8 @@ class Node4 extends InnerNode {
 				break;
 			}
 		}
-		// replace must be called from in a state where you know partialKey entry surely exists
-		if (index == noOfChildren) {
-			throw new IllegalArgumentException("Partial key " + unsignedPartialKey + " does not exist in this Node.");
-		}
+		// replace will be called from in a state where you know partialKey entry surely exists
+		assert index < noOfChildren : "Partial key does not exist";
 		child[index] = newChild;
 		createUplink(this, newChild, partialKey);
 	}
@@ -95,16 +86,14 @@ class Node4 extends InnerNode {
 	public void removeChild(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		int index = 0;
-		for(; index < noOfChildren; index++){
-			if(keys[index] == partialKey){
+		for (; index < noOfChildren; index++) {
+			if (keys[index] == partialKey) {
 				break;
 			}
 		}
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
-		if (index == noOfChildren) {
-			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
-		}
+		assert index < noOfChildren : "Partial key does not exist";
 		removeUplink(child[index]);
 		for (int i = index; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
@@ -116,9 +105,7 @@ class Node4 extends InnerNode {
 
 	@Override
 	public Node grow() {
-		if (!isFull()) {
-			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
-		}
+		assert isFull();
 		// grow from Node4 to Node16
 		Node node = new Node16(this);
 		return node;
@@ -126,12 +113,12 @@ class Node4 extends InnerNode {
 
 	@Override
 	public boolean shouldShrink() {
-		return false; // can't shrink less than node4
+		return false;
 	}
 
 	@Override
 	public Node shrink() {
-		throw new IllegalStateException("Node4 is smallest node type, can't shrink further");
+		throw new UnsupportedOperationException("Node4 is smallest node type");
 	}
 
 	@Override
@@ -141,10 +128,7 @@ class Node4 extends InnerNode {
 
 	@Override
 	public Node last() {
-		if (noOfChildren == 0) {
-			return null;
-		}
-		return child[noOfChildren - 1];
+		return child[Math.max(0, noOfChildren - 1)];
 	}
 
 	@Override
@@ -187,10 +171,8 @@ class Node4 extends InnerNode {
 		return child;
 	}
 
-	byte getOnlyChild() {
-		if (noOfChildren != 1) {
-			throw new IllegalStateException("more than one children");
-		}
+	byte getOnlyChildKey() {
+		assert noOfChildren == 1;
 		return BinaryComparableUtils.signed(keys[0]);
 	}
 }

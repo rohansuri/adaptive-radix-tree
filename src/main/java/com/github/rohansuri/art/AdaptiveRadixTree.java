@@ -173,7 +173,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node onlyChild = toCompress.getChild()[0];
 		assert onlyChild != null;
 		if (!(onlyChild instanceof LeafNode)) {
-			byte partialKeyToOnlyChild = toCompress.getOnlyChild();// toCompress.getKeys()[0]; // R
+			byte partialKeyToOnlyChild = toCompress.getOnlyChildKey();// toCompress.getKeys()[0]; // R
 			InnerNode oc = (InnerNode) onlyChild;
 			// update nextNode's compressed path with toCompress'
 			int toCopy = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, toCompress.prefixLen + 1);

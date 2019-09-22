@@ -23,9 +23,7 @@ class Node48 extends InnerNode {
 
 	Node48(Node16 node) {
 		super(node);
-		if (!node.isFull()) {
-			throw new IllegalArgumentException("Given Node16 still has capacity, cannot grow into Node48.");
-		}
+		assert node.isFull();
 
 		Arrays.fill(keyIndex, ABSENT);
 
@@ -44,9 +42,7 @@ class Node48 extends InnerNode {
 
 	Node48(Node256 node256) {
 		super(node256);
-		if (!node256.shouldShrink()) {
-			throw new IllegalArgumentException("Given Node256 hasn't crossed shrinking threshold yet");
-		}
+		assert node256.shouldShrink();
 		Arrays.fill(keyIndex, ABSENT);
 
 		Node[] children = node256.getChild();
@@ -79,15 +75,10 @@ class Node48 extends InnerNode {
 			return false;
 		}
 		int index = Byte.toUnsignedInt(partialKey);
-		if (keyIndex[index] != ABSENT) {
-			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node. "
-					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
-
-		}
+		assert keyIndex[index] == ABSENT;
 		// find a null place, left fragmented by a removeChild or has always been null
 		byte insertPosition = 0;
 		for (; this.child[insertPosition] != null && insertPosition < NODE_SIZE; insertPosition++) ;
-		assert insertPosition < NODE_SIZE;
 
 		this.child[insertPosition] = child;
 		keyIndex[index] = insertPosition;
@@ -99,20 +90,17 @@ class Node48 extends InnerNode {
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
-		if (!(index >= 0 && index <= 47)) {
-			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
-		}
+		assert index >= 0 && index <= 47;
 		child[index] = newChild;
 		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
 	public void removeChild(byte partialKey) {
+		assert !shouldShrink();
 		int index = Byte.toUnsignedInt(partialKey);
 		int pos = keyIndex[index];
-		if (pos == -1) {
-			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
-		}
+		assert pos != ABSENT;
 		removeUplink(child[pos]);
 		child[pos] = null; // fragment
 		keyIndex[index] = ABSENT;
@@ -121,9 +109,7 @@ class Node48 extends InnerNode {
 
 	@Override
 	public Node grow() {
-		if (!isFull()) {
-			throw new IllegalStateException("Grow should be called only when you reach a node's full capacity");
-		}
+		assert isFull();
 		Node node = new Node256(this);
 		return node;
 	}
@@ -135,39 +121,33 @@ class Node48 extends InnerNode {
 
 	@Override
 	public Node shrink() {
-		if (!shouldShrink()) {
-			throw new IllegalStateException("Haven't crossed shrinking threshold yet");
-		}
+		assert shouldShrink();
 		Node16 node16 = new Node16(this);
 		return node16;
 	}
 
 	@Override
 	public Node first() {
-		if (noOfChildren == 0) {
-			return null;
-		}
+		assert noOfChildren > Node16.NODE_SIZE;
 		for (int i = 0; i < KEY_INDEX_SIZE; i++) {
 			byte index = keyIndex[i];
 			if (index != ABSENT) {
 				return child[index];
 			}
 		}
-		return null;
+		throw new IllegalStateException("Node48 should contain more than " + Node16.NODE_SIZE + " elements");
 	}
 
 	@Override
 	public Node last() {
-		if (noOfChildren == 0) {
-			return null;
-		}
+		assert noOfChildren > Node16.NODE_SIZE;
 		for (int i = KEY_INDEX_SIZE - 1; i >= 0; i--) {
 			byte index = keyIndex[i];
 			if (index != ABSENT) {
 				return child[index];
 			}
 		}
-		return null;
+		throw new IllegalStateException("Node48 should contain more than " + Node16.NODE_SIZE + " elements");
 	}
 
 	@Override

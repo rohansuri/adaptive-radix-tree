@@ -6,9 +6,7 @@ class Node256 extends InnerNode {
 
 	Node256(Node48 node) {
 		super(node);
-		if (!node.isFull()) {
-			throw new IllegalArgumentException("Given Node48 still has capacity, cannot grow into Node256.");
-		}
+		assert node.isFull();
 
 		byte[] keyIndex = node.getKeyIndex();
 		Node[] child = node.getChild();
@@ -50,11 +48,7 @@ class Node256 extends InnerNode {
 		// convert it to a bigger container type
 		// or can we do something better?
 		int index = Byte.toUnsignedInt(partialKey);
-		if (this.child[index] != null) {
-			throw new IllegalArgumentException("Cannot insert partial key " + partialKey + " that already exists in Node. "
-					+ "If you want to replace the associated child pointer, use Node#replace(byte, Node)");
-
-		}
+		assert this.child[index] == null;
 		createUplink(this, child, partialKey);
 		this.child[index] = child;
 		noOfChildren++;
@@ -64,9 +58,7 @@ class Node256 extends InnerNode {
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		int index = Byte.toUnsignedInt(partialKey);
-		if (child[index] == null) {
-			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
-		}
+		assert child[index] != null;
 		child[index] = newChild;
 		createUplink(this, newChild, partialKey);
 	}
@@ -74,9 +66,7 @@ class Node256 extends InnerNode {
 	@Override
 	public void removeChild(byte partialKey) {
 		int index = Byte.toUnsignedInt(partialKey);
-		if (child[index] == null) {
-			throw new IllegalArgumentException("Partial key " + partialKey + " does not exist in this Node.");
-		}
+		assert child[index] != null;
 		removeUplink(child[index]);
 		child[index] = null;
 		noOfChildren--;
@@ -84,7 +74,7 @@ class Node256 extends InnerNode {
 
 	@Override
 	public Node grow() {
-		throw new IllegalStateException("Span of ART is 8 bits, so Node256 is the largest node type.");
+		throw new UnsupportedOperationException("Span of ART is 8 bits, so Node256 is the largest node type.");
 	}
 
 	@Override
@@ -94,37 +84,31 @@ class Node256 extends InnerNode {
 
 	@Override
 	public Node shrink() {
-		if (!shouldShrink()) {
-			throw new IllegalStateException("Haven't crossed shrinking threshold yet");
-		}
+		assert shouldShrink();
 		Node48 node48 = new Node48(this);
 		return node48;
 	}
 
 	@Override
 	public Node first() {
-		if (noOfChildren == 0) {
-			return null;
-		}
+		assert noOfChildren > Node48.NODE_SIZE;
 		for (int i = 0; i < NODE_SIZE; i++) {
 			if (child[i] != null) {
 				return child[i];
 			}
 		}
-		return null;
+		throw new IllegalStateException("Node256 should contain more than " + Node48.NODE_SIZE + " elements");
 	}
 
 	@Override
 	public Node last() {
-		if (noOfChildren == 0) {
-			return null;
-		}
+		assert noOfChildren > Node48.NODE_SIZE;
 		for (int i = NODE_SIZE - 1; i >= 0; i--) {
 			if (child[i] != null) {
 				return child[i];
 			}
 		}
-		return null;
+		throw new IllegalStateException("Node256 should contain more than " + Node48.NODE_SIZE + " elements");
 	}
 
 	@Override

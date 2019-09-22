@@ -2,6 +2,7 @@ package com.github.rohansuri.art;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,13 +15,18 @@ import org.mockito.Mockito;
 
 
 public abstract class NodeUnitTest {
-	protected static class Pair {
+	protected static class Pair implements Comparable<Pair> {
 		final byte partialKey;
 		final Node child;
 
 		Pair(byte partialKey, Node child) {
 			this.partialKey = partialKey;
 			this.child = child;
+		}
+
+		@Override
+		public int compareTo(Pair o) {
+			return UnsignedBytes.compare(partialKey, o.partialKey);
 		}
 	}
 
@@ -169,12 +175,13 @@ public abstract class NodeUnitTest {
 	 */
 	@Test
 	public void testGreater() {
-		assertNull(node.greater(node.last().uplinkKey()));
-		// remove smallest unsigned if exists in sampleKeys
-		if (node.findChild((byte) 0) != null) {
-			node.removeChild((byte) 0);
+		Node last = node.last();
+		assertNull(node.greater(last.uplinkKey()));
+		Arrays.sort(existingData);
+		for (int i = 0; i < node.size() - 1; i++) {
+			Node greater = node.greater(existingData[i].partialKey);
+			assertEquals(existingData[i + 1].child, greater);
 		}
-		assertEquals(node.first().uplinkKey(), node.greater((byte) 0).uplinkKey());
 	}
 
 	/*
@@ -183,12 +190,13 @@ public abstract class NodeUnitTest {
 	 */
 	@Test
 	public void testLesser() {
-		assertNull(node.lesser(node.first().uplinkKey()));
-		// remove largest unsigned if exists in sampleKeys
-		if (node.findChild((byte) -1) != null) {
-			node.removeChild((byte) -1);
+		Node first = node.first();
+		assertNull(node.lesser(first.uplinkKey()));
+		Arrays.sort(existingData);
+		for (int i = 1; i < node.size(); i++) {
+			Node lesser = node.lesser(existingData[i].partialKey);
+			assertEquals(existingData[i - 1].child, lesser);
 		}
-		assertEquals(node.last().uplinkKey(), node.lesser((byte) -1).uplinkKey());
 	}
 
 	/*
@@ -200,6 +208,25 @@ public abstract class NodeUnitTest {
 	 */
 	@Test
 	public void testRemove() {
+		// since we remove two in the test
+		// we must not break constraint of a node that it must have
+		// a number of minimum elements (check node size assert in first, last assert)
+		byte minByte = Byte.MAX_VALUE, maxByte = Byte.MIN_VALUE;
+		for(int i = 0; i < existingKeys().length; i++){
+			if(existingData[i].partialKey > maxByte){
+				maxByte = existingData[i].partialKey;
+			}
+			if(existingData[i].partialKey < minByte){
+				minByte = existingData[i].partialKey;
+			}
+		}
+		Pair p = new Pair((byte)(minByte-1), Mockito.spy(AbstractNode.class));
+		assertTrue(node.addChild(p.partialKey, p.child));
+		p = new Pair((byte)(maxByte+1), Mockito.spy(AbstractNode.class));
+		if(!node.isFull()){ // need for Node4 since we add 3 elements in test setup already
+			node.addChild(p.partialKey, p.child);
+		}
+
 		int initialSize = node.size();
 
 		// remove at head
@@ -216,26 +243,16 @@ public abstract class NodeUnitTest {
 		assertEquals(initialSize - 2, node.size());
 		assertNull(tail.parent());
 
-		// remove non existent partial key
-		Assertions.assertThrows(IllegalArgumentException.class, () -> node.removeChild(tail.uplinkKey()));
-
-		assertTrue(node.addChild(tail.uplinkKey(), node));
-
-		// adding same partial key again
-		Assertions.assertThrows(IllegalArgumentException.class, () -> node.addChild(tail.uplinkKey(), node));
-
 		verifyUnsignedLexicographicOrder();
 	}
 
 	/*
-		grow before full throws
 		after growing, new node:
 		 contains same key, child mappings in same lexicographic order but with uplinks to new grown node
 		 same prefix key, no of children, uplink key, parent
 	 */
 	@Test
 	public void testGrow() {
-		Assertions.assertThrows(IllegalStateException.class, () -> node.grow());
 		List<Pair> pairs = new ArrayList<>(Arrays.asList(existingData));
 		byte i;
 		Pair pair;
@@ -257,7 +274,7 @@ public abstract class NodeUnitTest {
 
 		// hence we need to grow
 		Node grown = node.grow();
-		Assertions.assertEquals(node.size(), grown.size());
+		assertEquals(node.size(), grown.size());
 		assertEqualHeader(node, grown);
 
 		// now add will succeed

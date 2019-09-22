@@ -12,6 +12,6 @@ public class Node256UnitTest extends NodeUnitTest {
 	@Test
 	@Override
 	public void testGrow(){
-		Assertions.assertThrows(IllegalStateException.class, () -> node.grow());
+		Assertions.assertThrows(UnsupportedOperationException.class, () -> node.grow());
 	}
 }
