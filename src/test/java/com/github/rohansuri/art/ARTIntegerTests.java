@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 public class ARTIntegerTests {
 	@Test
+	// REMOVE: covered by AbstractMapTest.testValuesRemoveChangesMap
 	public void testDeletingAll8BitIntegersUsingValueCollection() {
 		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
@@ -47,6 +48,7 @@ public class ARTIntegerTests {
 	}
 
 	@Test
+	// TODO: test against AbstractNavigableMapTest
 	public void testDescendingIterator() {
 		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
@@ -70,6 +72,7 @@ public class ARTIntegerTests {
 	// we can remove this test since entrySet, valueSet, keySet iterators all use the same super remove implementation
 	// in PrivateEntryIterator
 	@Test
+	// REMOVE:covered by AbstractMapTest.testValuesIteratorRemoveChangesMap
 	public void testDeletingAll8BitIntegersUsingValueIterator() {
 		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
@@ -99,6 +102,7 @@ public class ARTIntegerTests {
 	}
 
 	@Test
+	// REMOVE: covered by AbstractMapTest.testEntrySetIteratorRemoveChangesMap
 	public void testDeletingAll8BitIntegersUsingEntrySetIterator() {
 		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
@@ -128,6 +132,7 @@ public class ARTIntegerTests {
 	}
 
 	@Test
+	// TODO: replace with AbstractNavigableMapTest firstEntry, lastEntry, floorKey, ceilKey
 	public void testInsertingAndDeletingAllInt8BitIntegers() throws ReflectiveOperationException {
 		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
 
@@ -285,6 +290,7 @@ public class ARTIntegerTests {
 
 	 */
 	@Test
+	// REMOVE: covered by our ARTIntegerTest in acc
 	public void testInsertingAndDeleting32BitIntegers() {
 		AdaptiveRadixTree<Integer, Integer> art = new AdaptiveRadixTree<>(BinaryComparables.forInteger());
 		int level = 4;
