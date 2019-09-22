@@ -184,8 +184,8 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			boolean fromStart, K lo, boolean loInclusive,
 			boolean toEnd, K hi, boolean hiInclusive) {
 		// equivalent to type check in TreeMap
-		this.loBytes = m.binaryComparable().get(lo);
-		this.hiBytes = m.binaryComparable().get(hi);
+		this.loBytes = fromStart ? null : m.binaryComparable().get(lo);
+		this.hiBytes = toEnd ? null : m.binaryComparable().get(hi);
 		if (!fromStart && !toEnd) {
 			if (m.compare(loBytes, 0, loBytes.length, hiBytes, 0, hiBytes.length) > 0)
 				throw new IllegalArgumentException("fromKey > toKey");
@@ -557,11 +557,11 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	private static final Object UNBOUNDED = new Object();
 
 	/*
-	*  Iterators for SubMaps
-	*  that understand the submap's upper and lower bound while iterating.
-	*  Fence is one of the bounds depending on the kind of iterator (ascending, descending)
-	*  and first becomes the other one to start from.
-	*/
+	 *  Iterators for SubMaps
+	 *  that understand the submap's upper and lower bound while iterating.
+	 *  Fence is one of the bounds depending on the kind of iterator (ascending, descending)
+	 *  and first becomes the other one to start from.
+	 */
 	abstract class SubMapIterator<T> implements Iterator<T> {
 		LeafNode<K, V> lastReturned;
 		LeafNode<K, V> next;
