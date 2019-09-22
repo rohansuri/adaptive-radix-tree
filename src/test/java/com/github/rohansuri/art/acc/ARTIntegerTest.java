@@ -15,8 +15,8 @@ public class ARTIntegerTest extends AbstractSortedMapTest {
 
 	private final List<Integer> sampleKeys;
 
-	public ARTIntegerTest() {
-		super("ARTIntegerTest");
+	public ARTIntegerTest(String testName) {
+		super(testName);
 		int level = 4;
 		sampleKeys = new ArrayList<>();
 		permute(sampleKeys, ByteBuffer.allocate(level), 0, level);
@@ -52,11 +52,6 @@ public class ARTIntegerTest extends AbstractSortedMapTest {
 			permute(l, num, currLevel + 1, maxLevel);
 			num.position(currLevel);
 		}
-	}
-
-	@Test
-	public void testSize() {
-		System.out.println(sampleKeys.size());
 	}
 
 	@Override
