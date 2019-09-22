@@ -37,9 +37,10 @@ class Node256 extends InnerNode {
 
 	@Override
 	public boolean addChild(byte partialKey, Node child) {
-		if (isFull()) {
-			return false;
-		}
+		// addChild would never be called on a full Node256
+		// since the corresponding findChild for any byte key
+		// would always find the byte since the Node is full!
+		assert !isFull();
 		// byte in Java is signed
 		// but we want no interpretation of the partialKey
 		// we just want to treat it as raw binary bits

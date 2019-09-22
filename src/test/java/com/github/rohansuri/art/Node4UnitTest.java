@@ -28,4 +28,13 @@ public class Node4UnitTest extends NodeUnitTest {
 	public void testShrink() {
 		Assertions.assertThrows(UnsupportedOperationException.class, () -> node.shrink());
 	}
+
+	@Test
+	public void testShouldShrinkAlwaysFalse() {
+		// remove all
+		while (node.size() != 0) {
+			node.removeChild(node.first().uplinkKey());
+		}
+		Assertions.assertFalse(node.shouldShrink());
+	}
 }
