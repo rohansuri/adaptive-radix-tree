@@ -7,45 +7,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
-public class ARTIntegerTests {
-	@Test
-	// REMOVE: covered by AbstractMapTest.testValuesRemoveChangesMap
-	public void testDeletingAll8BitIntegersUsingValueCollection() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
-
-		// insert all
-		byte i = Byte.MIN_VALUE;
-		do {
-			String value = String.valueOf(i);
-			assertNull(art.put(i, value));
-			i++;
-		}
-		while (i != Byte.MIN_VALUE);
-
-		// check all using values collection
-		Collection<String> values = art.values();
-		i = Byte.MIN_VALUE;
-		do {
-			String value = String.valueOf(i);
-			assertTrue(values.contains(value));
-			i++;
-		}
-		while (i != Byte.MIN_VALUE);
-
-		// remove one by one
-		i = Byte.MIN_VALUE;
-		do {
-			String value = String.valueOf(i);
-			values.remove(value);
-			assertFalse(values.contains(value));
-			i++;
-		}
-		while (i != Byte.MIN_VALUE);
-		assertEquals(0, values.size());
-	}
+public class ARTIntegerTest {
 
 	@Test
 	// TODO: test against AbstractNavigableMapTest
@@ -66,68 +33,6 @@ public class ARTIntegerTests {
 		while (it.hasNext()) {
 			assertEquals(i, (byte) it.next());
 			i--;
-		}
-	}
-
-	// we can remove this test since entrySet, valueSet, keySet iterators all use the same super remove implementation
-	// in PrivateEntryIterator
-	@Test
-	// REMOVE:covered by AbstractMapTest.testValuesIteratorRemoveChangesMap
-	public void testDeletingAll8BitIntegersUsingValueIterator() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
-
-		// insert all
-		byte i = Byte.MIN_VALUE;
-		do {
-			String value = String.valueOf(i);
-			assertNull(art.put(i, value));
-			i++;
-		}
-		while (i != Byte.MIN_VALUE);
-
-		// remove one by one and check if next exists
-		i = Byte.MIN_VALUE;
-		Iterator<String> it = art.values().iterator();
-		while (it.hasNext()) {
-			String value = it.next();
-			assertEquals(String.valueOf(i), value);
-			it.remove();
-			i++;
-			if (i == Byte.MIN_VALUE) {
-				break;
-			}
-			value = String.valueOf(i);
-			assertEquals(value, art.get(i));
-		}
-	}
-
-	@Test
-	// REMOVE: covered by AbstractMapTest.testEntrySetIteratorRemoveChangesMap
-	public void testDeletingAll8BitIntegersUsingEntrySetIterator() {
-		AdaptiveRadixTree<Byte, String> art = new AdaptiveRadixTree<>(BinaryComparables.forByte());
-
-		// insert all
-		byte i = Byte.MIN_VALUE;
-		do {
-			String value = String.valueOf(i);
-			assertNull(art.put(i, value));
-			i++;
-		}
-		while (i != Byte.MIN_VALUE);
-
-		// remove one by one and check if next exists
-		i = Byte.MIN_VALUE;
-		Iterator<Map.Entry<Byte, String>> it = art.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<Byte, String> entry = it.next();
-			assertEquals(i, (byte) entry.getKey());
-			it.remove();
-			i++;
-			if (i == Byte.MIN_VALUE) {
-				break;
-			}
-			String value = String.valueOf(i);
-			assertEquals(value, art.get(i));
 		}
 	}
 
@@ -281,54 +186,4 @@ public class ARTIntegerTests {
 		}
 		while (i != Short.MIN_VALUE);
 	}
-
-	/*
-			int32 (4 levels)
-			p&c of byte variants to expand to all levels:
-			0000 0000
-			0000 0001
-
-	 */
-	@Test
-	// REMOVE: covered by our ARTIntegerTest in acc
-	public void testInsertingAndDeleting32BitIntegers() {
-		AdaptiveRadixTree<Integer, Integer> art = new AdaptiveRadixTree<>(BinaryComparables.forInteger());
-		int level = 4;
-		List<Integer> l = new ArrayList<>(1 << level);
-		pc(l, ByteBuffer.allocate(level), 0, level);
-		int expectedSize = 0;
-		for (int key : l) {
-			assertNull(art.put(key, key));
-			expectedSize++;
-			assertEquals(expectedSize, art.size());
-		}
-
-		// get all
-		for(int key: l){
-			assertEquals(key, (int)art.get(key));
-		}
-
-		for (int i = 0; i < l.size(); i++) {
-			int expected = l.get(i);
-			assertEquals(expected, (int) art.remove(expected));
-			expectedSize--;
-			assertEquals(expectedSize, art.size());
-		}
-	}
-
-	private void pc(List<Integer> l, ByteBuffer num, int currLevel, int maxLevel) {
-		if (currLevel == maxLevel) {
-			int n = num.getInt(0);
-			l.add(n);
-			return;
-		}
-
-		for (int i = 0; i < 2; i++) {
-			// two choices on every level
-			num.put((byte) i);
-			pc(l, num, currLevel + 1, maxLevel);
-			num.position(currLevel);
-		}
-	}
-
 }

@@ -19,7 +19,7 @@ public class ARTIntegerTest extends AbstractSortedMapTest {
 		super("ARTIntegerTest");
 		int level = 4;
 		sampleKeys = new ArrayList<>();
-		pc(sampleKeys, ByteBuffer.allocate(level), 0, level);
+		permute(sampleKeys, ByteBuffer.allocate(level), 0, level);
 		assertEquals(2 * 2 * 2 * 256, sampleKeys.size());
 	}
 
@@ -39,7 +39,7 @@ public class ARTIntegerTest extends AbstractSortedMapTest {
 		single child nodes getting replaced by with adjusted compressed path
 
 	 */
-	private void pc(List<Integer> l, ByteBuffer num, int currLevel, int maxLevel) {
+	private void permute(List<Integer> l, ByteBuffer num, int currLevel, int maxLevel) {
 		if (currLevel == maxLevel) {
 			int n = num.getInt(0);
 			l.add(n);
@@ -49,7 +49,7 @@ public class ARTIntegerTest extends AbstractSortedMapTest {
 		int choices = currLevel == maxLevel - 1 ? 256 : 2;
 		for (int i = 0; i < choices; i++) {
 			num.put((byte) i);
-			pc(l, num, currLevel + 1, maxLevel);
+			permute(l, num, currLevel + 1, maxLevel);
 			num.position(currLevel);
 		}
 	}
