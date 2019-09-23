@@ -649,7 +649,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	// 0 if a == b
 	// -1 if a < b
 	// 1 if a > b
-	int compare(byte[] a, int aFrom, int aTo, byte[] b, int bFrom, int bTo) {
+	// note: aFrom, bFrom are exclusive bounds
+	static int compare(byte[] a, int aFrom, int aTo, byte[] b, int bFrom, int bTo) {
 		int i = aFrom, j = bFrom;
 		for (; i < aTo && j < bTo && a[i] == b[j]; i++, j++) ;
 		if (i == aTo && j == bTo) {
