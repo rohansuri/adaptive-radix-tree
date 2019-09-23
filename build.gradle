@@ -29,13 +29,18 @@ dependencies {
 	testCompile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3', classifier: 'tests'
 	testCompile group: 'com.ibm.icu', name: 'icu4j', version: '64.2'
 	//testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-migrationsupport', version: '5.5.2'
-	testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.5.2'
+	//testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.5.2'
 
 	// Use JUnit test framework
-	testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
+	// testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.26.0'
 	testCompile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+	// testCompile("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+
+	testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+	testImplementation("junit:junit:4.12")
+	testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.5.2")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
 
 
 	jmh group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
@@ -48,9 +53,34 @@ repositories {
 	mavenCentral()
 }
 
+task testJUnit4(type: Test) {
+	testLogging {
+		events "passed", "skipped", "failed", "standardOut", "standardError"
+	}
+	useJUnit()
+	filter {
+		includeTestsMatching "com.github.rohansuri.art.acc.*"
+	}
+
+	afterSuite { desc, result ->
+		if (!desc.parent) { // will match the outermost suite
+			def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+			def startItem = '|  ', endItem = '  |'
+			def repeatLength = startItem.length() + output.length() + endItem.length()
+			println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+		}
+	}
+}
+
+// https://stackoverflow.com/questions/54493166/how-to-run-junit-5-and-junit-4-test-suites-in-gradle
+
 test {
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
+	}
+
+	useJUnitPlatform {
+		includeEngines "junit-jupiter"
 	}
 
 	// https://stackoverflow.com/a/36130467/3804127
@@ -63,7 +93,6 @@ test {
 		}
 	}
 
-	//useJUnitPlatform()
 
 	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }
