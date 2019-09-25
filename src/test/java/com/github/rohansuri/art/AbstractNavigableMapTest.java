@@ -71,6 +71,24 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		assertEquals(last, nm.lastEntry());
 	}
 
+	public void testPollFirstEntry() {
+		assertNull(this.makeObject().pollFirstEntry());
+		resetFull();
+		while (!this.getMap().isEmpty()) {
+			assertEquals(this.getConfirmed().pollFirstEntry(), this.getMap().pollFirstEntry());
+			verify();
+		}
+	}
+
+	public void testPollLastEntry() {
+		assertNull(this.makeObject().pollLastEntry());
+		resetFull();
+		while (!this.getMap().isEmpty()) {
+			assertEquals(this.getConfirmed().pollLastEntry(), this.getMap().pollLastEntry());
+			verify();
+		}
+	}
+
 	/*@Test
 	public void testCeilingEntry() {
 		// each existing element, is it's own ceiling
