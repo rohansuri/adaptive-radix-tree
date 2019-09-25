@@ -1,6 +1,10 @@
 package com.github.rohansuri.art;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.collections4.BulkTest;
@@ -18,8 +22,53 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 	@Override
 	public abstract NavigableMap<K, V> makeObject();
 
+	@Override
+	public NavigableMap<K, V> getMap() {
+		return (NavigableMap<K, V>) super.getMap();
+	}
+
+	@Override
+	public NavigableMap<K, V> getConfirmed() {
+		return (NavigableMap<K, V>) super.getConfirmed();
+	}
+
+	@Override
+	public void verify() {
+		super.verify();
+
+		Set<Map.Entry<K, V>> entrySet = this.getMap().entrySet();
+		for (Map.Entry<K, V> entry : entrySet) {
+			assertEquals(this.getConfirmed().higherEntry(entry.getKey()),
+					this.getMap().higherEntry(entry.getKey()));
+			assertEquals(this.getConfirmed().higherKey(entry.getKey()),
+					this.getMap().higherKey(entry.getKey()));
+			assertEquals(this.getConfirmed().lowerEntry(entry.getKey()),
+					this.getMap().lowerEntry(entry.getKey()));
+			assertEquals(this.getConfirmed().lowerKey(entry.getKey()),
+					this.getMap().lowerKey(entry.getKey()));
+		}
+	}
+
 	public NavigableMap<K, V> makeConfirmedMap() {
 		return new TreeMap<>();
+	}
+
+	public void testFirstEntry() {
+		assertNull(this.makeObject().firstEntry());
+		NavigableMap<K, V> nm = this.makeFullMap();
+		assertEquals(nm.entrySet().iterator().next(), nm.firstEntry());
+	}
+
+	public void testLastEntry() {
+		assertNull(this.makeObject().lastEntry());
+		NavigableMap<K, V> nm = this.makeFullMap();
+		Map.Entry<K, V> last = null;
+
+		for (Map.Entry<K, V> kvEntry : nm.entrySet()) {
+			last = kvEntry;
+		}
+
+		assertEquals(last, nm.lastEntry());
 	}
 
 	/*@Test
