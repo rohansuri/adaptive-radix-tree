@@ -1,13 +1,12 @@
 package com.github.rohansuri.art.acc;
 
 import java.util.NavigableMap;
-import java.util.SortedMap;
 
+import com.github.rohansuri.art.AbstractNavigableMapTest;
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
 import junit.framework.Test;
 import org.apache.commons.collections4.BulkTest;
-import org.apache.commons.collections4.map.AbstractSortedMapTest;
 
 public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 

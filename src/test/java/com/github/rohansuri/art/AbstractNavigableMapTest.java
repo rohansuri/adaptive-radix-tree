@@ -1,11 +1,9 @@
-package com.github.rohansuri.art.acc;
+package com.github.rohansuri.art;
 
 import java.util.NavigableMap;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.collections4.BulkTest;
-import org.apache.commons.collections4.map.AbstractMapTest;
 import org.apache.commons.collections4.map.AbstractSortedMapTest;
 
 public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTest<K, V> {
@@ -85,60 +83,60 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 
 		@Override
 		public BulkTest bulkTestHeadMap() {
-			return new AbstractNavigableMapTest.TestHeadMap<>(this);
+			return new TestDescendingMap.TestHeadMap<>(this);
 		}
 
 		@Override
 		public BulkTest bulkTestTailMap() {
-			return new AbstractNavigableMapTest.TestTailMap<>(this);
+			return new TestDescendingMap.TestTailMap<>(this);
 		}
 
 		@Override
 		public BulkTest bulkTestSubMap() {
-			return new AbstractNavigableMapTest.TestSubMap<>(this);
-		}
-	}
-
-	// TODO: explain the need (TestHeadMap doesn't override makeConfirmedMap to main's impl)
-	public static class TestHeadMap<K, V> extends AbstractSortedMapTest.TestHeadMap<K, V> {
-		private final AbstractNavigableMapTest<K, V> main;
-
-		public TestHeadMap(AbstractNavigableMapTest<K, V> main) {
-			super(main);
-			this.main = main;
+			return new TestDescendingMap.TestSubMap<>(this);
 		}
 
-		@Override
-		public NavigableMap<K, V> makeConfirmedMap() {
-			return this.main.makeConfirmedMap();
-		}
-	}
+		// TODO: explain the need (TestHeadMap doesn't override makeConfirmedMap to main's impl)
+		public static class TestHeadMap<K, V> extends AbstractSortedMapTest.TestHeadMap<K, V> {
+			private final AbstractNavigableMapTest<K, V> main;
 
-	public static class TestSubMap<K, V> extends AbstractSortedMapTest.TestSubMap<K, V> {
-		private final AbstractNavigableMapTest<K, V> main;
+			public TestHeadMap(AbstractNavigableMapTest<K, V> main) {
+				super(main);
+				this.main = main;
+			}
 
-		public TestSubMap(AbstractNavigableMapTest<K, V> main) {
-			super(main);
-			this.main = main;
-		}
-
-		@Override
-		public NavigableMap<K, V> makeConfirmedMap() {
-			return this.main.makeConfirmedMap();
-		}
-	}
-
-	public static class TestTailMap<K, V> extends AbstractSortedMapTest.TestTailMap<K, V> {
-		private final AbstractNavigableMapTest<K, V> main;
-
-		public TestTailMap(AbstractNavigableMapTest<K, V> main) {
-			super(main);
-			this.main = main;
+			@Override
+			public NavigableMap<K, V> makeConfirmedMap() {
+				return this.main.makeConfirmedMap();
+			}
 		}
 
-		@Override
-		public NavigableMap<K, V> makeConfirmedMap() {
-			return this.main.makeConfirmedMap();
+		public static class TestSubMap<K, V> extends AbstractSortedMapTest.TestSubMap<K, V> {
+			private final AbstractNavigableMapTest<K, V> main;
+
+			public TestSubMap(AbstractNavigableMapTest<K, V> main) {
+				super(main);
+				this.main = main;
+			}
+
+			@Override
+			public NavigableMap<K, V> makeConfirmedMap() {
+				return this.main.makeConfirmedMap();
+			}
+		}
+
+		public static class TestTailMap<K, V> extends AbstractSortedMapTest.TestTailMap<K, V> {
+			private final AbstractNavigableMapTest<K, V> main;
+
+			public TestTailMap(AbstractNavigableMapTest<K, V> main) {
+				super(main);
+				this.main = main;
+			}
+
+			@Override
+			public NavigableMap<K, V> makeConfirmedMap() {
+				return this.main.makeConfirmedMap();
+			}
 		}
 	}
 
