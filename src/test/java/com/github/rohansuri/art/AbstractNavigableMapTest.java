@@ -115,6 +115,22 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		}
 	}
 
+	public void testCeilingKey() {
+		assertNull(this.makeObject().ceilingKey(this.getSampleKeys()[0]));
+		resetFull();
+		for (int i = 0; i < this.getMap().size(); i++) {
+			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
+			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
+			assertEquals(removed, removedFromConfirmed);
+			assertEquals(this.getMap().ceilingKey(removed.getKey()),
+					this.getConfirmed().ceilingKey(removedFromConfirmed.getKey()));
+			verify();
+			this.getMap().put(removed.getKey(), removed.getValue());
+			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
+			verify();
+		}
+	}
+
 	public void testFloorEntry() {
 		assertNull(this.makeObject().floorEntry(this.getSampleKeys()[0]));
 		resetFull();
@@ -124,6 +140,22 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 			assertEquals(removed, removedFromConfirmed);
 			assertEquals(this.getMap().floorEntry(removed.getKey()),
 					this.getConfirmed().floorEntry(removedFromConfirmed.getKey()));
+			verify();
+			this.getMap().put(removed.getKey(), removed.getValue());
+			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
+			verify();
+		}
+	}
+
+	public void testFloorKey() {
+		assertNull(this.makeObject().floorKey(this.getSampleKeys()[0]));
+		resetFull();
+		for (int i = 0; i < this.getMap().size(); i++) {
+			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
+			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
+			assertEquals(removed, removedFromConfirmed);
+			assertEquals(this.getMap().floorKey(removed.getKey()),
+					this.getConfirmed().floorKey(removedFromConfirmed.getKey()));
 			verify();
 			this.getMap().put(removed.getKey(), removed.getValue());
 			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
