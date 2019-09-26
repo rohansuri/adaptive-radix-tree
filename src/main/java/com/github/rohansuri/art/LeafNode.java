@@ -154,6 +154,11 @@ class LeafNode<K, V> extends AbstractNode implements Map.Entry<K, V> {
 		return (getKey() == null ? 0 : getKey().hashCode()) ^
 				(getValue() == null ? 0 : getValue().hashCode());
 	}
+
+	@Override
+	public String toString() {
+		return key + "=" + value;
+	}
 }
 
 

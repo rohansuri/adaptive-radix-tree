@@ -4,10 +4,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.collections4.BulkTest;
+import org.apache.commons.collections4.keyvalue.DefaultMapEntry;
 import org.apache.commons.collections4.map.AbstractSortedMapTest;
 
 public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTest<K, V> {
@@ -35,7 +35,7 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 	@Override
 	public void verify() {
 		super.verify();
-
+		// just as org.apache.commons.collections4.set.AbstractNavigableSetTest
 		Set<Map.Entry<K, V>> entrySet = this.getMap().entrySet();
 		for (Map.Entry<K, V> entry : entrySet) {
 			assertEquals(this.getConfirmed().higherEntry(entry.getKey()),
@@ -46,6 +46,16 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 					this.getMap().lowerEntry(entry.getKey()));
 			assertEquals(this.getConfirmed().lowerKey(entry.getKey()),
 					this.getMap().lowerKey(entry.getKey()));
+			assertEquals(this.getConfirmed().lowerKey(entry.getKey()),
+					this.getMap().lowerKey(entry.getKey()));
+			assertEquals(this.getConfirmed().ceilingEntry(entry.getKey()),
+					this.getMap().ceilingEntry(entry.getKey()));
+			assertEquals(this.getConfirmed().ceilingKey(entry.getKey()),
+					this.getMap().ceilingKey(entry.getKey()));
+			assertEquals(this.getConfirmed().floorEntry(entry.getKey()),
+					this.getMap().floorEntry(entry.getKey()));
+			assertEquals(this.getConfirmed().floorKey(entry.getKey()),
+					this.getMap().floorKey(entry.getKey()));
 		}
 	}
 
@@ -89,19 +99,57 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		}
 	}
 
-	/*@Test
 	public void testCeilingEntry() {
-		// each existing element, is it's own ceiling
+		assertNull(this.makeObject().ceilingEntry(this.getSampleKeys()[0]));
+		resetFull();
+		for (int i = 0; i < this.getMap().size(); i++) {
+			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
+			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
+			assertEquals(removed, removedFromConfirmed);
+			assertEquals(this.getMap().ceilingEntry(removed.getKey()),
+					this.getConfirmed().ceilingEntry(removedFromConfirmed.getKey()));
+			verify();
+			this.getMap().put(removed.getKey(), removed.getValue());
+			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
+			verify();
+		}
 	}
 
-	@Test
-	public void testHigherKey() {
+	public void testFloorEntry() {
+		assertNull(this.makeObject().floorEntry(this.getSampleKeys()[0]));
+		resetFull();
+		for (int i = 0; i < this.getMap().size(); i++) {
+			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
+			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
+			assertEquals(removed, removedFromConfirmed);
+			assertEquals(this.getMap().floorEntry(removed.getKey()),
+					this.getConfirmed().floorEntry(removedFromConfirmed.getKey()));
+			verify();
+			this.getMap().put(removed.getKey(), removed.getValue());
+			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
+			verify();
+		}
+	}
 
-	}*/
+	/*
+		copy of Entry is needed because Map.Entry is undefined after the map is modified.
+		(see Javadoc of Map.Entry)
+		https://stackoverflow.com/questions/45863470/treemap-iterator-remove-modifies-the-last-entry
+	 */
+	private Map.Entry<K, V> removeIth(Map<K, V> m, int pos) {
+		Iterator<Map.Entry<K, V>> it = m.entrySet().iterator();
+		Map.Entry<K, V> toRemove = null;
+		for (int j = 0; j <= pos; j++) {
+			toRemove = it.next();
+		}
+		DefaultMapEntry<K, V> removed = new DefaultMapEntry<>(toRemove);
+		it.remove();
+		return removed;
+	}
+
 
 	public BulkTest bulkTestDescendingMap() {
 		return new TestDescendingMap<>(this);
-		//return null;
 	}
 
 	public static class TestDescendingMap<K, V> extends AbstractNavigableMapTest<K, V> {
