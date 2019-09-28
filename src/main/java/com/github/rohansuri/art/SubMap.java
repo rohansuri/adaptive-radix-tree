@@ -236,7 +236,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		// if we have a lower bound, then this key ought to be higher than our lower bound (closed, hence including).
 		// if we have an upper bound, then this key ought to be lower than our upper bound (closed, hence including).
 		return (fromStart || m.compare(key, loBytes) >= 0)
-				&& (toEnd || m.compare(hiBytes, key) >= 0);
+				&& (toEnd || m.compare(key, hiBytes) <= 0);
 	}
 
 	final boolean inRange(K key, boolean inclusive) {

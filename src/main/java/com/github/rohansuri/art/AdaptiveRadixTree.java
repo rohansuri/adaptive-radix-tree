@@ -640,11 +640,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return compare(k1Bytes, 0, k1Bytes.length, k2Bytes, 0, k2Bytes.length);
 	}
 
-	int compare(byte[] k1Bytes, K k2) {
-		byte[] k2Bytes = binaryComparable.get(k2);
-		return compare(k1Bytes, 0, k1Bytes.length, k2Bytes, 0, k2Bytes.length);
-	}
-
 	// 0 if a == b
 	// -1 if a < b
 	// 1 if a > b
