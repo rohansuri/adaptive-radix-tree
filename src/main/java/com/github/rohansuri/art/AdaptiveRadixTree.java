@@ -308,9 +308,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			if (newDepth == -1) { // matchCompressedPath already inserted the leaf node for us
 				return null;
 			}
-
 			// we're now at line 26 in paper
-
 			byte partialKey = keyBytes[newDepth];
 			Node child = node.findChild(partialKey);
 			if (child == null) {
@@ -410,7 +408,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// could that be the case?
 		// I think so! What if keys inserted are BAR, BOZ, BBC?
 		// with nothing common?
-		if (node.prefixLen < 1) { // compressed path empty
+		if (node.prefixLen == 0) { // compressed path empty
 			return depth;
 		}
 

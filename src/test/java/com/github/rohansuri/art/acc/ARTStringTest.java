@@ -23,12 +23,19 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 		return new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
 	}
 
+	/*
+	 	CLEANUP:
+	 	changing sample keys to introduce baaar, baaaz, baoz
+		which cause branchOut (since lcp is not totally equal)
+
+	 	changing sample keys to introduce fooooooooz, fooooooood, fooooooooe
+	 	which cause optimistic path compression jump
+
+	 	but better to write out a separate test that brings this out behaviour
+	 */
 	@Override
 	public String[] getSampleKeys() {
-		// changing sample keys to introduce baaar, baaaz, baoz
-		// which cause branchOut
-		// but better to write out a separate test that brings this out behaviour
-		Object[] result = new String[] {"gosh", "foo", "baaar", "baaaz", "tmp", "baoz", "golly", "gee", "hello", "goodbye", "we'll", "see", "you", "all", "again", "key", "key2", "nonnullkey"};
+		Object[] result = new String[] {"fooooooooz", "fooooooood", "fooooooooe", "baaar", "baaaz", "tmp", "baoz", "gee", "hello", "goodbye", "we'll", "see", "you", "all", "again", "key", "key2", "nonnullkey"};
 		return (String[]) result;
 	}
 
