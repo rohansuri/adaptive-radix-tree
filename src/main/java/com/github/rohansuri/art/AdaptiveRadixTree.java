@@ -169,7 +169,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// TODO: unit test this
-	private void updateCompressedPathOfOnlyChild(Node4 toCompress) {
+	private static void updateCompressedPathOfOnlyChild(Node4 toCompress) {
 		Node onlyChild = toCompress.getChild()[0];
 		assert onlyChild != null;
 		if (!(onlyChild instanceof LeafNode)) {
@@ -369,7 +369,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// what is worse? having to copy the path compressed before and later discarding it
 		// or having to recopy the common prefix?
 		Node4 pathCompressedNode = new Node4();
-		int lcp = longestCommonPrefix(leaf, keyBytes, pathCompressedNode, depth);
+		int lcp = setLongestCommonPrefix(leaf, keyBytes, pathCompressedNode, depth);
 		// why both conditions needed?
 		// think of BAR present as lazily stored and we inserting BARCA
 		// lcp = 3 and depth + lcp == leaf.getKey().length i.e 0 + 3 == len(BAR) = 3
@@ -395,7 +395,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return pathCompressedNode;
 	}
 
-	private void updateCompressedPath(InnerNode node, int lcp) {
+	private static void updateCompressedPath(InnerNode node, int lcp) {
 		// lcp th byte was the differing one, so we start shifting from lcp + 1
 		// from the lcp th + 1 index till whatever prefix key is left, shift that to left
 		for (int i = lcp + 1, j = 0; i < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && i < node.prefixLen; i++, j++) {
@@ -501,12 +501,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		pathCompressedNode.addChild(differ, newLeaf);
 	}
 
-	private int longestCommonPrefix(LeafNode node, byte[] key, Node4 pathCompressedNode, int depth) {
+	static int setLongestCommonPrefix(LeafNode node, byte[] key, Node4 pathCompressedNode, int depth) {
 		// both leaf node's key and new node's key should be compared from depth index
 		int lcp = 0;
 		byte[] leafKey = node.getKeyBytes(); // loadKey in paper
 		for (; depth < leafKey.length && depth < key.length && leafKey[depth] == key[depth]; depth++, lcp++) {
-			// this should be nicely branch predicated since PESSIMISTIC_PATH_COMPRESSION_LIMIT
+			// this should be nicely branch predicted since PESSIMISTIC_PATH_COMPRESSION_LIMIT
 			// is a constant
 			if (lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
 				pathCompressedNode.prefixKeys[lcp] = key[depth];

@@ -55,6 +55,7 @@ repositories {
 }
 
 tasks.withType(Test) {
+	enableAssertions = true
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
 	}
@@ -92,6 +93,6 @@ test {
 	useJUnitPlatform {
 		includeEngines "junit-jupiter"
 	}
-	dependsOn testJUnit4
+	//dependsOn testJUnit4
 	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }

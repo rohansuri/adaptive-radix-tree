@@ -31,6 +31,7 @@ abstract class InnerNode extends AbstractNode {
 		this.prefixKeys = node.prefixKeys;
 	}
 
+	// CLEANUP: move to test utils
 	byte[] getValidPrefixKey() {
 		int limit = Math.min(PESSIMISTIC_PATH_COMPRESSION_LIMIT, prefixLen);
 		byte[] valid = new byte[limit];
