@@ -241,7 +241,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// is compressed path equal/more/lesser (0, 1, -1) than key
-	private int compareCompressedPath(InnerNode node, byte[] key, int depth) {
+	static int compareCompressedPath(InnerNode node, byte[] key, int depth) {
 		byte[] prefix = node.prefixKeys;
 		int upperLimitForPessimisticMatch = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
 		// limit key because if key length greater than compressed path
