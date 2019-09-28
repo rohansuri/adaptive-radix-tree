@@ -394,10 +394,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return pathCompressedNode;
 	}
 
-	static void updateCompressedPath(InnerNode node, int lcp) {
+	static void removeLCPFromCompressedPath(InnerNode node, int lcp) {
 		// lcp th byte was the differing one, so we start shifting from lcp + 1
 		// from the lcp th + 1 index till whatever prefix key is left, shift that to left
 		int end = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
+		assert lcp < end;
 		for (int i = lcp + 1, j = 0; i < end; i++, j++) {
 			node.prefixKeys[j] = node.prefixKeys[i];
 		}
@@ -415,11 +416,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 		// match pessimistic compressed path
 		int lcp = 0;
-		// it is important to have both prefixLen and prefixKeys.Length checks
-		// the first one would incorporate the optimistic prefixLen as well
-		// where it is more than 8 (prefixKeys size)
-		// therefore we need to constraint with both when matching for pessimistic compressed path
-		for (; lcp < node.prefixLen && depth < keyBytes.length && lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT /*8 */ && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
+		int end = Math.min(node.prefixLen, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
+		for (; lcp < end && depth < keyBytes.length && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
 
 		// can lcp be 0? yes
@@ -434,7 +432,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// 4) pessimistic path did not match, we have to split
 		// purpose of pessimistic prefixKeys match is to serve as safety net and early return.
 
-		if (lcp <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && lcp == node.prefixLen) {
+		if (lcp == node.prefixLen) {
 			return depth;
 		}
 		else if (lcp == InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
@@ -468,7 +466,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 
 		// remove lcp common prefix key from "this" node
-		updateCompressedPath(node, lcp);
+		removeLCPFromCompressedPath(node, lcp);
 
 		// replace "this" node with newNode
 		// initialDepth can be zero even if prefixLen is not zero.

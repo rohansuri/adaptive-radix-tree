@@ -113,7 +113,7 @@ public class ARTUnitTest {
 		AdaptiveRadixTree.updateCompressedPathOfOnlyChild(node);
 		Assertions.assertEquals(11, onlyChild.prefixLen);
 		byte[] expected = new byte[InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT];
-		for(int i = 0; i < node.prefixLen; i++){
+		for (int i = 0; i < node.prefixLen; i++) {
 			expected[i] = node.prefixKeys[i];
 		}
 		expected[node.prefixLen] = linkingKey;
@@ -132,11 +132,12 @@ public class ARTUnitTest {
 		AdaptiveRadixTree.updateCompressedPathOfOnlyChild(node);
 		Assertions.assertEquals(10, onlyChild.prefixLen);
 		expected = new byte[InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT];
-		for(int i = 0; i < node.prefixLen; i++){
+		for (int i = 0; i < node.prefixLen; i++) {
 			expected[i] = node.prefixKeys[i];
 		}
 		expected[node.prefixLen] = linkingKey;
-		for(int i = node.prefixLen + 1, j = 0; i < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && j < onlyChildPrefix.length(); i++, j++){
+		for (int i = node.prefixLen + 1, j = 0; i < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && j < onlyChildPrefix
+				.length(); i++, j++) {
 			expected[i] = onlyChildPrefix.getBytes()[j];
 		}
 		Assertions.assertArrayEquals(expected, onlyChild.getValidPrefixKey());
@@ -153,14 +154,42 @@ public class ARTUnitTest {
 		System.arraycopy(onlyChildPrefix.getBytes(), 0, onlyChild.prefixKeys, 0, onlyChildPrefix.length());
 		AdaptiveRadixTree.updateCompressedPathOfOnlyChild(node);
 		Assertions.assertEquals(7, onlyChild.prefixLen);
-		expected = new byte[InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT-1];
-		for(int i = 0; i < node.prefixLen; i++){
+		expected = new byte[InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT - 1];
+		for (int i = 0; i < node.prefixLen; i++) {
 			expected[i] = node.prefixKeys[i];
 		}
 		expected[node.prefixLen] = linkingKey;
-		for(int i = node.prefixLen + 1, j = 0; i < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && j < onlyChildPrefix.length(); i++, j++){
+		for (int i = node.prefixLen + 1, j = 0; i < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && j < onlyChildPrefix
+				.length(); i++, j++) {
 			expected[i] = onlyChildPrefix.getBytes()[j];
 		}
 		Assertions.assertArrayEquals(expected, onlyChild.getValidPrefixKey());
+	}
+
+	@Test
+	public void testRemoveLCPFromCompressedPath() {
+		InnerNode node = new Node4();
+		String compressedPath = "abcd";
+		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
+		node.prefixLen = compressedPath.length();
+		// LCP = 3, hence "d" would be the differing partial key, therefore new compressed path
+		// would be "", hence 0 length
+		AdaptiveRadixTree.removeLCPFromCompressedPath(node, 3);
+		Assertions.assertEquals(0, node.prefixLen);
+
+		// LCP = 2, hence "c" would be differing partial key
+		// and new compressed path would be "d"
+		node.prefixLen = compressedPath.length();
+		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
+		AdaptiveRadixTree.removeLCPFromCompressedPath(node, 2);
+		Assertions.assertEquals(1, node.prefixLen);
+		Assertions.assertArrayEquals("d".getBytes(), node.getValidPrefixKey());
+
+		// LCP = 4, does not obey constraint of method
+		node.prefixLen = compressedPath.length();
+		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
+		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
+				.removeLCPFromCompressedPath(node, compressedPath.length()));
+
 	}
 }
