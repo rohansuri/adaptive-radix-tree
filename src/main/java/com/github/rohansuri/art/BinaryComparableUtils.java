@@ -3,6 +3,11 @@ package com.github.rohansuri.art;
 import java.io.ByteArrayOutputStream;
 
 class BinaryComparableUtils {
+	private BinaryComparableUtils() {
+		// Effective Java Item 4
+		throw new AssertionError();
+	}
+
 	// terminator should be the smallest allowed byte value to obey binary comparability of strings
 	static final byte[] TERMINATOR = new byte[] {0, 0};
 	// smallest allowed byte value 0 will have to be mapped to 01

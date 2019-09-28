@@ -10,6 +10,7 @@ import static com.github.rohansuri.art.BinaryComparableUtils.unsigned;
 public class BinaryComparables {
 
 	private BinaryComparables() {
+		throw new AssertionError();
 	}
 
 	public static BinaryComparable<Integer> forInteger() {
