@@ -23,4 +23,13 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 		return new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
 	}
 
+	@Override
+	public String[] getSampleKeys() {
+		// changing sample keys to introduce baaar, baaaz, baoz
+		// which cause branchOut
+		// but better to write out a separate test that brings this out behaviour
+		Object[] result = new String[] {"gosh", "foo", "baaar", "baaaz", "tmp", "baoz", "golly", "gee", "hello", "goodbye", "we'll", "see", "you", "all", "again", "key", "key2", "nonnullkey"};
+		return (String[]) result;
+	}
+
 }

@@ -167,7 +167,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node onlyChild = toCompress.getChild()[0];
 		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
 	}
-	
+
 	static void updateCompressedPathOfOnlyChild(Node4 toCompress) {
 		Node onlyChild = toCompress.getChild()[0];
 		assert onlyChild != null;
@@ -394,10 +394,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return pathCompressedNode;
 	}
 
-	private static void updateCompressedPath(InnerNode node, int lcp) {
+	static void updateCompressedPath(InnerNode node, int lcp) {
 		// lcp th byte was the differing one, so we start shifting from lcp + 1
 		// from the lcp th + 1 index till whatever prefix key is left, shift that to left
-		for (int i = lcp + 1, j = 0; i < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT && i < node.prefixLen; i++, j++) {
+		int end = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
+		for (int i = lcp + 1, j = 0; i < end; i++, j++) {
 			node.prefixKeys[j] = node.prefixKeys[i];
 		}
 		node.prefixLen = node.prefixLen - lcp - 1;

@@ -209,6 +209,11 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		}
 
 		@Override
+		public K[] getSampleKeys(){
+			return this.main.getSampleKeys();
+		}
+
+		@Override
 		public NavigableMap<K, V> makeObject() {
 			return this.main.makeObject().descendingMap();
 		}
