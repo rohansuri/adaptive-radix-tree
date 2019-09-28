@@ -10,6 +10,7 @@ plugins {
 	// Apply the java-library plugin to add support for Java Library
 	id 'java-library'
 	id "me.champeau.gradle.jmh" version "0.4.7"
+	id 'jacoco'
 }
 
 jmh {
@@ -53,15 +54,11 @@ repositories {
 	mavenCentral()
 }
 
-task testJUnit4(type: Test) {
+tasks.withType(Test) {
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
 	}
-	useJUnit()
-	filter {
-		includeTestsMatching "com.github.rohansuri.art.acc.*"
-	}
-
+	// https://stackoverflow.com/a/36130467/3804127
 	afterSuite { desc, result ->
 		if (!desc.parent) { // will match the outermost suite
 			def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
@@ -72,27 +69,29 @@ task testJUnit4(type: Test) {
 	}
 }
 
+
 // https://stackoverflow.com/questions/54493166/how-to-run-junit-5-and-junit-4-test-suites-in-gradle
+task testJUnit4(type: Test) {
+	useJUnit()
+	filter {
+		includeTestsMatching "com.github.rohansuri.art.acc.*"
+	}
+}
+
+task jacocoRootReport(type: JacocoReport) {
+	executionData = project.fileTree(dir: '.', include: '**/build/jacoco/*.exec')
+	additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
+	sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+	classDirectories = files(sourceSets.main.output)
+}
 
 test {
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
 	}
-
 	useJUnitPlatform {
 		includeEngines "junit-jupiter"
 	}
-
-	// https://stackoverflow.com/a/36130467/3804127
-	afterSuite { desc, result ->
-		if (!desc.parent) { // will match the outermost suite
-			def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-			def startItem = '|  ', endItem = '  |'
-			def repeatLength = startItem.length() + output.length() + endItem.length()
-			println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
-		}
-	}
-
-
+	dependsOn testJUnit4
 	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }
