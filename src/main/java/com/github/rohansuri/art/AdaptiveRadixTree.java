@@ -167,9 +167,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node onlyChild = toCompress.getChild()[0];
 		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
 	}
-
-	// TODO: unit test this
-	private static void updateCompressedPathOfOnlyChild(Node4 toCompress) {
+	
+	static void updateCompressedPathOfOnlyChild(Node4 toCompress) {
 		Node onlyChild = toCompress.getChild()[0];
 		assert onlyChild != null;
 		if (!(onlyChild instanceof LeafNode)) {
