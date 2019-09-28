@@ -449,10 +449,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	// TODO: write a unit test to assert on before and after node structures (after branching out)
 	static <K, V> Node branchOut(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth) {
 		// pessimistic prefix doesn't match entirely, we have to branch
 		// BAR, BAZ inserted, now inserting BOZ
+		assert lcp < node.prefixLen && lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT;
 
 		int initialDepth = depth - lcp;
 

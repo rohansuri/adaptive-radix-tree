@@ -241,4 +241,39 @@ public class ARTUnitTest {
 				.removeLCPFromCompressedPath(node, compressedPath.length()));
 
 	}
+
+	@Test
+	public void testBranchOut() {
+		InnerNode node = new Node4();
+		BinaryComparable<String> bc = BinaryComparables.forUTF8();
+		String compressedPath = "abcxyz";
+		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
+		node.prefixLen = compressedPath.length();
+		String key = "xxabcdef";
+		String value = "value";
+		// lcp == "abc"
+		Node newNode = AdaptiveRadixTree.branchOut(node, bc.get(key), key, value, 3, 5);
+		Assertions.assertEquals(2, newNode.size());
+		Assertions.assertEquals(node, newNode.findChild((byte) 'x'));
+		Node leaf = newNode.findChild((byte) 'd');
+		Assertions.assertTrue(leaf instanceof LeafNode);
+		Assertions.assertEquals(key, ((LeafNode) leaf).getKey());
+		Assertions.assertEquals(value, ((LeafNode) leaf).getValue());
+		Assertions.assertEquals(3, ((InnerNode) newNode).prefixLen);
+		Assertions.assertArrayEquals("abc".getBytes(), ((InnerNode) newNode).getValidPrefixKey());
+
+		// test removeLCPFromCompressedPath
+		Assertions.assertEquals(2, node.prefixLen);
+		Assertions.assertArrayEquals("yz".getBytes(), node.getValidPrefixKey());
+
+		// obey constraints
+		node.prefixLen = 1;
+		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
+				.branchOut(node, bc.get(key), key, value, 3, 5));
+
+		node.prefixLen = 10;
+		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
+				.branchOut(node, bc.get(key), key, value, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, 5));
+
+	}
 }
