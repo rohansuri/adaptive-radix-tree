@@ -437,7 +437,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			return depth + (node.prefixLen - InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		}
 		else {
-			branchOut(node, keyBytes, key, value, lcp, depth, prevDepth);
+			Node newNode = branchOut(node, keyBytes, key, value, lcp, depth);
+			// replace "this" node with newNode
+			// initialDepth can be zero even if prefixLen is not zero.
+			// the root node could have a prefix too, for example after insertions of
+			// BAR, BAZ? prefix would be BA kept in the root node itself
+			replace(depth - lcp, keyBytes, prevDepth, newNode);
 			size++;
 			modCount++;
 			return -1; // we've already inserted the leaf node, caller needs to do nothing more
@@ -445,7 +450,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// TODO: write a unit test to assert on before and after node structures (after branching out)
-	private void branchOut(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth, Node prevDepth) {
+	static <K, V> Node branchOut(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth) {
 		// pessimistic prefix doesn't match entirely, we have to branch
 		// BAR, BAZ inserted, now inserting BOZ
 
@@ -465,12 +470,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 		// remove lcp common prefix key from "this" node
 		removeLCPFromCompressedPath(node, lcp);
-
-		// replace "this" node with newNode
-		// initialDepth can be zero even if prefixLen is not zero.
-		// the root node could have a prefix too, for example after insertions of
-		// BAR, BAZ? prefix would be BA kept in the root node itself
-		replace(initialDepth, keyBytes, prevDepth, branchOut);
+		return branchOut;
 	}
 
 
