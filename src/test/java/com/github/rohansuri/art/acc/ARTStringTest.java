@@ -1,10 +1,12 @@
 package com.github.rohansuri.art.acc;
 
+import java.util.Arrays;
 import java.util.NavigableMap;
 
 import com.github.rohansuri.art.AbstractNavigableMapTest;
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
+import com.github.rohansuri.art.NavigableKeySetStringTest;
 import junit.framework.Test;
 import org.apache.commons.collections4.BulkTest;
 
@@ -39,4 +41,9 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 		return (String[]) result;
 	}
 
+	// since default sample keys in AbstractNavigableSet are integers
+	@Override
+	public BulkTest bulkTestNavigableKeySet() {
+		return new NavigableKeySetStringTest(this);
+	}
 }

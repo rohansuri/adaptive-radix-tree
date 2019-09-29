@@ -3,12 +3,14 @@ package com.github.rohansuri.art;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.collections4.BulkTest;
 import org.apache.commons.collections4.keyvalue.DefaultMapEntry;
 import org.apache.commons.collections4.map.AbstractSortedMapTest;
+import org.apache.commons.collections4.set.AbstractNavigableSetTest;
 
 public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTest<K, V> {
 	public AbstractNavigableMapTest(String testName) {
@@ -184,12 +186,70 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		return new TestDescendingMap<>(this);
 	}
 
+	public BulkTest bulkTestNavigableKeySet() {
+		return new TestNavigableKeySet<>(this);
+	}
+
+	public static class TestNavigableKeySet<K, V> extends AbstractNavigableSetTest<K> {
+		private final AbstractNavigableMapTest<K, V> main;
+
+		public TestNavigableKeySet(AbstractNavigableMapTest<K, V> main) {
+			super("TestNavigableKeySet");
+			this.main = main;
+		}
+
+		// although the view does not support element add,
+		// the map could be pre filled and then we test
+		// over it's view
+		@Override
+		public NavigableSet<K> makeFullCollection() {
+			NavigableMap<K, V> map = this.main.makeObject();
+			K[] elements = getFullElements();
+			for (K element : elements) {
+				// all same values, doesn't matter since we're testing a "KeySet"
+				map.put(element, this.main.getSampleValues()[0]);
+			}
+			return map.navigableKeySet();
+		}
+
+		// false since it is just a view
+		@Override
+		public boolean isAddSupported() {
+			return false;
+		}
+
+		// since ART doesn't support null keys, the key set also cannot
+		@Override
+		public boolean isNullSupported() {
+			return false;
+		}
+
+		@Override
+		public NavigableSet<K> makeObject() {
+			return this.main.makeObject().navigableKeySet();
+		}
+	}
+
 	public static class TestDescendingMap<K, V> extends AbstractNavigableMapTest<K, V> {
 		private final AbstractNavigableMapTest<K, V> main;
 
 		public TestDescendingMap(AbstractNavigableMapTest<K, V> main) {
 			super("TestDescendingMap");
 			this.main = main;
+		}
+
+		// need to override since TestDescendingMap runs all tests over
+		// vanilla AbstractNavigableMapTest.
+		// Vanilla AbstractNavigableTest's keySet test
+		// is creating integer keys by default
+		// but we want to delegate to whatever main's version is.
+		// In general it would be best to override all tests and call main's version
+		// use composition here rather than inheritance.
+		// have a ForwardingAbstractNavigableTest
+		// that calls all tests on passed in AbstractNavigableMapTest
+		@Override
+		public BulkTest bulkTestNavigableKeySet() {
+			return this.main.bulkTestNavigableKeySet();
 		}
 
 		public void resetFull() {
@@ -209,7 +269,7 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		}
 
 		@Override
-		public K[] getSampleKeys(){
+		public K[] getSampleKeys() {
 			return this.main.getSampleKeys();
 		}
 
