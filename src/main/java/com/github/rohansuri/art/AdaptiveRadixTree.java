@@ -213,7 +213,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// then skip over those many prefixLen bytes from key
 			// and do findChild and continue search over that child.
 			// if incomplete match, then we return null.
-			if (!matchesCompressedPathCompletely((InnerNode) node, key, depth)) {
+			// TODO: small optimisation could be done to check if key length left is == length of compressed path
+			if (compareCompressedPath((InnerNode) node, key, depth) != 0) {
 				return null;
 			}
 
@@ -227,17 +228,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			depth++;
 			node = nextNode;
 		}
-	}
-
-	private boolean matchesCompressedPathCompletely(InnerNode node, byte[] key, int depth) {
-		int lcp;
-		byte[] prefix = node.prefixKeys;
-		int upperLimitForPessimisticMatch = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
-		for (lcp = 0; lcp < upperLimitForPessimisticMatch
-				&& depth < key.length
-				&& prefix[lcp] == key[depth]; lcp++, depth++)
-			;
-		return (lcp == upperLimitForPessimisticMatch);
 	}
 
 	// is compressed path equal/more/lesser (0, 1, -1) than key

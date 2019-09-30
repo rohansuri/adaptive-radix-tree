@@ -73,7 +73,7 @@ public class ARTUnitTest {
 
 
 	@Test
-	public void testLongestCommonPrefix() {
+	public void testSetLongestCommonPrefix() {
 		// common prefix len more than pessimistic storage
 		String leafKey = "xxabcdefghijk";
 		String key = "xxabcdefghijp";
@@ -280,4 +280,5 @@ public class ARTUnitTest {
 				.branchOut(node, bc.get(key), key, value, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, 5));
 
 	}
+
 }
