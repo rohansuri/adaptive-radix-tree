@@ -241,8 +241,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				.min(depth + upperLimitForPessimisticMatch, key.length));
 	}
 
-	private void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
+	void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
+			assert depth == 0;
 			root = replaceWith;
 			AbstractNode.replaceUplink(null, root);
 		}

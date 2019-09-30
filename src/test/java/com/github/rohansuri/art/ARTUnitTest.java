@@ -1,7 +1,10 @@
 package com.github.rohansuri.art;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /*
 	tests for helper methods defined in ART
@@ -279,6 +282,32 @@ public class ARTUnitTest {
 		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
 				.branchOut(node, bc.get(key), key, value, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, 5));
 
+	}
+
+	@Test
+	public void testReplace() {
+		BinaryComparable<String> bc = BinaryComparables.forUTF8();
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(bc);
+		String key = "foo";
+		String value = "value";
+		// adding the very first key would result in replacing root
+		LeafNode<String, String> leafNode = new LeafNode<>(bc.get(key), key, value);
+		art.replace(0, bc.get("foo"), null, leafNode);
+		Assertions.assertEquals(value, art.get(key));
+
+		art = new AdaptiveRadixTree<>(bc);
+		// setup root with one child
+		Node4 root = new Node4();
+		art.replace(0, new byte[] {}, null, leafNode);
+		Node child = Mockito.spy(AbstractNode.class);
+		root.addChild((byte) 'x', child);
+
+		// replace root's x downlink with new child (for various reasons, for example because we just grew this child)
+		Node newChild = Mockito.spy(AbstractNode.class);
+		art.replace(1, bc.get("x"), root, newChild);
+
+		Assertions.assertEquals(1, root.size());
+		Assertions.assertSame(newChild, root.findChild((byte) 'x'));
 	}
 
 }
