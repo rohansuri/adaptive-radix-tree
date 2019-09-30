@@ -3,8 +3,8 @@ package com.github.rohansuri.art;
 import java.util.Arrays;
 
 public class NavigableKeySetStringTest extends AbstractNavigableMapTest.TestNavigableKeySet<String, String> {
-	public NavigableKeySetStringTest(AbstractNavigableMapTest<String, String> main) {
-		super(main);
+	public NavigableKeySetStringTest(AbstractNavigableMapTest<String, String> main, boolean asc) {
+		super(main, asc);
 	}
 
 	@Override
@@ -19,8 +19,8 @@ public class NavigableKeySetStringTest extends AbstractNavigableMapTest.TestNavi
 		// of the provided elements.
 		// we should make it depend on the given map's order, just like sub view tests of
 		// AbstractNavigableMapTest do.
-		Arrays.sort(elements);
-		return elements;
+
+		return order(elements);
 	}
 
 	@Override
@@ -31,7 +31,6 @@ public class NavigableKeySetStringTest extends AbstractNavigableMapTest.TestNavi
 			elements[i] = String.valueOf(i + i + 2);
 		}
 
-		Arrays.sort(elements);
-		return elements;
+		return order(elements);
 	}
 }

@@ -44,6 +44,11 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 	// since default sample keys in AbstractNavigableSet are integers
 	@Override
 	public BulkTest bulkTestNavigableKeySet() {
-		return new NavigableKeySetStringTest(this);
+		return new NavigableKeySetStringTest(this, true);
+	}
+
+	@Override
+	public BulkTest bulkTestDescendingKeySet() {
+		return new NavigableKeySetStringTest(this, false);
 	}
 }

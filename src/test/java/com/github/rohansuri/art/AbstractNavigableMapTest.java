@@ -1,16 +1,20 @@
 package com.github.rohansuri.art;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.collections4.BulkTest;
 import org.apache.commons.collections4.keyvalue.DefaultMapEntry;
 import org.apache.commons.collections4.map.AbstractSortedMapTest;
-import org.apache.commons.collections4.set.AbstractNavigableSetTest;
+import com.github.rohansuri.art.AbstractNavigableSetTest;
 
 public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTest<K, V> {
 	public AbstractNavigableMapTest(String testName) {
@@ -187,15 +191,21 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 	}
 
 	public BulkTest bulkTestNavigableKeySet() {
-		return new TestNavigableKeySet<>(this);
+		return new TestNavigableKeySet<>(this, true);
+	}
+
+	public BulkTest bulkTestDescendingKeySet() {
+		return new TestNavigableKeySet<>(this, false);
 	}
 
 	public static class TestNavigableKeySet<K, V> extends AbstractNavigableSetTest<K> {
 		private final AbstractNavigableMapTest<K, V> main;
+		private final boolean asc;
 
-		public TestNavigableKeySet(AbstractNavigableMapTest<K, V> main) {
+		public TestNavigableKeySet(AbstractNavigableMapTest<K, V> main, boolean asc) {
 			super("TestNavigableKeySet");
 			this.main = main;
+			this.asc = asc;
 		}
 
 		// although the view does not support element add,
@@ -209,7 +219,7 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 				// all same values, doesn't matter since we're testing a "KeySet"
 				map.put(element, this.main.getSampleValues()[0]);
 			}
-			return map.navigableKeySet();
+			return asc ? map.navigableKeySet() : map.descendingKeySet();
 		}
 
 		// false since it is just a view
@@ -226,7 +236,23 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 
 		@Override
 		public NavigableSet<K> makeObject() {
-			return this.main.makeObject().navigableKeySet();
+			return asc ? this.main.makeObject().navigableKeySet() :
+					this.main.makeObject().descendingKeySet();
+		}
+
+		@Override
+		public NavigableSet<K> makeConfirmedCollection() {
+			return asc ? new TreeSet<>() : new TreeSet<K>().descendingSet();
+		}
+
+		public K[] order(K[] elements) {
+			if (asc) {
+				Arrays.sort(elements);
+			}
+			else {
+				Arrays.sort(elements, Collections.reverseOrder());
+			}
+			return elements;
 		}
 	}
 
@@ -250,6 +276,11 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		@Override
 		public BulkTest bulkTestNavigableKeySet() {
 			return this.main.bulkTestNavigableKeySet();
+		}
+
+		@Override
+		public BulkTest bulkTestDescendingKeySet() {
+			return this.main.bulkTestDescendingKeySet();
 		}
 
 		public void resetFull() {
