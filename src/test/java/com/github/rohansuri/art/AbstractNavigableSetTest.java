@@ -6,10 +6,33 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections4.BulkTest;
 import org.apache.commons.collections4.set.AbstractSortedSetTest;
+import org.junit.Assert;
 
 public abstract class AbstractNavigableSetTest<K> extends org.apache.commons.collections4.set.AbstractNavigableSetTest<K> {
 	public AbstractNavigableSetTest(String name) {
 		super(name);
+	}
+
+	public void testPollFirst() {
+		NavigableSet<K> set = this.makeObject();
+		Assert.assertNull(set.pollFirst());
+		resetFull();
+		while (!this.getCollection().isEmpty()) {
+			Assert.assertEquals(this.getCollection().pollFirst(), this.getConfirmed().pollFirst());
+			verify();
+		}
+		verify();
+	}
+
+	public void testPollLast() {
+		NavigableSet<K> set = this.makeObject();
+		Assert.assertNull(set.pollLast());
+		resetFull();
+		while (!this.getCollection().isEmpty()) {
+			Assert.assertEquals(this.getCollection().pollLast(), this.getConfirmed().pollLast());
+			verify();
+		}
+		verify();
 	}
 
 	public BulkTest bulkTestSortedSetSubSet() {
@@ -56,6 +79,8 @@ public abstract class AbstractNavigableSetTest<K> extends org.apache.commons.col
 	}
 
 	// request upstream to forward call to makeConfirmedCollection
+	// TODO: subset tests should ideally run on our AbstractNavigableSetTest
+	// (since that includes more tests like pollFirst, etc)
 	public class TestNavigableSetSubSet extends org.apache.commons.collections4.set.AbstractNavigableSetTest.TestNavigableSetSubSet {
 
 		public TestNavigableSetSubSet(int bound, boolean head, boolean inclusive) {
