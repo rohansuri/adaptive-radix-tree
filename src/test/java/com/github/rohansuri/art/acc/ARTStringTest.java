@@ -41,6 +41,16 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 		return (String[]) result;
 	}
 
+	// For replaced by foooe to cause higherKey to match against compressed path of "fooooooooz",
+	// "fooooooood", "fooooooooe" and then be less than compressed path and hence get first on the level.
+	// ideally we should include a separate test with such set special set of keys
+	// inducing the behaviour.
+	// for now we change the sample keys
+	@Override
+	public Object[] getOtherNonNullStringElements() {
+		return new Object[] {"foooe", "then", "despite", "space", "I", "would", "be", "brought", "From", "limits", "far", "remote", "where", "thou", "dost", "stay"};
+	}
+
 	// since default sample keys in AbstractNavigableSet are integers
 	@Override
 	public BulkTest bulkTestNavigableKeySet() {

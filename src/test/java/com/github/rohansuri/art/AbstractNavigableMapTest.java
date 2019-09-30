@@ -69,6 +69,15 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		return new TreeMap<>();
 	}
 
+	public void testHigherEntry() {
+		assertNull(this.makeObject().higherEntry(this.getSampleKeys()[0]));
+		resetFull();
+		for (K key : this.getOtherKeys()) {
+			assertEquals(this.getConfirmed().higherEntry(key), this.getMap().higherEntry(key));
+			assertEquals(this.getConfirmed().higherKey(key), this.getMap().higherKey(key));
+		}
+	}
+
 	public void testFirstEntry() {
 		assertNull(this.makeObject().firstEntry());
 		NavigableMap<K, V> nm = this.makeFullMap();
