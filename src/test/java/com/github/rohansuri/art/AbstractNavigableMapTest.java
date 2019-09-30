@@ -194,6 +194,15 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		return removed;
 	}
 
+	public void testSameDescendingMap() {
+		NavigableMap<K, V> m = this.makeObject();
+		assertSame(m.descendingMap(), m.descendingMap());
+	}
+
+	public void testSameKeySet(){
+		NavigableMap<K, V> m = this.makeObject();
+		assertSame(m.navigableKeySet(), m.navigableKeySet());
+	}
 
 	public BulkTest bulkTestDescendingMap() {
 		return new TestDescendingMap<>(this);

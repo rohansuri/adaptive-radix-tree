@@ -213,6 +213,10 @@ public class ARTUnitTest {
 			expected[i] = onlyChildPrefix.getBytes()[j];
 		}
 		Assertions.assertArrayEquals(expected, onlyChild.getValidPrefixKey());
+
+		// coverage for assert onlyChild != null;
+		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
+				.updateCompressedPathOfOnlyChild(new Node4()));
 	}
 
 	@Test
