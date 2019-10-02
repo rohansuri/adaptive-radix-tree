@@ -34,6 +34,8 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 	 	which cause optimistic path compression jump
 
 	 	but better to write out a separate test that brings this out behaviour
+
+	 	we also insert key, key2 (where key2 is prefix of key)
 	 */
 	@Override
 	public String[] getSampleKeys() {
