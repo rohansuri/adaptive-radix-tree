@@ -269,7 +269,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			if (node instanceof LeafNode) {
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
-				Node pathCompressedNode = createPathCompressedNodeAfterExpandLazyLeaf(leaf, keyBytes, key, value, depth);
+				Node pathCompressedNode = lazyExpansion(leaf, keyBytes, key, value, depth);
 				if (pathCompressedNode == node) {
 					// key already exists
 					V oldValue = leaf.getValue();
@@ -349,7 +349,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		that's the part we can path compress.
 		what is left over for both leaf, new node can be stored lazy expanded.
 	*/
-	private Node createPathCompressedNodeAfterExpandLazyLeaf(LeafNode<K, V> leaf, byte[] keyBytes, K key, V value, int depth) {
+	private static <K, V> Node lazyExpansion(LeafNode<K, V> leaf, byte[] keyBytes, K key, V value, int depth) {
 		// we refactored creation of path compressed node before knowing if it's the same key or not
 		// so that early copying of path compressed node can be done.
 		// but what if it is the same key?
@@ -465,7 +465,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 
-	private void addTwoLazyLeavesToPathCompressedNode(LeafNode leaf, int lcp, byte[] keyBytes, Node4 pathCompressedNode, int depth, K key, V value) {
+	private static <K, V> void addTwoLazyLeavesToPathCompressedNode(LeafNode leaf, int lcp, byte[] keyBytes, Node4 pathCompressedNode, int depth, K key, V value) {
 		// reuse current leaf node
 		byte differ = leaf.getKeyBytes()[depth + lcp];
 		// depth + lcp cannot be greater than leaf.getKey()'s length.

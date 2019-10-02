@@ -9,7 +9,6 @@ import java.util.SortedMap;
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
 import org.apache.commons.collections4.map.AbstractSortedMapTest;
-import org.junit.jupiter.api.Test;
 
 public class ARTIntegerTest extends AbstractSortedMapTest {
 
