@@ -33,13 +33,17 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 	 	changing sample keys to introduce fooooooooz, fooooooood, fooooooooe
 	 	which cause optimistic path compression jump
 
+	 	the "fooooooooee" is used to prefix with fooooooooe and cause
+	 	updating of compressed path of only child when removing fooooooooe
+	 	(since fooooooooz, fooooooood would've been removed already when removing fooooooooe)
+
 	 	but better to write out a separate test that brings this out behaviour
 
 	 	we also insert key, key2 (where key2 is prefix of key)
 	 */
 	@Override
 	public String[] getSampleKeys() {
-		Object[] result = new String[] {"fooooooooz", "fooooooood", "fooooooooe", "baaar", "baaaz", "tmp", "baoz", "gee", "hello", "goodbye", "we'll", "see", "you", "all", "again", "key", "key2", "nonnullkey"};
+		Object[] result = new String[] {"fooooooooz", "fooooooood", "fooooooooe", "fooooooooee", "baaar", "baaaz", "tmp", "baoz", "hello", "goodbye", "we'll", "see", "you", "all", "again", "key", "key2", "nonnullkey"};
 		return (String[]) result;
 	}
 
