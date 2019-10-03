@@ -7,7 +7,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -68,12 +70,45 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		return new TreeMap<>();
 	}
 
+	// if provided object to entrySet is not an "entry" then we always return false
+	public void testEntrySetContainsForNonEntryObject() {
+		resetFull();
+		Object ob = new Object();
+		assertEquals(this.getConfirmed().entrySet().contains(ob), this.getMap().entrySet().contains(ob));
+	}
+
+	public void testMapGetNullKey() {
+		this.resetFull();
+		// no need to test if isAllowNullKey is true
+		// because get tests would test for all sample keys
+		// which would include getting a null key
+		if (!this.isAllowNullKey()) {
+			try {
+				this.getMap().get(null);
+				fail("get(null) should throw NPE/IAE");
+			}
+			catch (NullPointerException var3) {
+			}
+			catch (IllegalArgumentException var4) {
+			}
+		}
+	}
+
 	public void testHigherEntry() {
 		assertNull(this.makeObject().higherEntry(this.getSampleKeys()[0]));
 		resetFull();
 		for (K key : this.getOtherKeys()) {
 			assertEquals(this.getConfirmed().higherEntry(key), this.getMap().higherEntry(key));
 			assertEquals(this.getConfirmed().higherKey(key), this.getMap().higherKey(key));
+		}
+	}
+
+	public void testFirstKeyOnEmptyMap() {
+		NavigableMap<K, V> nm = this.makeObject();
+		try {
+			nm.firstKey();
+		}
+		catch (NoSuchElementException e) {
 		}
 	}
 
@@ -201,6 +236,12 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 	public void testSameKeySet() {
 		NavigableMap<K, V> m = this.makeObject();
 		assertSame(m.navigableKeySet(), m.navigableKeySet());
+	}
+
+	// should be same as NavigableMap's comparator
+	public void testKeySetComparator() {
+		NavigableMap<K, V> m = this.makeObject();
+		assertSame(m.comparator(), m.navigableKeySet().comparator());
 	}
 
 	public BulkTest bulkTestDescendingMap() {
