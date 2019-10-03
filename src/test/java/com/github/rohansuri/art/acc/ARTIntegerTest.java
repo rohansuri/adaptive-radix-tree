@@ -1,12 +1,13 @@
 package com.github.rohansuri.art.acc;
 
+import java.util.NavigableMap;
 import java.util.SortedMap;
 
+import com.github.rohansuri.art.AbstractNavigableMapTest;
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
-import org.apache.commons.collections4.map.AbstractSortedMapTest;
 
-public class ARTIntegerTest extends AbstractSortedMapTest {
+public class ARTIntegerTest extends AbstractNavigableMapTest<Integer, Integer> {
 
 	public ARTIntegerTest(String testName) {
 		super(testName);
@@ -54,7 +55,7 @@ public class ARTIntegerTest extends AbstractSortedMapTest {
 	}
 
 	@Override
-	public SortedMap makeObject() {
+	public NavigableMap<Integer, Integer> makeObject() {
 		return new AdaptiveRadixTree<>(BinaryComparables.forInteger());
 	}
 }

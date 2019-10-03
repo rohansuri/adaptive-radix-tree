@@ -1,6 +1,5 @@
 package com.github.rohansuri.art.acc;
 
-import java.util.Arrays;
 import java.util.NavigableMap;
 
 import com.github.rohansuri.art.AbstractNavigableMapTest;
