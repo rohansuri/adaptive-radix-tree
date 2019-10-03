@@ -14,7 +14,6 @@ import java.util.TreeSet;
 import org.apache.commons.collections4.BulkTest;
 import org.apache.commons.collections4.keyvalue.DefaultMapEntry;
 import org.apache.commons.collections4.map.AbstractSortedMapTest;
-import com.github.rohansuri.art.AbstractNavigableSetTest;
 
 public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTest<K, V> {
 	public AbstractNavigableMapTest(String testName) {
@@ -199,7 +198,7 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		assertSame(m.descendingMap(), m.descendingMap());
 	}
 
-	public void testSameKeySet(){
+	public void testSameKeySet() {
 		NavigableMap<K, V> m = this.makeObject();
 		assertSame(m.navigableKeySet(), m.navigableKeySet());
 	}
