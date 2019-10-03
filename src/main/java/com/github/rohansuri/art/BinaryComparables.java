@@ -21,11 +21,11 @@ public class BinaryComparables {
 		return LONG;
 	}
 
-	public static BinaryComparable<Short> forShort() {
+	static BinaryComparable<Short> forShort() {
 		return SHORT;
 	}
 
-	public static BinaryComparable<Byte> forByte() {
+	static BinaryComparable<Byte> forByte() {
 		return BYTE;
 	}
 
