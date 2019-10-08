@@ -2,6 +2,7 @@ package com.github.rohansuri.art;
 
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -223,30 +224,95 @@ public class ARTUnitTest {
 	}
 
 	@Test
-	public void testRemoveLCPFromCompressedPath() {
+	public void testRemoveLCPFromPessimisticCompressedPath() {
 		InnerNode node = new Node4();
 		String compressedPath = "abcd";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
 		// LCP = 3, hence "d" would be the differing partial key, therefore new compressed path
 		// would be "", hence 0 length
-		AdaptiveRadixTree.removeLCPFromCompressedPath(node, 3);
+		AdaptiveRadixTree.removeLCPFromCompressedPath(node, -1, 3);
 		Assertions.assertEquals(0, node.prefixLen);
 
 		// LCP = 2, hence "c" would be differing partial key
 		// and new compressed path would be "d"
 		node.prefixLen = compressedPath.length();
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
-		AdaptiveRadixTree.removeLCPFromCompressedPath(node, 2);
+		AdaptiveRadixTree.removeLCPFromCompressedPath(node, -1, 2);
 		Assertions.assertEquals(1, node.prefixLen);
 		Assertions.assertArrayEquals("d".getBytes(), node.getValidPrefixKey());
 
 		// LCP = 4, does not obey constraint of method
+		// since LCP == compressedPath.length()
+		// which would mean, we have totally matched!
+		// in which case there's no need to remove LCP from branching out node
 		node.prefixLen = compressedPath.length();
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
-				.removeLCPFromCompressedPath(node, compressedPath.length()));
+				.removeLCPFromCompressedPath(node, -1, compressedPath.length()));
+	}
 
+	// case 1: new prefix len > InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
+	@Test
+	public void testRemoveLCPFromOptimisticCompressedPath() {
+		InnerNode node = new Node4();
+		// number of optimistic equal characters in all children of this InnerNode
+		int optimisticCPLength = 10, lcp = 3;
+		String compressedPath = "abcdefgh"; // pessimistic compressed path
+		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
+		node.prefixLen = compressedPath
+				.length() + optimisticCPLength;
+		int expectedNewPrefixLen = compressedPath.length() + optimisticCPLength - lcp - 1;
+
+		InnerNode nodeLeft = new Node4();
+		node.addChild((byte) 'i', nodeLeft);
+		node.addChild((byte) 'j', Mockito.spy(AbstractNode.class));
+
+		String prevDepth = "prevdepthbytes";
+		String optimisticPath = "0123456789";
+		String key = prevDepth + compressedPath + optimisticPath + "ik";
+		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forUTF8().get(key), key, "value");
+		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
+		nodeLeft.addChild((byte) 'l', Mockito.spy(AbstractNode.class));
+
+		AdaptiveRadixTree.removeLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
+		Assertions.assertEquals(expectedNewPrefixLen, node.prefixLen);
+
+
+		Assertions.assertArrayEquals("efgh0123".getBytes(), node
+				.getValidPrefixKey());
+	}
+
+	// case 2: new prefix len <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
+	@Test
+	public void testRemoveLCPFromOptimisticCompressedPath2() {
+		InnerNode node = new Node4();
+		// number of optimistic equal characters in all children of this InnerNode
+		int optimisticCPLength = 2, lcp = 3;
+		String compressedPath = "abcdefgh"; // pessimistic compressed path
+		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
+		node.prefixLen = compressedPath
+				.length() + optimisticCPLength;
+
+		int expectedNewPrefixLen = compressedPath.length() + optimisticCPLength - lcp - 1;
+
+		InnerNode nodeLeft = new Node4();
+		node.addChild((byte) 'i', nodeLeft);
+		node.addChild((byte) 'j', Mockito.spy(AbstractNode.class));
+
+		String prevDepth = "prevdepthbytes";
+		String optimisticPath = "01";
+		String key = prevDepth + compressedPath + optimisticPath + "ik";
+		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forUTF8().get(key), key, "value");
+		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
+		nodeLeft.addChild((byte) 'l', Mockito.spy(AbstractNode.class));
+
+		AdaptiveRadixTree.removeLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
+		Assertions.assertEquals(expectedNewPrefixLen, node.prefixLen);
+
+
+		Assertions.assertArrayEquals("efgh01".getBytes(), node
+				.getValidPrefixKey());
 	}
 
 	@Test

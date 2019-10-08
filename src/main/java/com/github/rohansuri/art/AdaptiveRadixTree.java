@@ -383,15 +383,26 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return pathCompressedNode;
 	}
 
-	static void removeLCPFromCompressedPath(InnerNode node, int lcp) {
-		// lcp th byte was the differing one, so we start shifting from lcp + 1
-		// from the lcp th + 1 index till whatever prefix key is left, shift that to left
-		int end = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
-		assert lcp < end;
-		for (int i = lcp + 1, j = 0; i < end; i++, j++) {
-			node.prefixKeys[j] = node.prefixKeys[i];
+	static void removeLCPFromCompressedPath(InnerNode node, int depth, int lcp) {
+		// lcp cannot be equal to Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen)
+		// it has to be less, else it'd mean the compressed path matches completely
+		assert lcp < Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
+		if (node.prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
+			node.prefixLen = node.prefixLen - lcp - 1;
+			for (int i = 0; i < node.prefixLen; i++) {
+				node.prefixKeys[i] = node.prefixKeys[i + lcp + 1];
+			}
 		}
-		node.prefixLen = node.prefixLen - lcp - 1;
+		else {
+			// since there's more compressed path left
+			// we need to "bring up" more of it what we can take
+			node.prefixLen = node.prefixLen - lcp - 1;
+			byte[] leafBytes = getFirstEntry(node).getKeyBytes();
+			int end = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
+			for (int i = 0; i < end; i++) {
+				node.prefixKeys[i] = leafBytes[i + depth + 1];
+			}
+		}
 	}
 
 	private int matchCompressedPath(InnerNode node, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
@@ -460,7 +471,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 
 		// remove lcp common prefix key from "this" node
-		removeLCPFromCompressedPath(node, lcp);
+		removeLCPFromCompressedPath(node, depth, lcp);
 		return branchOut;
 	}
 
