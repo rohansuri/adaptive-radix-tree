@@ -282,18 +282,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				modCount++;
 				return null;
 			}
-
-		/*
-			before doing the find child, we gotta match the current node's prefix?
-			i.e. the compressed path it has?
-			only once that completely matches, we go ahead and skip over those many matched bytes
-			in partial key and then do a findChild for the next byte partial key.
-			so that means, when doing this we change our depths and jump to lower levels in the search tree.
-			again compressed paths can totally match --- easy then
-			differ at a point -- we do the same splitting and update the compressed path.
-			QUES: can code be shared for this split?
-		 */
-
 			// compare with compressed path
 			int newDepth = matchCompressedPath((InnerNode) node, keyBytes, key, value, depth, prevDepth);
 			if (newDepth == -1) { // matchCompressedPath already inserted the leaf node for us
@@ -383,7 +371,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return pathCompressedNode;
 	}
 
-	static void removeLCPFromCompressedPath(InnerNode node, int depth, int lcp) {
+	static void removeOptimisticLCPFromCompressedPath(InnerNode node, int depth, int lcp, byte[] leafBytes) {
+		// lcp cannot be equal to node.prefixLen
+		// it has to be less, else it'd mean the compressed path matches completely
+		assert lcp < node.prefixLen && lcp >= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT : lcp;
+
+		// since there's more compressed path left
+		// we need to "bring up" more of it what we can take
+		node.prefixLen = node.prefixLen - lcp - 1;
+		int end = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
+		for (int i = 0; i < end; i++) {
+			node.prefixKeys[i] = leafBytes[i + depth + 1];
+		}
+	}
+
+	static void removePessimisticLCPFromCompressedPath(InnerNode node, int depth, int lcp) {
 		// lcp cannot be equal to Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen)
 		// it has to be less, else it'd mean the compressed path matches completely
 		assert lcp < Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
@@ -405,53 +407,90 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
+	/*
+		 1) pessimistic path matched entirely
+
+	 			case 1: key has nothing left (can't happen, else they'd be prefixes and our key transformations
+	 					must ensure that it is not possible)
+				case 2: prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
+				  		we're done here, we can do a findChild for next partial key (caller's depth + lcp + 1)
+				case 3: prefixLen is more i.e. an optimistic path is left to match.
+				  		traverse down and get leaf to match remaining optimistic prefix path.
+							case 3a: optimistic path matches, we can do findChild for next partial key
+							case 3b: have to split
+
+		 2) pessimistic path did not match, we have to split
+	 */
 	private int matchCompressedPath(InnerNode node, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
-		// what if prefixLen is 0?
-		// could that be the case?
-		// I think so! What if keys inserted are BAR, BOZ, BBC?
-		// with nothing common?
-		if (node.prefixLen == 0) { // compressed path empty
-			return depth;
-		}
-
-		// match pessimistic compressed path
 		int lcp = 0;
-		int end = Math.min(node.prefixLen, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
-		for (; lcp < end && depth < keyBytes.length && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
+		int end = Math.min(keyBytes.length, Math.min(node.prefixLen, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT));
+		// first match pessimistic compressed path
+		for (; lcp < end && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
-
-		// can lcp be 0? yes
-		// consider BAZ, BAR already inserted
-		// and we want to insert BOZ?
-		// so prefixLen is 1, but lcp is 0.
-
-		// 1) pessimistic path matched entirely, key has nothing left (can't happen, else they'd be prefixes)
-		// 2) pessimistic path matched entirely, key has bytes left, prefixLen <= 8, no need to switch to optimistic,
-		//    do a findChild on this node for next partial key (depth + lcp + 1)
-		// 3) pessimistic path matched entirely, key has bytes left, move to optimistic and skip over prefixLen bytes
-		// 4) pessimistic path did not match, we have to split
-		// purpose of pessimistic prefixKeys match is to serve as safety net and early return.
 
 		if (lcp == node.prefixLen) {
 			return depth;
 		}
-		else if (lcp == InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
-			return depth + (node.prefixLen - InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
+		Node newNode;
+		if (lcp == InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
+			// match remaining optimistic path
+			byte[] leafBytes = getFirstEntry(node).getKeyBytes();
+			int leftToMatch = node.prefixLen - InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT;
+			end = Math.min(keyBytes.length, depth + leftToMatch);
+			/*
+				match remaining optimistic path
+				if we match entirely we return with new depth and caller can proceed with findChild (depth + lcp + 1)
+				if we don't match entirely, then we split
+			 */
+			for (; depth < end && keyBytes[depth] == leafBytes[depth]; depth++, lcp++)
+				;
+			if (lcp == node.prefixLen) {
+				return depth;
+			}
+			// depth != keyBytes.length
+			// since if this happens, it'd mean we reached the key's end
+			// and it is completely equal to the optimistic compressed path
+			// which'd mean the key to be inserted is prefix of
+			// all children of this node, which should never happen
+			// as our key transformation must guarantee that prefixes are never possible.
+			assert depth != keyBytes.length;
+			newNode = branchOutOptimistic(node, keyBytes, key, value, lcp, depth, leafBytes);
 		}
 		else {
-			Node newNode = branchOut(node, keyBytes, key, value, lcp, depth);
-			// replace "this" node with newNode
-			// initialDepth can be zero even if prefixLen is not zero.
-			// the root node could have a prefix too, for example after insertions of
-			// BAR, BAZ? prefix would be BA kept in the root node itself
-			replace(depth - lcp, keyBytes, prevDepth, newNode);
-			size++;
-			modCount++;
-			return -1; // we've already inserted the leaf node, caller needs to do nothing more
+			newNode = branchOutPessimistic(node, keyBytes, key, value, lcp, depth);
 		}
+		// replace "this" node with newNode
+		// initialDepth can be zero even if prefixLen is not zero.
+		// the root node could have a prefix too, for example after insertions of
+		// BAR, BAZ? prefix would be BA kept in the root node itself
+		replace(depth - lcp, keyBytes, prevDepth, newNode);
+		size++;
+		modCount++;
+		return -1; // we've already inserted the leaf node, caller needs to do nothing more
 	}
 
-	static <K, V> Node branchOut(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth) {
+	// called when lcp has become more than InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
+	static <K, V> Node branchOutOptimistic(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth,
+			byte[] leafBytes) {
+		// prefix doesn't match entirely, we have to branch
+		assert lcp < node.prefixLen && lcp >= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT : lcp;
+		int initialDepth = depth - lcp;
+		LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
+
+		// new node with updated prefix len, compressed path
+		Node4 branchOut = new Node4();
+		branchOut.prefixLen = lcp;
+		// note: depth is the updated depth (initialDepth = depth - lcp)
+		System.arraycopy(keyBytes, initialDepth, branchOut.prefixKeys, 0, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
+		branchOut.addChild(keyBytes[depth], leafNode);
+		branchOut.addChild(leafBytes[depth], node); // reusing "this" node
+
+		// remove lcp common prefix key from "this" node
+		removeOptimisticLCPFromCompressedPath(node, depth, lcp, leafBytes);
+		return branchOut;
+	}
+
+	static <K, V> Node branchOutPessimistic(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth) {
 		// pessimistic prefix doesn't match entirely, we have to branch
 		// BAR, BAZ inserted, now inserting BOZ
 		assert lcp < node.prefixLen && lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT;
@@ -471,7 +510,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
 
 		// remove lcp common prefix key from "this" node
-		removeLCPFromCompressedPath(node, depth, lcp);
+		removePessimisticLCPFromCompressedPath(node, depth, lcp);
 		return branchOut;
 	}
 

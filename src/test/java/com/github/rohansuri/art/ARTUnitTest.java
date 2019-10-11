@@ -1,8 +1,5 @@
 package com.github.rohansuri.art;
 
-import java.util.Map;
-
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -223,22 +220,23 @@ public class ARTUnitTest {
 				.updateCompressedPathOfOnlyChild(new Node4()));
 	}
 
+	// current prefix len <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
 	@Test
-	public void testRemoveLCPFromPessimisticCompressedPath() {
+	public void testRemovePessimisticLCPFromPessimisticCompressedPath() {
 		InnerNode node = new Node4();
 		String compressedPath = "abcd";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
 		// LCP = 3, hence "d" would be the differing partial key, therefore new compressed path
 		// would be "", hence 0 length
-		AdaptiveRadixTree.removeLCPFromCompressedPath(node, -1, 3);
+		AdaptiveRadixTree.removePessimisticLCPFromCompressedPath(node, -1, 3);
 		Assertions.assertEquals(0, node.prefixLen);
 
 		// LCP = 2, hence "c" would be differing partial key
 		// and new compressed path would be "d"
 		node.prefixLen = compressedPath.length();
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
-		AdaptiveRadixTree.removeLCPFromCompressedPath(node, -1, 2);
+		AdaptiveRadixTree.removePessimisticLCPFromCompressedPath(node, -1, 2);
 		Assertions.assertEquals(1, node.prefixLen);
 		Assertions.assertArrayEquals("d".getBytes(), node.getValidPrefixKey());
 
@@ -249,12 +247,12 @@ public class ARTUnitTest {
 		node.prefixLen = compressedPath.length();
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
-				.removeLCPFromCompressedPath(node, -1, compressedPath.length()));
+				.removePessimisticLCPFromCompressedPath(node, -1, compressedPath.length()));
 	}
 
 	// case 1: new prefix len > InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
 	@Test
-	public void testRemoveLCPFromOptimisticCompressedPath() {
+	public void testRemovePessimisticLCPFromOptimisticCompressedPath1() {
 		InnerNode node = new Node4();
 		// number of optimistic equal characters in all children of this InnerNode
 		int optimisticCPLength = 10, lcp = 3;
@@ -275,7 +273,7 @@ public class ARTUnitTest {
 		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
 		nodeLeft.addChild((byte) 'l', Mockito.spy(AbstractNode.class));
 
-		AdaptiveRadixTree.removeLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
+		AdaptiveRadixTree.removePessimisticLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
 		Assertions.assertEquals(expectedNewPrefixLen, node.prefixLen);
 
 
@@ -285,7 +283,7 @@ public class ARTUnitTest {
 
 	// case 2: new prefix len <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
 	@Test
-	public void testRemoveLCPFromOptimisticCompressedPath2() {
+	public void testRemovePessimisticLCPFromOptimisticCompressedPath2() {
 		InnerNode node = new Node4();
 		// number of optimistic equal characters in all children of this InnerNode
 		int optimisticCPLength = 2, lcp = 3;
@@ -307,7 +305,7 @@ public class ARTUnitTest {
 		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
 		nodeLeft.addChild((byte) 'l', Mockito.spy(AbstractNode.class));
 
-		AdaptiveRadixTree.removeLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
+		AdaptiveRadixTree.removePessimisticLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
 		Assertions.assertEquals(expectedNewPrefixLen, node.prefixLen);
 
 
@@ -316,7 +314,7 @@ public class ARTUnitTest {
 	}
 
 	@Test
-	public void testBranchOut() {
+	public void testBranchOutPessimistic() {
 		InnerNode node = new Node4();
 		BinaryComparable<String> bc = BinaryComparables.forUTF8();
 		String compressedPath = "abcxyz";
@@ -325,7 +323,7 @@ public class ARTUnitTest {
 		String key = "xxabcdef";
 		String value = "value";
 		// lcp == "abc"
-		Node newNode = AdaptiveRadixTree.branchOut(node, bc.get(key), key, value, 3, 5);
+		Node newNode = AdaptiveRadixTree.branchOutPessimistic(node, bc.get(key), key, value, 3, 5);
 		Assertions.assertEquals(2, newNode.size());
 		Assertions.assertEquals(node, newNode.findChild((byte) 'x'));
 		Node leaf = newNode.findChild((byte) 'd');
@@ -342,11 +340,11 @@ public class ARTUnitTest {
 		// obey constraints
 		node.prefixLen = 1;
 		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
-				.branchOut(node, bc.get(key), key, value, 3, 5));
+				.branchOutPessimistic(node, bc.get(key), key, value, 3, 5));
 
 		node.prefixLen = 10;
 		Assertions.assertThrows(AssertionError.class, () -> AdaptiveRadixTree
-				.branchOut(node, bc.get(key), key, value, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, 5));
+				.branchOutPessimistic(node, bc.get(key), key, value, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, 5));
 
 	}
 
