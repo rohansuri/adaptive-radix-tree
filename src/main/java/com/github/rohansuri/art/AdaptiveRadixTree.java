@@ -209,17 +209,20 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				}
 				return null;
 			}
-			// match compressed path, if match completely
-			// then skip over those many prefixLen bytes from key
-			// and do findChild and continue search over that child.
-			// if incomplete match, then we return null.
-			// TODO: small optimisation could be done to check if key length left is == length of compressed path
-			if (comparePessimisticCompressedPath((InnerNode) node, key, depth) != 0) {
+
+			InnerNode innerNode = (InnerNode) node;
+
+			// if key.length == depth + innerNode.prefixLen
+			// that'd only mean the key is a prefix, but we don't have that prefix
+			// the key must be greater for us to take optimistic jump
+			// and carry out comparisons
+			if (key.length <= depth + innerNode.prefixLen
+					|| comparePessimisticCompressedPath(innerNode, key, depth) != 0) {
 				return null;
 			}
 
 			// complete match, continue search
-			depth = depth + ((InnerNode) node).prefixLen;
+			depth = depth + innerNode.prefixLen;
 			Node nextNode = node.findChild(key[depth]);
 			if (nextNode == null) {
 				return null;
@@ -230,6 +233,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
+	// TODO: no need for this method, this behaviour is only needed for Map.get
+	// we can call compare from get directly
 	// is compressed path equal/more/lesser (0, 1, -1) than key
 	static int comparePessimisticCompressedPath(InnerNode node, byte[] key, int depth) {
 		byte[] prefix = node.prefixKeys;
@@ -881,6 +886,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	public NavigableSet<K> navigableKeySet() {
 		KeySet<K> nks = navigableKeySet;
 		return (nks != null) ? nks : (navigableKeySet = new KeySet<>(this));
+	}
+
+	@Override
+	public Set<K> keySet() {
+		return navigableKeySet();
 	}
 
 	@Override
