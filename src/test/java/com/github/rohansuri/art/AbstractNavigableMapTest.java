@@ -66,6 +66,24 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		}
 	}
 
+	@Override
+	public void testSampleMappings() {
+		super.testSampleMappings();
+
+		// TODO: push this upstream (Apache Common's test suite)
+		// no common keys in "other keys" and "sample keys"
+		// map.remove test assumes this
+		K[] sampleKeys = this.getSampleKeys();
+		for (K otherKey : this.getOtherKeys()) {
+			for (K sampleKey : sampleKeys) {
+				if (otherKey.equals(sampleKey)) {
+					fail("there should be no common keys in otherKeys and sampleKeys,"
+							+ " but key " + sampleKey + " found to be common.");
+				}
+			}
+		}
+	}
+
 	public NavigableMap<K, V> makeConfirmedMap() {
 		return new TreeMap<>();
 	}
@@ -130,86 +148,138 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		assertEquals(last, nm.lastEntry());
 	}
 
-	public void testPollFirstEntry() {
+	protected void pollFirstEntry(boolean shortTest) {
 		assertNull(this.makeObject().pollFirstEntry());
 		resetFull();
 		while (!this.getMap().isEmpty()) {
 			assertEquals(this.getConfirmed().pollFirstEntry(), this.getMap().pollFirstEntry());
-			verify();
+			if (!shortTest) {
+				verify();
+			}
 		}
+		verify();
 	}
 
-	public void testPollLastEntry() {
+	protected void pollLastEntry(boolean shortTest) {
 		assertNull(this.makeObject().pollLastEntry());
 		resetFull();
 		while (!this.getMap().isEmpty()) {
 			assertEquals(this.getConfirmed().pollLastEntry(), this.getMap().pollLastEntry());
-			verify();
+			if (!shortTest) {
+				verify();
+			}
 		}
+		verify();
+	}
+
+	public void testPollFirstEntry() {
+		pollFirstEntry(false);
+	}
+
+
+	public void testPollLastEntry() {
+		pollLastEntry(false);
+	}
+
+	protected void ceilingEntry(boolean shortTest) {
+		assertNull(this.makeObject().ceilingEntry(this.getSampleKeys()[0]));
+		resetFull();
+		K[] keys = this.getSampleKeys();
+		V[] values = this.getSampleValues();
+		for (int i = 0; i < this.getMap().size(); i++) {
+			assertEquals(this.getMap().remove(keys[i]), this.getConfirmed().remove(keys[i]));
+			assertEquals(this.getMap().ceilingEntry(keys[i]),
+					this.getConfirmed().ceilingEntry(keys[i]));
+			if (!shortTest) {
+				verify();
+			}
+			this.getMap().put(keys[i], values[i]);
+			this.getConfirmed().put(keys[i], values[i]);
+			if (!shortTest) {
+				verify();
+			}
+		}
+		verify();
 	}
 
 	public void testCeilingEntry() {
-		assertNull(this.makeObject().ceilingEntry(this.getSampleKeys()[0]));
+		ceilingEntry(false);
+	}
+
+	protected void ceilingKey(boolean shortTest) {
+		assertNull(this.makeObject().ceilingKey(this.getSampleKeys()[0]));
 		resetFull();
+		K[] keys = this.getSampleKeys();
+		V[] values = this.getSampleValues();
 		for (int i = 0; i < this.getMap().size(); i++) {
-			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
-			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
-			assertEquals(removed, removedFromConfirmed);
-			assertEquals(this.getMap().ceilingEntry(removed.getKey()),
-					this.getConfirmed().ceilingEntry(removedFromConfirmed.getKey()));
-			verify();
-			this.getMap().put(removed.getKey(), removed.getValue());
-			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
-			verify();
+			assertEquals(this.getMap().remove(keys[i]), this.getConfirmed().remove(keys[i]));
+			assertEquals(this.getMap().ceilingKey(keys[i]),
+					this.getConfirmed().ceilingKey(keys[i]));
+			if (!shortTest) {
+				verify();
+			}
+			this.getMap().put(keys[i], values[i]);
+			this.getConfirmed().put(keys[i], values[i]);
+			if (!shortTest) {
+				verify();
+			}
 		}
+		verify();
 	}
 
 	public void testCeilingKey() {
-		assertNull(this.makeObject().ceilingKey(this.getSampleKeys()[0]));
+		ceilingKey(false);
+	}
+
+	protected void floorEntry(boolean shortTest) {
+		assertNull(this.makeObject().floorEntry(this.getSampleKeys()[0]));
 		resetFull();
+		K[] keys = this.getSampleKeys();
+		V[] values = this.getSampleValues();
 		for (int i = 0; i < this.getMap().size(); i++) {
-			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
-			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
-			assertEquals(removed, removedFromConfirmed);
-			assertEquals(this.getMap().ceilingKey(removed.getKey()),
-					this.getConfirmed().ceilingKey(removedFromConfirmed.getKey()));
-			verify();
-			this.getMap().put(removed.getKey(), removed.getValue());
-			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
-			verify();
+			assertEquals(this.getConfirmed().remove(keys[i]), this.getMap().remove(keys[i]));
+			assertEquals(this.getMap().floorEntry(keys[i]),
+					this.getConfirmed().floorEntry(keys[i]));
+			if (!shortTest) {
+				verify();
+			}
+			this.getMap().put(keys[i], values[i]);
+			this.getConfirmed().put(keys[i], values[i]);
+			if (!shortTest) {
+				verify();
+			}
 		}
+		verify();
 	}
 
 	public void testFloorEntry() {
-		assertNull(this.makeObject().floorEntry(this.getSampleKeys()[0]));
+		floorEntry(false);
+	}
+
+	protected void floorKey(boolean shortTest) {
+		assertNull(this.makeObject().floorKey(this.getSampleKeys()[0]));
 		resetFull();
+		K[] keys = this.getSampleKeys();
+		V[] values = this.getSampleValues();
 		for (int i = 0; i < this.getMap().size(); i++) {
-			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
-			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
-			assertEquals(removed, removedFromConfirmed);
-			assertEquals(this.getMap().floorEntry(removed.getKey()),
-					this.getConfirmed().floorEntry(removedFromConfirmed.getKey()));
-			verify();
-			this.getMap().put(removed.getKey(), removed.getValue());
-			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
-			verify();
+			assertEquals(this.getMap().remove(keys[i]), this.getConfirmed().remove(keys[i]));
+			assertEquals(this
+							.getMap().floorKey(keys[i]),
+					this.getConfirmed().floorKey(keys[i]));
+			if (!shortTest) {
+				verify();
+			}
+			this.getMap().put(keys[i], values[i]);
+			this.getConfirmed().put(keys[i], values[i]);
+			if (!shortTest) {
+				verify();
+			}
 		}
+		verify();
 	}
 
 	public void testFloorKey() {
-		assertNull(this.makeObject().floorKey(this.getSampleKeys()[0]));
-		resetFull();
-		for (int i = 0; i < this.getMap().size(); i++) {
-			Map.Entry<K, V> removed = removeIth(this.getMap(), i);
-			Map.Entry<K, V> removedFromConfirmed = removeIth(this.getConfirmed(), i);
-			assertEquals(removed, removedFromConfirmed);
-			assertEquals(this.getMap().floorKey(removed.getKey()),
-					this.getConfirmed().floorKey(removedFromConfirmed.getKey()));
-			verify();
-			this.getMap().put(removed.getKey(), removed.getValue());
-			this.getConfirmed().put(removedFromConfirmed.getKey(), removedFromConfirmed.getValue());
-			verify();
-		}
+		floorKey(false);
 	}
 
 	/*
