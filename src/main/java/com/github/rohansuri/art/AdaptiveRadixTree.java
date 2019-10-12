@@ -214,7 +214,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// and do findChild and continue search over that child.
 			// if incomplete match, then we return null.
 			// TODO: small optimisation could be done to check if key length left is == length of compressed path
-			if (compareCompressedPath((InnerNode) node, key, depth) != 0) {
+			if (comparePessimisticCompressedPath((InnerNode) node, key, depth) != 0) {
 				return null;
 			}
 
@@ -231,7 +231,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// is compressed path equal/more/lesser (0, 1, -1) than key
-	static int compareCompressedPath(InnerNode node, byte[] key, int depth) {
+	static int comparePessimisticCompressedPath(InnerNode node, byte[] key, int depth) {
 		byte[] prefix = node.prefixKeys;
 		int upperLimitForPessimisticMatch = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
 		// limit key because if key length greater than compressed path
@@ -240,6 +240,22 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return compare(prefix, 0, upperLimitForPessimisticMatch, key, depth, Math
 				.min(depth + upperLimitForPessimisticMatch, key.length));
 	}
+
+	static int compareOptimisticCompressedPath(InnerNode node, byte[] key, int depth) {
+		int result = comparePessimisticCompressedPath(node, key, depth);
+		if (result != 0 || node.prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
+			return result;
+		}
+		// expand optimistic path and compare
+		byte[] leafBytes = getFirstEntry(node).getKeyBytes();
+		// limit key because if key length greater than compressed path
+		// and all byte comparisons are same, then also we consider
+		// compressed path == key length
+		return compare(leafBytes, depth + InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, depth + node.prefixLen,
+				key, depth + InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, Math
+						.min(depth + node.prefixLen, key.length));
+	}
+
 
 	void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
@@ -644,7 +660,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return goUpAndFindLesser(depth, node, key);
 			}
 			// compare compressed path
-			int compare = compareCompressedPath((InnerNode) node, key, depth);
+			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
 			if (compare == -1) { // lesser
 				return getLastEntry(node);
 			}
@@ -795,7 +811,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return goUpAndFindGreater(depth, node, key);
 			}
 			// compare compressed path
-			int compare = compareCompressedPath((InnerNode) node, key, depth);
+			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
 			if (compare == 1) { // greater
 				return getFirstEntry(node);
 			}

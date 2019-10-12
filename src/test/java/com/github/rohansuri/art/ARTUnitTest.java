@@ -41,34 +41,34 @@ public class ARTUnitTest {
 		String key = "xx" + compressedPath + "ef";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(0, AdaptiveRadixTree.compareCompressedPath(node, bc.get(key), 2));
+		Assertions.assertEquals(0, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 2));
 
 		// 0 (totally equal and length same)
 		key = compressedPath;
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(0, AdaptiveRadixTree.compareCompressedPath(node, bc.get(key), 0));
+		Assertions.assertEquals(0, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 0));
 
 
 		// 1 (compressed path length is more than key)
 		key = "cab";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(1, AdaptiveRadixTree.compareCompressedPath(node, bc.get(key), 1));
+		Assertions.assertEquals(1, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 1));
 
 		// 1 (inequality and compressed path being greater)
 		compressedPath = "xxz";
 		key = "xxa";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(1, AdaptiveRadixTree.compareCompressedPath(node, bc.get(key), 0));
+		Assertions.assertEquals(1, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 0));
 
 		// -1 (only in case of inequality of partial key byte)
 		compressedPath = "xxaa";
 		key = "xxabcd";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(-1, AdaptiveRadixTree.compareCompressedPath(node, bc.get(key), 0));
+		Assertions.assertEquals(-1, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 0));
 
 	}
 
