@@ -1,6 +1,8 @@
-package com.github.rohansuri.art;
+package com.github.rohansuri.art.integer;
 
-import com.sun.source.tree.Scope;
+import com.github.rohansuri.art.AdaptiveRadixTree;
+import com.github.rohansuri.art.BinaryComparables;
+import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
 
@@ -22,7 +24,7 @@ public class Insert {
 		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
 		int[] keys;
 		Supplier<Map<Integer, Object>> supplier;
-		@Param({"16000000"}) // 16m
+		@Param({"65000", "16000000"}) // 16m
 		int size;
 
 		public enum MapType {

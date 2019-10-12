@@ -1,6 +1,8 @@
-package com.github.rohansuri.art;
+package com.github.rohansuri.art.integer;
 
-import com.sun.source.tree.Scope;
+import com.github.rohansuri.art.AdaptiveRadixTree;
+import com.github.rohansuri.art.BinaryComparables;
+import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
 

@@ -9,7 +9,7 @@
 plugins {
 	// Apply the java-library plugin to add support for Java Library
 	id 'java-library'
-	id "me.champeau.gradle.jmh" version "0.4.7"
+	id "me.champeau.gradle.jmh" version "0.5.0-rc-1"
 	id 'jacoco'
 }
 
@@ -19,8 +19,9 @@ jmh {
 	warmup = '1s'
 	timeOnIteration = '1s'
 	benchmarkParameters = [:]
-	benchmarkParameters['mapType'] = ['ART', 'HASH_MAP']
-	benchmarkParameters['size'] = ['16000000']
+	benchmarkParameters['mapType'] = ['ART', 'HASH_MAP', 'TREE_MAP']
+	benchmarkParameters['size'] = ['65000']
+	resultFormat = 'JSON'
 }
 
 dependencies {
@@ -29,6 +30,7 @@ dependencies {
 	testCompile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
 	testCompile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3', classifier: 'tests'
 	testCompile group: 'com.ibm.icu', name: 'icu4j', version: '64.2'
+	testCompile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 	//testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-migrationsupport', version: '5.5.2'
 	//testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.5.2'
 
@@ -36,6 +38,7 @@ dependencies {
 	// testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.2'
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.26.0'
 	testCompile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
+	testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
 	// testCompile("org.junit.jupiter:junit-jupiter-engine:5.5.2")
 
 	testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
@@ -45,6 +48,9 @@ dependencies {
 
 
 	jmh group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+	jmh group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
+	jmh group: 'commons-io', name: 'commons-io', version: '2.6'
+
 }
 
 // In this section you declare where to find the dependencies of your project
