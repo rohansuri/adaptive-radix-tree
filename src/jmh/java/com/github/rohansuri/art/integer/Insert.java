@@ -5,6 +5,8 @@ import com.github.rohansuri.art.BinaryComparables;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
+import org.ardverk.collection.IntegerKeyAnalyzer;
+import org.apache.commons.collections4.trie.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,9 @@ import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
+
 import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.concurrent.TimeUnit;
 
 public class Insert {
@@ -25,12 +29,13 @@ public class Insert {
 		int[] keys;
 		Supplier<Map<Integer, Object>> supplier;
 		@Param({"65000", "16000000"}) // 16m
-		int size;
+				int size;
 
 		public enum MapType {
 			HASH_MAP,
 			ART,
-			TREE_MAP
+			TREE_MAP,
+			PATRICIA_TRIE
 		}
 
 		public enum DistributionType {
@@ -57,6 +62,9 @@ public class Insert {
 			case TREE_MAP:
 				supplier = () -> new TreeMap<>();
 				break;
+			case PATRICIA_TRIE:
+				supplier = () -> new GenericPatriciaTrie<Integer, Object>(IntegerKeyAnalyzer.INSTANCE);
+				break;
 			default:
 				throw new AssertionError();
 			}
@@ -67,14 +75,14 @@ public class Insert {
 
 			// TODO: refactor if-else block into a KeyGenerator
 			if (distributionType == DistributionType.DENSE_SORTED ||
-				distributionType == DistributionType.DENSE_SHUFFLE) {
+					distributionType == DistributionType.DENSE_SHUFFLE) {
 				// dense keys
 				// 0, 1, 2, 3, 4, .... ,size
 				for (int i = 0; i < size; i++) {
 					keys[i] = i;
 				}
 
-				if(distributionType == DistributionType.DENSE_SHUFFLE){
+				if (distributionType == DistributionType.DENSE_SHUFFLE) {
 					ArrayUtils.shuffle(keys);
 				}
 			}
