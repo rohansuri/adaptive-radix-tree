@@ -72,6 +72,30 @@ public class Words {
 		}
 	}
 
+	public static class LookupData extends Data {
+		@Override
+		public void setup() throws IOException, URISyntaxException {
+			super.setup();
+			Map<String, Object> m = supplier.get();
+			for (int i = 0; i < keys.length; i++) {
+				m.put(keys[i], holder);
+			}
+			supplier = () -> m;
+		}
+
+	}
+
+	@Benchmark
+	@BenchmarkMode({Mode.AverageTime})
+	@OutputTimeUnit(TimeUnit.NANOSECONDS)
+	public int lookup(Blackhole bh, LookupData d) {
+		Map<String, Object> m = d.supplier.get();
+		for (int i = 0; i < d.keys.length; i++) {
+			bh.consume(m.get(d.keys[i]));
+		}
+		return m.size();
+	}
+
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
