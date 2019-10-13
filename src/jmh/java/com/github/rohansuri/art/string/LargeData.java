@@ -24,8 +24,7 @@ import java.util.function.Supplier;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-public class Words {
-	private static final int WORDS = 235886;
+public class LargeData {
 
 	@State(Scope.Benchmark)
 	public static class Data {
@@ -42,6 +41,22 @@ public class Words {
 
 		@Param
 		MapType mapType;
+
+		public enum File {
+			WORDS("/words.txt", 235886),
+			UUIDs("/uuid.txt", 100000);
+
+			private final String fileName;
+			private final int size;
+
+			File(String fileName, int size) {
+				this.fileName = fileName;
+				this.size = size;
+			}
+		}
+
+		@Param
+		File file;
 
 		@Setup
 		public void setup() throws IOException, URISyntaxException {
@@ -64,10 +79,10 @@ public class Words {
 
 			holder = new Object();
 			List<String> s = IOUtils
-					.readLines(this.getClass().getResourceAsStream("/words.txt"), StandardCharsets.UTF_8);
+					.readLines(this.getClass().getResourceAsStream(file.fileName), StandardCharsets.UTF_8);
 			keys = s.toArray(String[]::new);
-			if (keys.length != WORDS) {
-				throw new AssertionError("expected " + WORDS + " words from the file, got " + keys.length);
+			if (keys.length != file.size) {
+				throw new AssertionError("expected " + file.size + " words from the file, got " + keys.length);
 			}
 		}
 	}
