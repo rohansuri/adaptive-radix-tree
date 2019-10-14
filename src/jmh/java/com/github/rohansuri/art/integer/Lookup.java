@@ -2,6 +2,8 @@ package com.github.rohansuri.art.integer;
 
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
+import org.apache.commons.collections4.trie.GenericPatriciaTrie;
+import org.ardverk.collection.IntegerKeyAnalyzer;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
@@ -28,7 +30,8 @@ public class Lookup {
 		public enum MapType {
 			HASH_MAP,
 			ART,
-			TREE_MAP
+			TREE_MAP,
+			PATRICIA_TRIE
 		}
 
 		public enum DistributionType {
@@ -53,6 +56,9 @@ public class Lookup {
 				break;
 			case TREE_MAP:
 				m = new TreeMap<>();
+				break;
+			case PATRICIA_TRIE:
+				m = new GenericPatriciaTrie<Integer, Object>(IntegerKeyAnalyzer.INSTANCE);
 				break;
 			default:
 				throw new AssertionError();
