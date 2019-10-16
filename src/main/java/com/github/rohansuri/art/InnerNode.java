@@ -33,6 +33,10 @@ abstract class InnerNode extends Node {
 		this.noOfChildren = node.noOfChildren;
 		this.prefixLen = node.prefixLen;
 		this.prefixKeys = node.prefixKeys;
+
+		// copy leaf & replace uplink
+		child[size] = node.getLeaf();
+		replaceUplink(this, child[size]);
 	}
 
 	// CLEANUP: move to test utils
@@ -46,6 +50,10 @@ abstract class InnerNode extends Node {
 	public void setLeaf(LeafNode<?, ?> leaf) {
 		child[child.length - 1] = leaf;
 		createUplink(this, leaf);
+	}
+
+	public Node getLeaf() {
+		return child[child.length - 1];
 	}
 
 }

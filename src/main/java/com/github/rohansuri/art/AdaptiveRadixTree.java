@@ -216,7 +216,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// that'd only mean the key is a prefix, but we don't have that prefix
 			// the key must be greater for us to take optimistic jump
 			// and carry out comparisons
-			if (key.length <= depth + innerNode.prefixLen) {
+			if (key.length < depth + innerNode.prefixLen) {
 				return null;
 			}
 
@@ -231,7 +231,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 			// complete match, continue search
 			depth = depth + innerNode.prefixLen;
-			Node nextNode = node.findChild(key[depth]);
+			Node nextNode;
+			if (depth == key.length) {
+				nextNode = innerNode.getLeaf();
+			}
+			else {
+				nextNode = node.findChild(key[depth]);
+			}
 			if (nextNode == null) {
 				return null;
 			}
