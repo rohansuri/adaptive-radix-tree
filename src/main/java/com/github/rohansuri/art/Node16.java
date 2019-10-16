@@ -4,11 +4,10 @@ import java.util.Arrays;
 
 class Node16 extends InnerNode {
 	static final int NODE_SIZE = 16;
-	private final Node[] child = new Node[NODE_SIZE];
 	private final byte[] keys = new byte[NODE_SIZE];
 
 	Node16(Node4 node) {
-		super(node);
+		super(node, NODE_SIZE);
 		assert node.isFull();
 		byte[] keys = node.getKeys();
 		Node[] child = node.getChild();
@@ -22,7 +21,7 @@ class Node16 extends InnerNode {
 	}
 
 	Node16(Node48 node48) {
-		super(node48);
+		super(node48, NODE_SIZE);
 		assert node48.shouldShrink();
 		byte[] keyIndex = node48.getKeyIndex();
 		Node[] children = node48.getChild();

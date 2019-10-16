@@ -4,17 +4,16 @@ class Node4 extends InnerNode {
 
 	static final int NODE_SIZE = 4;
 
-	private final Node[] child = new Node[NODE_SIZE];
-
 	// each array element would contain the partial byte key to match
 	// if key matches then take up the same index from the child pointer array
 	private final byte[] keys = new byte[NODE_SIZE];
 
 	Node4() {
+		super(NODE_SIZE);
 	}
 
 	Node4(Node16 node16) {
-		super(node16);
+		super(node16, NODE_SIZE);
 		assert node16.shouldShrink();
 		byte[] keys = node16.getKeys();
 		Node[] child = node16.getChild();

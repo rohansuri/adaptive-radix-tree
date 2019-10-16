@@ -88,6 +88,7 @@ abstract class Node {
 	 *
 	 * @return no of children this Node has
 	 */
+
 	abstract short size();
 
 	// for upwards traversal
@@ -101,6 +102,12 @@ abstract class Node {
 	Node(Node node) {
 		this.partialKey = node.partialKey;
 		this.parent = node.parent;
+	}
+
+	// do we need partial key for leaf nodes? we'll find out
+	static void createUplink(InnerNode parent, LeafNode<?, ?> child) {
+		Node c = child;
+		c.parent = parent;
 	}
 
 	static void createUplink(Node parent, Node child, byte partialKey) {

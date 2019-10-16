@@ -18,13 +18,17 @@ abstract class InnerNode extends Node {
 	// using it specifically on an AbstractNode level? (are we?)
 	short noOfChildren; // 2 bytes
 
-	InnerNode() {
+	final Node[] child;
+
+	InnerNode(int size) {
 		prefixKeys = new byte[PESSIMISTIC_PATH_COMPRESSION_LIMIT];
+		child = new Node[size + 1];
 	}
 
 	// copy ctor. called when growing/shrinking
-	InnerNode(InnerNode node) {
+	InnerNode(InnerNode node, int size) {
 		super(node);
+		child = new Node[size + 1];
 		// copy header
 		this.noOfChildren = node.noOfChildren;
 		this.prefixLen = node.prefixLen;
@@ -37,6 +41,11 @@ abstract class InnerNode extends Node {
 		byte[] valid = new byte[limit];
 		System.arraycopy(prefixKeys, 0, valid, 0, limit);
 		return valid;
+	}
+
+	public void setLeaf(LeafNode<?, ?> leaf) {
+		child[child.length - 1] = leaf;
+		createUplink(this, leaf);
 	}
 
 }

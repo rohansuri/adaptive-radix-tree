@@ -2,10 +2,9 @@ package com.github.rohansuri.art;
 
 class Node256 extends InnerNode {
 	static final int NODE_SIZE = 256;
-	private final Node child[] = new Node[NODE_SIZE]; // 256 * 8 bytes
 
 	Node256(Node48 node) {
-		super(node);
+		super(node, NODE_SIZE);
 		assert node.isFull();
 
 		byte[] keyIndex = node.getKeyIndex();
