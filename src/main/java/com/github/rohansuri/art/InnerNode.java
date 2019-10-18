@@ -36,7 +36,9 @@ abstract class InnerNode extends Node {
 
 		// copy leaf & replace uplink
 		child[size] = node.getLeaf();
-		replaceUplink(this, child[size]);
+		if (child[size] != null) {
+			replaceUplink(this, child[size]);
+		}
 	}
 
 	// CLEANUP: move to test utils
