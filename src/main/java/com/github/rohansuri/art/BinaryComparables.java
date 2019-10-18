@@ -30,7 +30,7 @@ public class BinaryComparables {
 	}
 
 	public static BinaryComparable<String> forUTF8() {
-		return UTF8;
+		return (key) -> key.getBytes(StandardCharsets.UTF_8);
 	}
 
 	private static final BinaryComparable<Integer> INTEGER = (key) -> BinaryComparableUtils
