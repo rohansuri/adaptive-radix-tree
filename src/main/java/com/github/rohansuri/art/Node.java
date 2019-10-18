@@ -88,7 +88,6 @@ abstract class Node {
 	 *
 	 * @return no of children this Node has
 	 */
-
 	abstract short size();
 
 	// for upwards traversal
