@@ -14,13 +14,14 @@ plugins {
 }
 
 jmh {
-	include = ['Lookup', 'Insert']
+	include = ['LargeData']
 	fork = 1
 	warmup = '1s'
 	timeOnIteration = '1s'
 	benchmarkParameters = [:]
-	benchmarkParameters['mapType'] = ['ART', 'HASH_MAP', 'TREE_MAP']
-	benchmarkParameters['size'] = ['65000']
+	//benchmarkParameters['mapType'] = ['ART', 'HASH_MAP', 'TREE_MAP']
+	//benchmarkParameters['size'] = ['65000']
+	benchmarkParameters['file'] = ['WORDS']
 	resultFormat = 'JSON'
 }
 
@@ -100,5 +101,5 @@ test {
 		includeEngines "junit-jupiter"
 	}
 	//dependsOn testJUnit4
-	exclude 'playground/**' // folder just includes some examples or playing around with APIs
+	// exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }
