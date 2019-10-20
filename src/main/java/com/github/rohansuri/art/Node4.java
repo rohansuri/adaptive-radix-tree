@@ -45,22 +45,15 @@ class Node4 extends InnerNode {
 			return false;
 		}
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
-
-		int insertionPoint = 0;
-		for (; insertionPoint < noOfChildren; insertionPoint++) {
-			if (keys[insertionPoint] > unsignedPartialKey) {
-				break;
-			}
-			assert keys[insertionPoint] != unsignedPartialKey : "Cannot insert partial key that already exists";
-		}
 		// shift elements from this point to right by one place
 		// noOfChildren here would never be == Node_SIZE (since we have isFull() check)
-		for (int i = noOfChildren; i > insertionPoint; i--) {
+		int i = noOfChildren;
+		for (; i > 0 && unsignedPartialKey < keys[i - 1]; i--) {
 			keys[i] = keys[i - 1];
 			this.child[i] = this.child[i - 1];
 		}
-		keys[insertionPoint] = unsignedPartialKey;
-		this.child[insertionPoint] = child;
+		keys[i] = unsignedPartialKey;
+		this.child[i] = child;
 		noOfChildren++;
 		createUplink(this, child, partialKey);
 		return true;
