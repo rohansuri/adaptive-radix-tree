@@ -1,6 +1,6 @@
 package com.github.rohansuri.art;
 
-abstract class AbstractNode implements Node {
+abstract class AbstractNode extends Node {
 	// for upwards traversal
 	// dev note: wherever you setup downlinks, you setup uplinks as well
 	private Node parent;
