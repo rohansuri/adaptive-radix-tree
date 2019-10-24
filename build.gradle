@@ -14,15 +14,26 @@ plugins {
 }
 
 jmh {
-	include = ['LargeData']
+	include = ['LargeData.lookup']
+	// exclude 'playground/**'
 	fork = 1
-	warmup = '1s'
+	warmup = '3s'
+	// warmup = '1s'
+	// timeOnIteration = '500s'
 	timeOnIteration = '1s'
 	benchmarkParameters = [:]
-	//benchmarkParameters['mapType'] = ['ART', 'HASH_MAP', 'TREE_MAP']
-	//benchmarkParameters['size'] = ['65000']
-	benchmarkParameters['file'] = ['WORDS']
+	profilers = ['perfasm:hotThreshold=.05']
+	// profilers = ['perf']
+	// benchmarkParameters['mapType'] = ['ART1', 'ART2']
+	// benchmarkParameters['mapType'] = ['ART', 'PATRICIA_TRIE', 'TREE_MAP']
+	// benchmarkParameters['mapType'] = ['ART','TREE_MAP']
+	benchmarkParameters['mapType'] = ['FIXEDART']
+	// benchmarkParameters['size'] = ['65000']
+	// benchmarkParameters['file'] = ['TERMINATED_WORDS', 'UUIDs']
+	benchmarkParameters['file'] = ['TERMINATED_WORDS']
+	// benchmarkParameters['distributionType'] = ['DENSE']
 	resultFormat = 'JSON'
+	// jvmArgs = '-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly'
 }
 
 dependencies {
@@ -101,5 +112,5 @@ test {
 		includeEngines "junit-jupiter"
 	}
 	//dependsOn testJUnit4
-	// exclude 'playground/**' // folder just includes some examples or playing around with APIs
+	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }
