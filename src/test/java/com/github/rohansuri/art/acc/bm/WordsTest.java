@@ -13,6 +13,7 @@ import java.util.UUID;
 import com.github.rohansuri.art.AbstractNavigableMapShortTest;
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
+import com.github.rohansuri.art.FixedStringBinaryComparable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Assertions;
@@ -42,7 +43,7 @@ public class WordsTest extends AbstractNavigableMapShortTest<String, String> {
 	private static String[] loadWords() {
 		try {
 			List<String> lines = IOUtils
-					.readLines(WordsTest.class.getResourceAsStream("/words.txt"), StandardCharsets.UTF_8);
+					.readLines(WordsTest.class.getResourceAsStream("/terminated_words.txt"), StandardCharsets.UTF_8);
 			return lines.toArray(new String[0]);
 		}
 		catch (IOException e) {
@@ -81,6 +82,6 @@ public class WordsTest extends AbstractNavigableMapShortTest<String, String> {
 
 	@Override
 	public NavigableMap<String, String> makeObject() {
-		return new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		return new AdaptiveRadixTree<>(new FixedStringBinaryComparable());
 	}
 }

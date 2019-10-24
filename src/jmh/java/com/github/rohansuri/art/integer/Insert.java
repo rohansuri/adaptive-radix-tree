@@ -26,7 +26,7 @@ public class Insert {
 	public static class Data {
 		Object holder;
 		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
-		int[] keys;
+		Integer[] keys;
 		Supplier<Map<Integer, Object>> supplier;
 		@Param({"65000", "16000000"}) // 16m
 				int size;
@@ -70,7 +70,7 @@ public class Insert {
 			}
 
 			holder = new Object();
-			keys = new int[size];
+			keys = new Integer[size];
 			keySet = new HashSet<>(size);
 
 			// TODO: refactor if-else block into a KeyGenerator
@@ -86,7 +86,7 @@ public class Insert {
 					ArrayUtils.shuffle(keys);
 				}
 			}
-			else {
+			else if (distributionType == DistributionType.SPARSE) {
 				// sparse keys
 				int x;
 				for (int i = 0; i < size; i++) {
@@ -97,6 +97,9 @@ public class Insert {
 					keys[i] = x;
 					keySet.add(x);
 				}
+			}
+			else {
+				throw new IllegalArgumentException("not a valid distribution type");
 			}
 		}
 	}

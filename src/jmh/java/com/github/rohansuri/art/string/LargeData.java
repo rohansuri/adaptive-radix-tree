@@ -3,6 +3,8 @@ package com.github.rohansuri.art.string;
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
 
+import com.github.rohansuri.art.FixedStringBinaryComparable;
+import com.github.rohansuri.art.StringBinaryComparable1;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
@@ -34,7 +36,9 @@ public class LargeData {
 
 		public enum MapType {
 			HASH_MAP,
-			ART,
+			ART1,
+			ART2,
+			FIXEDART,
 			TREE_MAP,
 			PATRICIA_TRIE
 		}
@@ -44,7 +48,8 @@ public class LargeData {
 
 		public enum File {
 			WORDS("/words.txt", 235886),
-			UUIDs("/uuid.txt", 100000);
+			UUIDs("/uuid.txt", 100000),
+			TERMINATED_WORDS("/terminated_words.txt", 235886);
 
 			private final String fileName;
 			private final int size;
@@ -64,8 +69,14 @@ public class LargeData {
 			case HASH_MAP:
 				supplier = () -> new HashMap<>();
 				break;
-			case ART:
+			case ART1:
 				supplier = () -> new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+				break;
+			case ART2:
+				supplier = () -> new AdaptiveRadixTree<>(new StringBinaryComparable1());
+				break;
+			case FIXEDART:
+				supplier = () -> new AdaptiveRadixTree<>(new FixedStringBinaryComparable());
 				break;
 			case TREE_MAP:
 				supplier = () -> new TreeMap<>();

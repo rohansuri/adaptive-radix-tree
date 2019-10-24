@@ -7,6 +7,7 @@ import org.ardverk.collection.IntegerKeyAnalyzer;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +23,10 @@ public class Lookup {
 	@State(Scope.Benchmark)
 	public static class Data {
 		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
-		int[] keys;
+		Integer[] keys;
 		Map<Integer, Object> m;
 		@Param({"65000", "16000000"}) // 65k, 16m
-		int size;
+				int size;
 
 		public enum MapType {
 			HASH_MAP,
@@ -65,7 +66,7 @@ public class Lookup {
 			}
 			Object holder = new Object();
 			keySet = new HashSet<>(size);
-			keys = new int[size];
+			keys = new Integer[size];
 
 			// TODO: refactor if-else block into a KeyGenerator
 			if (distributionType == DistributionType.DENSE) {
@@ -74,8 +75,9 @@ public class Lookup {
 				for (int i = 0; i < size; i++) {
 					keys[i] = i;
 				}
+				ArrayUtils.shuffle(keys);
 			}
-			else {
+			else if (distributionType == DistributionType.SPARSE) {
 				// sparse keys
 				int x;
 				for (int i = 0; i < size; i++) {
@@ -86,6 +88,9 @@ public class Lookup {
 					keys[i] = x;
 					keySet.add(x);
 				}
+			}
+			else {
+				throw new IllegalArgumentException("not a valid distribution type");
 			}
 			// insert into map
 			for (int key : keys) {
