@@ -1,0 +1,28 @@
+Secondary result "playground.LinearVsBinarySearch.linear:·perf":
+Perf stats:
+--------------------------------------------------
+
+       4596.133419      task-clock (msec)         #    0.224 CPUs utilized          
+               276      context-switches          #    0.060 K/sec                  
+                32      cpu-migrations            #    0.007 K/sec                  
+               183      page-faults               #    0.040 K/sec                  
+   13,87,18,69,371      cycles                    #    3.018 GHz                      (28.38%)
+    3,47,18,98,325      stalled-cycles-frontend   #   25.03% frontend cycles idle     (28.79%)
+   44,36,05,28,094      instructions              #    3.20  insn per cycle         
+                                                  #    0.08  stalled cycles per insn  (36.07%)
+    9,00,64,49,132      branches                  # 1959.571 M/sec                    (36.25%)
+         17,58,712      branch-misses             #    0.02% of all branches          (36.46%)
+   12,11,42,71,442      L1-dcache-loads           # 2635.753 M/sec                    (28.31%)
+          6,06,657      L1-dcache-load-misses     #    0.01% of all L1-dcache hits    (14.22%)
+          1,72,344      LLC-loads                 #    0.037 M/sec                    (14.18%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+          5,88,471      L1-icache-load-misses                                         (21.27%)
+   12,13,57,90,565      dTLB-loads                # 2640.435 M/sec                    (21.18%)
+            62,090      dTLB-load-misses          #    0.00% of all dTLB cache hits   (14.14%)
+            55,464      iTLB-loads                #    0.012 M/sec                    (14.05%)
+            16,966      iTLB-load-misses          #   30.59% of all iTLB cache hits   (21.04%)
+   <not supported>      L1-dcache-prefetches                                        
+            32,234      L1-dcache-prefetch-misses #    0.007 M/sec                    (28.02%)
+
+      20.543073197 seconds time elapsed
