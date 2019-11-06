@@ -54,6 +54,15 @@ abstract class InnerNode extends Node {
 		createUplink(this, leaf);
 	}
 
+	public void removeLeaf() {
+		removeUplink(child[child.length - 1]);
+		child[child.length - 1] = null;
+	}
+
+	public boolean hasLeaf() {
+		return child[child.length - 1] != null;
+	}
+
 	public Node getLeaf() {
 		return child[child.length - 1];
 	}

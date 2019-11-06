@@ -980,26 +980,36 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	void deleteEntry(LeafNode<K, V> leaf) {
 		size--;
 		modCount++;
-		Node parent = leaf.parent();
-		if (parent == null) {
+		Node p = leaf.parent();
+		if (p == null) {
 			// means root == leaf
 			root = null;
 			return;
 		}
-		parent.removeChild(leaf.uplinkKey());
+		InnerNode parent = (InnerNode) p;
+		if (parent.getLeaf() == leaf) {
+			parent.removeLeaf();
+		}
+		else {
+			parent.removeChild(leaf.uplinkKey());
+		}
 		if (parent.shouldShrink()) {
 			Node newParent = parent.shrink();
 			// newParent should have copied the uplink to same grandParent of oldParent
 			Node grandParent = newParent.parent();
 			replace(newParent.uplinkKey(), grandParent, newParent);
 		}
-		else if (parent.size() == 1) {
+		else if (parent.size() == 1 && !parent.hasLeaf()) {
 			// this node can be path compressed
 			// so now: grandParent --> partial key to parent --> partialKey to only leaf left
 			// to path compress
 			// grandParent --> same partial key, but now to leaf
 			// leaf's compressed path updated to (parent's compressed path + partialKey to leaf + leaf's own compressed path)
 			pathCompress((Node4) parent);
+		}
+		else if (parent.size() == 0) {
+			assert parent.hasLeaf();
+			replace(parent.uplinkKey(), parent.parent(), parent.getLeaf());
 		}
 	}
 
