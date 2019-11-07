@@ -597,10 +597,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	@SuppressWarnings("unchecked")
 	private static <K, V> LeafNode<K, V> getFirstEntry(Node startFrom) {
 		Node node = startFrom;
-		Node next = node.first();
+		Node next = node.firstOrLeaf();
 		while (next != null) {
 			node = next;
-			next = node.first();
+			next = node.firstOrLeaf();
 		}
 		return (LeafNode<K, V>) node;
 	}
@@ -952,8 +952,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	static <K, V> LeafNode<K, V> successor(Node node) {
-		Node uplink;
+		InnerNode uplink;
 		while ((uplink = node.parent()) != null) {
+			if(uplink.getLeaf() == node){
+				// we surely have a first node
+				return getFirstEntry(uplink.first());
+			}
 			Node greater = uplink.greater(node.uplinkKey());
 			if (greater != null) {
 				return getFirstEntry(greater);
@@ -964,11 +968,17 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	static <K, V> LeafNode<K, V> predecessor(Node node) {
-		Node uplink;
+		InnerNode uplink;
 		while ((uplink = node.parent()) != null) {
+			if(uplink.getLeaf() == node){ // least node, go up
+				node = uplink;
+				continue;
+			}
 			Node lesser = uplink.lesser(node.uplinkKey());
 			if (lesser != null) {
 				return getLastEntry(lesser);
+			} else if(uplink.hasLeaf()){
+				return (LeafNode<K, V>) uplink.getLeaf();
 			}
 			node = uplink;
 		}

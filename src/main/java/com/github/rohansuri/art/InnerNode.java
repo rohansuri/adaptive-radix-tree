@@ -67,4 +67,11 @@ abstract class InnerNode extends Node {
 		return child[child.length - 1];
 	}
 
+	@Override
+	public Node firstOrLeaf() {
+		if (hasLeaf()) {
+			return getLeaf();
+		}
+		return first();
+	}
 }
