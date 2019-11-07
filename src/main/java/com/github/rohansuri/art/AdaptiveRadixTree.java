@@ -673,6 +673,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				}
 				return predecessor(leafNode);
 			}
+			InnerNode innerNode = (InnerNode) node;
 			// compare compressed path
 			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
 			if (compare < 0) { // lesser
@@ -682,15 +683,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return predecessor(node);
 			}
 			// compressed path matches completely
-			depth += ((InnerNode) node).prefixLen;
-			Node child = node.findChild(key[depth]);
+			depth += innerNode.prefixLen;
+			if (depth == key.length) {
+				if (!lower && innerNode.hasLeaf()) {
+					return (LeafNode<K, V>) innerNode.getLeaf();
+				}
+				return predecessor(innerNode);
+			}
+			Node child = innerNode.findChild(key[depth]);
 			if (child == null) { // same child not found, can we find a lesser child at this node level itself?
 				// CLEANUP: Node could also support a floor(partialKey) in this case to combine the findChild + lesser
-				Node lesser = node.lesser(key[depth]);
+				Node lesser = innerNode.lesser(key[depth]);
 				if (lesser != null) {
 					return getLastEntry(lesser);
 				}
-				return predecessor(node);
+				return predecessor(innerNode);
 			}
 			depth++;
 			node = child;
@@ -802,8 +809,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			else if (compare < 0) { // lesser, that means all children of this node will be lesser than key
 				return successor(node);
 			}
+			InnerNode innerNode = (InnerNode) node;
 			// compressed path matches completely
-			depth += ((InnerNode) node).prefixLen;
+			depth += innerNode.prefixLen;
+			if (depth == key.length) {
+				return ceil ? getFirstEntry(innerNode) : getFirstEntry(innerNode.first());
+			}
 			Node child = node.findChild(key[depth]);
 			if (child == null) { // same child not found, can we find a greater child at this node level itself?
 				// CLEANUP: Node could also support a ceil(partialKey) in this case to combine the findChild + next
@@ -954,7 +965,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	static <K, V> LeafNode<K, V> successor(Node node) {
 		InnerNode uplink;
 		while ((uplink = node.parent()) != null) {
-			if(uplink.getLeaf() == node){
+			if (uplink.getLeaf() == node) {
 				// we surely have a first node
 				return getFirstEntry(uplink.first());
 			}
@@ -970,7 +981,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	static <K, V> LeafNode<K, V> predecessor(Node node) {
 		InnerNode uplink;
 		while ((uplink = node.parent()) != null) {
-			if(uplink.getLeaf() == node){ // least node, go up
+			if (uplink.getLeaf() == node) { // least node, go up
 				node = uplink;
 				continue;
 			}
