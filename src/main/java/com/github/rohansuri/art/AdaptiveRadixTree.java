@@ -662,7 +662,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) >= (lower ? 1 : 0)) {
 					return leafNode;
 				}
-				return goUpAndFindLesser(depth, node, key);
+				return predecessor(leafNode);
 			}
 			// compare compressed path
 			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
@@ -670,7 +670,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return getLastEntry(node);
 			}
 			else if (compare == 1) { // greater, that means all children of this node will be greater than key
-				return goUpAndFindLesser(depth, node, key);
+				return predecessor(node);
 			}
 			// compressed path matches completely
 			depth += ((InnerNode) node).prefixLen;
@@ -681,8 +681,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				if (lesser != null) {
 					return getLastEntry(lesser);
 				}
-				depth -= ((InnerNode) node).prefixLen;
-				return goUpAndFindLesser(depth, node, key);
+				return predecessor(node);
 			}
 			depth++;
 			node = child;
@@ -718,35 +717,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		else {
 			return a[i] < b[j] ? -1 : 1;
 		}
-	}
-
-	// CLEANUP: rather than using depth, refactor to use node.parentKey() i.e. reuse successor(...) method
-	private LeafNode<K, V> goUpAndFindGreater(int depth, Node node, byte[] key) {
-		while ((node = node.parent()) != null) { // while you don't reach the root node
-			depth--;
-			Node next = node.greater(key[depth]);
-			if (next != null) {
-				// found a next, return first leaf
-				return getFirstEntry(next);
-			}
-			// prepare to go up
-			depth -= ((InnerNode) node).prefixLen;
-		}
-		return null;
-	}
-
-	private LeafNode<K, V> goUpAndFindLesser(int depth, Node node, byte[] key) {
-		while ((node = node.parent()) != null) { // while you don't reach the root node
-			depth--;
-			Node lesser = node.lesser(key[depth]);
-			if (lesser != null) {
-				// found a lesser, return last leaf
-				return getLastEntry(lesser);
-			}
-			// prepare to go up
-			depth -= ((InnerNode) node).prefixLen;
-		}
-		return null;
 	}
 
 	@Override
@@ -813,7 +783,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) < (ceil ? 1 : 0)) {
 					return leafNode;
 				}
-				return goUpAndFindGreater(depth, node, key);
+				return successor(leafNode);
 			}
 			// compare compressed path
 			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
@@ -821,7 +791,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return getFirstEntry(node);
 			}
 			else if (compare == -1) { // lesser, that means all children of this node will be lesser than key
-				return goUpAndFindGreater(depth, node, key);
+				return successor(node);
 			}
 			// compressed path matches completely
 			depth += ((InnerNode) node).prefixLen;
@@ -832,8 +802,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				if (next != null) {
 					return getFirstEntry(next);
 				}
-				depth -= ((InnerNode) node).prefixLen;
-				return goUpAndFindGreater(depth, node, key);
+				return successor(node);
 			}
 			depth++;
 			node = child;
@@ -973,8 +942,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return size;
 	}
 
-	static <K, V> LeafNode<K, V> successor(LeafNode<K, V> of) {
-		Node node = of; // LeafNode
+	static <K, V> LeafNode<K, V> successor(Node node) {
 		Node uplink;
 		while ((uplink = node.parent()) != null) {
 			Node greater = uplink.greater(node.uplinkKey());
@@ -986,8 +954,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return null;
 	}
 
-	static <K, V> LeafNode<K, V> predecessor(LeafNode<K, V> of) {
-		Node node = of; // LeafNode
+	static <K, V> LeafNode<K, V> predecessor(Node node) {
 		Node uplink;
 		while ((uplink = node.parent()) != null) {
 			Node lesser = uplink.lesser(node.uplinkKey());
