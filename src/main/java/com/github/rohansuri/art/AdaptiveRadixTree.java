@@ -316,11 +316,18 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return null;
 			}
 			// compare with compressed path
-			int newDepth = matchCompressedPath((InnerNode) node, keyBytes, key, value, depth, prevDepth);
+			InnerNode innerNode = (InnerNode)node;
+			int newDepth = matchCompressedPath(innerNode, keyBytes, key, value, depth, prevDepth);
 			if (newDepth == -1) { // matchCompressedPath already inserted the leaf node for us
 				return null;
 			}
 			// we're now at line 26 in paper
+			if(keyBytes.length == newDepth){
+				LeafNode<K, V> leaf = (LeafNode<K, V>) innerNode.getLeaf();
+				V oldValue = leaf.getValue();
+				leaf.setValue(value);
+				return oldValue;
+			}
 			byte partialKey = keyBytes[newDepth];
 			Node child = node.findChild(partialKey);
 			if (child == null) {
@@ -438,13 +445,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 */
 	private int matchCompressedPath(InnerNode node, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
 		int lcp = 0;
-		int end = Math.min(keyBytes.length, Math.min(node.prefixLen, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT));
+		int end = Math.min(node.prefixLen, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		// first match pessimistic compressed path
-		for (; lcp < end && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
+		for (; depth < keyBytes.length && lcp < end && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
 		Node newNode = null;
 		if (lcp == node.prefixLen) {
-			if (depth == keyBytes.length) { // key ended, it means it is a prefix
+			if (depth == keyBytes.length && !node.hasLeaf()) { // key ended, it means it is a prefix
 				LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
 				node.setLeaf(leafNode);
 			}
@@ -465,7 +472,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			for (; depth < end && keyBytes[depth] == leafBytes[depth]; depth++, lcp++)
 				;
 			if (lcp == node.prefixLen) {
-				if (depth == keyBytes.length) { // key ended, it means it is a prefix
+				if (depth == keyBytes.length && !node.hasLeaf()) { // key ended, it means it is a prefix
 					LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
 					node.setLeaf(leafNode);
 				}
@@ -473,8 +480,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 					// matched entirely, but key is left
 					return depth;
 				}
+			} else {
+				newNode = branchOutOptimistic(node, keyBytes, key, value, lcp, depth, leafBytes);
 			}
-			newNode = branchOutOptimistic(node, keyBytes, key, value, lcp, depth, leafBytes);
 		}
 		else {
 			newNode = branchOutPessimistic(node, keyBytes, key, value, lcp, depth);
@@ -495,7 +503,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	static <K, V> Node branchOutOptimistic(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth,
 			byte[] leafBytes) {
 		// prefix doesn't match entirely, we have to branch
-		assert lcp < node.prefixLen && lcp >= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT : lcp;
+		assert lcp < node.prefixLen && lcp >= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT : lcp + ", " + node.prefixLen;
 		int initialDepth = depth - lcp;
 		LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
 
@@ -697,11 +705,18 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				if (lesser != null) {
 					return getLastEntry(lesser);
 				}
-				return predecessor(innerNode);
+				return leafOrPredecessor(innerNode);
 			}
 			depth++;
 			node = child;
 		}
+	}
+
+	private LeafNode<K, V> leafOrPredecessor(InnerNode innerNode){
+		if(innerNode.hasLeaf()){
+			return (LeafNode<K, V>)innerNode.getLeaf();
+		}
+		return predecessor(innerNode);
 	}
 
 	@Override

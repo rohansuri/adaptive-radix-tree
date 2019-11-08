@@ -63,8 +63,8 @@ abstract class InnerNode extends Node {
 		return child[child.length - 1] != null;
 	}
 
-	public Node getLeaf() {
-		return child[child.length - 1];
+	public LeafNode<?, ?> getLeaf() {
+		return (LeafNode<?, ?>) child[child.length - 1];
 	}
 
 	@Override
