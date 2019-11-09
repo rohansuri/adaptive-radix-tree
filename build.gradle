@@ -23,7 +23,7 @@ jmh {
 	benchmarkParameters = [:]
 	benchmarkParameters['mapType'] = ['ART']
 	benchmarkParameters['file'] = ['WORDS']
-	benchmarkParameters['size'] = ['16','32','64','128','256']
+	benchmarkParameters['size'] = ['16', '32', '64', '128', '256']
 	resultFormat = 'JSON'
 	// jvmArgs = '-XX:FreqInlineSize=0'
 }
@@ -97,6 +97,8 @@ task jacocoRootReport(type: JacocoReport) {
 }
 
 test {
+	maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+	println "maxParallelForks=" + maxParallelForks
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
 	}
