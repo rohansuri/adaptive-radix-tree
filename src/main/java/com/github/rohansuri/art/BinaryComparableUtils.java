@@ -14,31 +14,36 @@ class BinaryComparableUtils {
 	// see paper's null value idea
 	static final byte[] ZERO = new byte[] {0, 1};
 
+	private static int countZeroBytes(byte[] key) {
+		int count = 0;
+		for (int i = 0; i < key.length; i++) {
+			count += key[i] == 0 ? 1 : 0;
+		}
+		return count;
+	}
+
 	// in UTF-8 encoding, other than the 0 byte from the ASCII subset
 	// no codepoint ever will have a 0 byte!
 	// because of the continuation bytes which always have a 1 MSB.
 	// so this is safe to do
 	static byte[] terminateUTF8(byte[] key) {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream(key.length + 2);
-		int i = 0;
-		while (true) {
-			// find a 0 byte
-			int prev = i;
-			for (; i < key.length && key[i] != 0; i++) ;
-			if (i < key.length) { // found a 0 byte at position i
-				bytes.write(key, prev, i - prev);
-				bytes.write(ZERO, 0, ZERO.length);
-				i++;
-			}
-			else {
-				// last portion to copy
-				bytes.write(key, prev, i - prev);
-				break;
+		int count = countZeroBytes(key);
+		int end = key.length + count; // to add ZERO byte 1
+		byte[] terminatedKey = new byte[end + 2];
+		if (count == 0) {
+			System.arraycopy(key, 0, terminatedKey, 0, key.length);
+		}
+		else {
+			for (int i = 0, j = 0; i < key.length; i++, j++) {
+				terminatedKey[j] = key[i];
+				if (key[i] == 0) {
+					terminatedKey[++j] = 1;
+				}
 			}
 		}
-		// add terminator
-		bytes.write(TERMINATOR, 0, TERMINATOR.length);
-		return bytes.toByteArray();
+		terminatedKey[end] = 0;
+		terminatedKey[end + 1] = 0;
+		return terminatedKey;
 	}
 
 	// 2^7 = 128
