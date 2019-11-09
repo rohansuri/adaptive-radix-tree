@@ -9,7 +9,7 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.infra.Blackhole;
 
-public class LinearSearchUnrolledLoop {
+public class LinearSearchFixedSizeUnrolledLoop {
 
 	@State(Scope.Benchmark)
 	public static class Data4 {
