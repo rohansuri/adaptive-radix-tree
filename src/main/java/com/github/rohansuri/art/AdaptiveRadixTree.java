@@ -666,10 +666,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 			// compare compressed path
 			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
-			if (compare == -1) { // lesser
+			if (compare < 0) { // lesser
 				return getLastEntry(node);
 			}
-			else if (compare == 1) { // greater, that means all children of this node will be greater than key
+			else if (compare > 0) { // greater, that means all children of this node will be greater than key
 				return predecessor(node);
 			}
 			// compressed path matches completely
@@ -787,10 +787,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 			// compare compressed path
 			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
-			if (compare == 1) { // greater
+			if (compare > 0) { // greater
 				return getFirstEntry(node);
 			}
-			else if (compare == -1) { // lesser, that means all children of this node will be lesser than key
+			else if (compare < 0) { // lesser, that means all children of this node will be lesser than key
 				return successor(node);
 			}
 			// compressed path matches completely

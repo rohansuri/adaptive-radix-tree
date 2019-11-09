@@ -54,21 +54,21 @@ public class ARTUnitTest {
 		key = "cab";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(1, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 1));
+		Assertions.assertTrue(0 < AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 1));
 
 		// 1 (inequality and compressed path being greater)
 		compressedPath = "xxz";
 		key = "xxa";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(1, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 0));
+		Assertions.assertTrue(0 < AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 0));
 
 		// -1 (only in case of inequality of partial key byte)
 		compressedPath = "xxaa";
 		key = "xxabcd";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
-		Assertions.assertEquals(-1, AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 0));
+		Assertions.assertTrue(0 > AdaptiveRadixTree.comparePessimisticCompressedPath(node, bc.get(key), 0));
 
 	}
 
