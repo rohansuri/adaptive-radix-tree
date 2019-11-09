@@ -216,9 +216,17 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// that'd only mean the key is a prefix, but we don't have that prefix
 			// the key must be greater for us to take optimistic jump
 			// and carry out comparisons
-			if (key.length <= depth + innerNode.prefixLen
-					|| comparePessimisticCompressedPath(innerNode, key, depth) != 0) {
+			if (key.length <= depth + innerNode.prefixLen) {
 				return null;
+			}
+
+			// matches pessimistic compressed path completely?
+			byte[] prefix = innerNode.prefixKeys;
+			int upperLimitForPessimisticMatch = Math
+					.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, innerNode.prefixLen);
+			for (int i = 0; i < upperLimitForPessimisticMatch; i++) {
+				if (prefix[i] != key[depth + i])
+					return null;
 			}
 
 			// complete match, continue search
@@ -233,8 +241,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	// TODO: no need for this method, this behaviour is only needed for Map.get
-	// we can call compare from get directly
 	// is compressed path equal/more/lesser (0, 1, -1) than key
 	static int comparePessimisticCompressedPath(InnerNode node, byte[] key, int depth) {
 		byte[] prefix = node.prefixKeys;
@@ -246,7 +252,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				.min(depth + upperLimitForPessimisticMatch, key.length));
 	}
 
-	static int compareOptimisticCompressedPath(InnerNode node, byte[] key, int depth) {
+	private static int compareOptimisticCompressedPath(InnerNode node, byte[] key, int depth) {
 		int result = comparePessimisticCompressedPath(node, key, depth);
 		if (result != 0 || node.prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
 			return result;
