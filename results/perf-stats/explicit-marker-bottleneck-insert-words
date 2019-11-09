@@ -1,0 +1,40 @@
+
+disabled inlining using -XX:FreqInlineSize=0
+
+....[Hottest Methods (after inlining)]..............................................................
+8.86% c2, level 4 com.github.rohansuri.art.AdaptiveRadixTree::put, version 627 
+8.31% c2, level 4 com.github.rohansuri.art.Node16::findChild, version 616 
+7.17% c2, level 4 com.github.rohansuri.art.AdaptiveRadixTree::matchCompressedPath, version 648 
+6.99% c2, level 4 com.github.rohansuri.art.Node4::findChild, version 614 
+6.13% c2, level 4 java.io.ByteArrayOutputStream::write, version 624 
+4.20% c2, level 4 java.util.Arrays::copyOf, version 418 
+3.33% c2, level 4 com.github.rohansuri.art.BinaryComparableUtils::terminateUTF8, version 619 
+3.09% c2, level 4 com.github.rohansuri.art.Node4::addChild, version 634 
+3.07% c2, level 4 java.lang.StringCoding::encodeUTF8, version 635 
+2.75% c2, level 4 com.github.rohansuri.art.BinaryComparables$$Lambda$48.0x000000080118b440::get, version 651 
+2.59% runtime stub StubRoutines::vectorizedMismatch 
+2.55% c1, level 1 com.github.rohansuri.art.BinaryComparableUtils::unsigned, version 594 
+1.91% c2, level 4 com.github.rohansuri.art.Node48::findChild, version 663 
+1.90% runtime stub StubRoutines::jbyte_disjoint_arraycopy 
+1.77% c2, level 4 com.github.rohansuri.art.Node::&lt;init&gt;, version 631 
+1.66% c2, level 4 com.github.rohansuri.art.AdaptiveRadixTree::setLongestCommonPrefix, version 674 
+1.62% c2, level 4 com.github.rohansuri.art.LeafNode::&lt;init&gt;, version 646 
+1.60% c2, level 4 com.github.rohansuri.art.Node4::replace, version 673 
+1.54% runtime stub StubRoutines::jlong_disjoint_arraycopy 
+1.45% c2, level 4 com.github.rohansuri.art.AbstractNode::createUplink, version 629 
+27.51% <...other 231 warm methods...>
+
+
+so methodthat wouldn't be there in implicit marker:
+6.13% c2, level 4 java.io.ByteArrayOutputStream::write, version 624 
+(no hot code here, but called for whole array copy -- last portion and writing terminator)
+4.20% c2, level 4 java.util.Arrays::copyOf, version 418  (converting BAOS to byte array) 
+3.33% c2, level 4 com.github.rohansuri.art.BinaryComparableUtils::terminateUTF8, version 619
+(nothing hot, naturally called lot of times)
+1.90% runtime stub StubRoutines::jbyte_disjoint_arraycopy (terminator copy at end)
+
+equivalent hot source lines:
+bytes.write(key, prev, i - prev);
+bytes.write(TERMINATOR, 0, TERMINATOR.length);
+ -- 6.13 + 4.20 = 10.33% time
+return bytes.toByteArray(); -- 4.2%
