@@ -15,9 +15,11 @@ public class ExtraSpaceSentinelLinearSearch {
 		byte keys[];
 		byte toLookup[];
 
+		@Param({"16"})
+		int size;
+
 		@Setup
 		public void setup() {
-			int size = 16;
 			keys = new byte[size + 1];
 			toLookup = new byte[size];
 			ThreadLocalRandom.current().nextBytes(keys);
@@ -39,10 +41,10 @@ public class ExtraSpaceSentinelLinearSearch {
 	}
 
 	private int sentinel(byte[] keys, byte key) {
-		keys[16] = key;
+		keys[keys.length - 1] = key;
 		int i = 0;
 		while (keys[i] != key) i++;
-		return i == 16 ? -1 : i;
+		return i == keys.length - 1 ? -1 : i;
 	}
 
 }

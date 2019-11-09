@@ -14,14 +14,18 @@ plugins {
 }
 
 jmh {
-	include = ['Lookup', 'Insert']
+	// include = ['LargeData.lookup']
+	include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
 	fork = 1
-	warmup = '1s'
+	warmup = '2s'
+	// profilers = ['perfasm:hotThreshold=.1']
 	timeOnIteration = '1s'
 	benchmarkParameters = [:]
-	benchmarkParameters['mapType'] = ['ART', 'HASH_MAP', 'TREE_MAP']
-	benchmarkParameters['size'] = ['65000']
+	benchmarkParameters['mapType'] = ['ART']
+	benchmarkParameters['file'] = ['WORDS']
+	benchmarkParameters['size'] = ['16','32','64','128','256']
 	resultFormat = 'JSON'
+	// jvmArgs = '-XX:FreqInlineSize=0'
 }
 
 dependencies {
