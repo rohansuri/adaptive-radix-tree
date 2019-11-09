@@ -2,7 +2,7 @@ package com.github.rohansuri.art;
 
 // should be 16 bytes only
 
-abstract class InnerNode extends AbstractNode {
+abstract class InnerNode extends Node {
 
 	static final int PESSIMISTIC_PATH_COMPRESSION_LIMIT = 8;
 

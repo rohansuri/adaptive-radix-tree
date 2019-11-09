@@ -73,16 +73,6 @@ abstract class Node {
 	abstract boolean isFull();
 
 	/**
-	 * @return the parent of this node. Returns null for root node.
-	 */
-	abstract Node parent();
-
-	/**
-	 * @return the uplinking partial key to parent
-	 */
-	abstract byte uplinkKey();
-
-	/**
 	 * @return returns the smallest child node for the partialKey strictly greater than the partialKey passed.
 	 * Returns null if no such child.
 	 */
@@ -99,4 +89,45 @@ abstract class Node {
 	 * @return no of children this Node has
 	 */
 	abstract short size();
+
+	// for upwards traversal
+	// dev note: wherever you setup downlinks, you setup uplinks as well
+	private Node parent;
+	private byte partialKey;
+
+	Node(){}
+
+	// copy ctor. called when growing/shrinking
+	Node(Node node) {
+		this.partialKey = node.partialKey;
+		this.parent = node.parent;
+	}
+
+	static void createUplink(Node parent, Node child, byte partialKey) {
+		child.parent = parent;
+		child.partialKey = partialKey;
+	}
+
+	// called when growing/shrinking and all children now have a new parent
+	static void replaceUplink(Node parent, Node child) {
+		child.parent = parent;
+	}
+
+	static void removeUplink(Node child) {
+		child.parent = null;
+	}
+
+	/**
+	 * @return the parent of this node. Returns null for root node.
+	 */
+	public Node parent() {
+		return parent;
+	}
+
+	/**
+	 * @return the uplinking partial key to parent
+	 */
+	public byte uplinkKey() {
+		return partialKey;
+	}
 }

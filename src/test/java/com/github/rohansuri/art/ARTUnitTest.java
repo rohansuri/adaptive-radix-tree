@@ -264,14 +264,14 @@ public class ARTUnitTest {
 
 		InnerNode nodeLeft = new Node4();
 		node.addChild((byte) 'i', nodeLeft);
-		node.addChild((byte) 'j', Mockito.spy(AbstractNode.class));
+		node.addChild((byte) 'j', Mockito.spy(Node.class));
 
 		String prevDepth = "prevdepthbytes";
 		String optimisticPath = "0123456789";
 		String key = prevDepth + compressedPath + optimisticPath + "ik";
 		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forUTF8().get(key), key, "value");
 		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
-		nodeLeft.addChild((byte) 'l', Mockito.spy(AbstractNode.class));
+		nodeLeft.addChild((byte) 'l', Mockito.spy(Node.class));
 
 		AdaptiveRadixTree.removePessimisticLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
 		Assertions.assertEquals(expectedNewPrefixLen, node.prefixLen);
@@ -296,14 +296,14 @@ public class ARTUnitTest {
 
 		InnerNode nodeLeft = new Node4();
 		node.addChild((byte) 'i', nodeLeft);
-		node.addChild((byte) 'j', Mockito.spy(AbstractNode.class));
+		node.addChild((byte) 'j', Mockito.spy(Node.class));
 
 		String prevDepth = "prevdepthbytes";
 		String optimisticPath = "01";
 		String key = prevDepth + compressedPath + optimisticPath + "ik";
 		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forUTF8().get(key), key, "value");
 		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
-		nodeLeft.addChild((byte) 'l', Mockito.spy(AbstractNode.class));
+		nodeLeft.addChild((byte) 'l', Mockito.spy(Node.class));
 
 		AdaptiveRadixTree.removePessimisticLCPFromCompressedPath(node, prevDepth.length() + lcp, lcp);
 		Assertions.assertEquals(expectedNewPrefixLen, node.prefixLen);
@@ -363,11 +363,11 @@ public class ARTUnitTest {
 		// setup root with one child
 		Node4 root = new Node4();
 		art.replace(0, new byte[] {}, null, leafNode);
-		Node child = Mockito.spy(AbstractNode.class);
+		Node child = Mockito.spy(Node.class);
 		root.addChild((byte) 'x', child);
 
 		// replace root's x downlink with new child (for various reasons, for example because we just grew this child)
-		Node newChild = Mockito.spy(AbstractNode.class);
+		Node newChild = Mockito.spy(Node.class);
 		art.replace(1, bc.get("x"), root, newChild);
 
 		Assertions.assertEquals(1, root.size());

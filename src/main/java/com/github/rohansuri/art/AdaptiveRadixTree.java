@@ -272,7 +272,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if (prevDepth == null) {
 			assert depth == 0;
 			root = replaceWith;
-			AbstractNode.replaceUplink(null, root);
+			Node.replaceUplink(null, root);
 		}
 		else {
 			assert depth > 0;
@@ -284,7 +284,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private void replace(byte partialKey, Node prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
 			root = replaceWith;
-			AbstractNode.replaceUplink(null, root);
+			Node.replaceUplink(null, root);
 		}
 		else {
 			prevDepth.replace(partialKey, replaceWith);

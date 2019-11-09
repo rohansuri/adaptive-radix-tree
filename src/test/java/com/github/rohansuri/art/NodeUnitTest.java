@@ -2,7 +2,6 @@ package com.github.rohansuri.art;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +39,7 @@ public abstract class NodeUnitTest {
 			if (node.isFull()) {
 				node = node.grow();
 			}
-			Pair p = new Pair((byte) i, Mockito.spy(AbstractNode.class));
+			Pair p = new Pair((byte) i, Mockito.spy(Node.class));
 			existingData[j] = p;
 			Assertions.assertTrue(node.addChild(p.partialKey, p.child));
 		}
@@ -129,7 +128,7 @@ public abstract class NodeUnitTest {
 			if (node.findChild(i) != null) {
 				continue;
 			}
-			Pair p = new Pair(i, Mockito.spy(AbstractNode.class));
+			Pair p = new Pair(i, Mockito.spy(Node.class));
 			pairs.add(p);
 			node.addChild(p.partialKey, p.child);
 		}
@@ -220,9 +219,9 @@ public abstract class NodeUnitTest {
 				minByte = existingData[i].partialKey;
 			}
 		}
-		Pair p = new Pair((byte)(minByte-1), Mockito.spy(AbstractNode.class));
+		Pair p = new Pair((byte)(minByte-1), Mockito.spy(Node.class));
 		assertTrue(node.addChild(p.partialKey, p.child));
-		p = new Pair((byte)(maxByte+1), Mockito.spy(AbstractNode.class));
+		p = new Pair((byte)(maxByte+1), Mockito.spy(Node.class));
 		if(!node.isFull()){ // need for Node4 since we add 3 elements in test setup already
 			node.addChild(p.partialKey, p.child);
 		}
@@ -261,7 +260,7 @@ public abstract class NodeUnitTest {
 			if (node.findChild(i) != null) {
 				continue; // find at least one non existent child to force add
 			}
-			pair = new Pair(i, Mockito.spy(AbstractNode.class));
+			pair = new Pair(i, Mockito.spy(Node.class));
 			if (node.isFull()) {
 				break;
 			}
@@ -348,7 +347,7 @@ public abstract class NodeUnitTest {
 	@Test
 	public void testReplace() {
 		Node first = node.first();
-		Node newChild = Mockito.spy(AbstractNode.class);
+		Node newChild = Mockito.spy(Node.class);
 		node.replace(first.uplinkKey(), newChild);
 		assertEquals(newChild, node.findChild(first.uplinkKey()));
 		assertEquals(existingData.length, node.size());

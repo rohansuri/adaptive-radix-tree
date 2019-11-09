@@ -63,7 +63,7 @@ public class ARTByteTest {
 		// assert parent of root is null
 		Field root = art.getClass().getDeclaredField("root");
 		root.setAccessible(true);
-		assertNull(((AbstractNode) root.get(art)).parent());
+		assertNull(((Node) root.get(art)).parent());
 
 
 		// test sorted order iteration
