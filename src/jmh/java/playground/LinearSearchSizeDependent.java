@@ -344,22 +344,26 @@ public class LinearSearchSizeDependent {
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void looped(Blackhole b, Data16 d){
+	public int looped(Blackhole b, Data16 d){
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
 			int limit = d.limits[i];
-			b.consume(find(d.keys, limit, d.toLookup[i]));
+			sum += find(d.keys, limit, d.toLookup[i]);
 		}
+		return sum;
 	}
 
 
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void unrolled(Blackhole b, Data16 d) {
+	public int unrolled(Data16 d) {
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
 			int limit = d.limits[i];
-			b.consume(UNROLLED[limit].find(d.keys, d.toLookup[i]));
+			sum += UNROLLED[limit].find(d.keys, d.toLookup[i]);
 		}
+		return sum;
 	}
 }
 

@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.infra.Blackhole;
+
 
 public class LinearSearchFixedSizeUnrolledLoop {
 
@@ -76,18 +76,22 @@ public class LinearSearchFixedSizeUnrolledLoop {
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void unrolled4(Blackhole b, Data4 d) {
+	public int unrolled4(Data4 d) {
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
-			b.consume(unrolled4(d.keys, d.toLookup[i]));
+			sum += unrolled4(d.keys, d.toLookup[i]);
 		}
+		return sum;
 	}
 
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void unrolled16(Blackhole b, Data16 d) {
+	public int unrolled16(Data16 d) {
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
-			b.consume(unrolled16(d.keys, d.toLookup[i]));
+			sum += unrolled16(d.keys, d.toLookup[i]);
 		}
+		return sum;
 	}
 }

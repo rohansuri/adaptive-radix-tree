@@ -33,19 +33,23 @@ public class LinearVsBinarySearch {
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void linear(Blackhole b, Data d) {
+	public int linear(Data d) {
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
-			b.consume(linear(d.keys, d.toLookup[i]));
+			sum += linear(d.keys, d.toLookup[i]);
 		}
+		return sum;
 	}
 
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void sentinel(Blackhole b, Data d) {
+	public int sentinel(Data d) {
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
-			b.consume(sentinel(d.keys, d.toLookup[i]));
+			sum += (sentinel(d.keys, d.toLookup[i]));
 		}
+		return sum;
 	}
 
 	// https://stackoverflow.com/a/2741888/3804127
@@ -71,10 +75,12 @@ public class LinearVsBinarySearch {
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void binary(Blackhole b, Data d) {
+	public int binary(Data d) {
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
-			b.consume(Arrays.binarySearch(d.keys, d.toLookup[i]));
+			sum += Arrays.binarySearch(d.keys, d.toLookup[i]);
 		}
+		return sum;
 	}
 
 }

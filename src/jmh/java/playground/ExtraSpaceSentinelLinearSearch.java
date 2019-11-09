@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.infra.Blackhole;
 
 public class ExtraSpaceSentinelLinearSearch {
 
@@ -31,18 +30,19 @@ public class ExtraSpaceSentinelLinearSearch {
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public void sentinel(Blackhole b, Data d) {
+	public int sentinel(Data d) {
+		int sum = 0;
 		for (int i = 0; i < d.toLookup.length; i++) {
-			b.consume(sentinel(d.keys, d.toLookup[i]));
+			sum += sentinel(d.keys, d.toLookup[i]); // sum to avoid Dead code elimination
 		}
+		return sum;
 	}
 
 	private int sentinel(byte[] keys, byte key) {
 		keys[16] = key;
 		int i = 0;
 		while (keys[i] != key) i++;
-		int ans = i != 16 ? i : -1;
-		return ans;
+		return i == 16 ? -1 : i;
 	}
 
 }
