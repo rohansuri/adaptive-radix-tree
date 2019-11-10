@@ -14,16 +14,16 @@ plugins {
 }
 
 jmh {
-	// include = ['LargeData.lookup']
-	include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
+	include = ['LargeData']
+	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
 	fork = 1
 	warmup = '2s'
 	// profilers = ['perfasm:hotThreshold=.1']
 	timeOnIteration = '1s'
 	benchmarkParameters = [:]
-	benchmarkParameters['mapType'] = ['ART']
-	benchmarkParameters['file'] = ['WORDS']
-	benchmarkParameters['size'] = ['16', '32', '64', '128', '256']
+	benchmarkParameters['mapType'] = ['ART', 'TREE_MAP', 'PATRICIA_TRIE']
+	// benchmarkParameters['file'] = ['WORDS']
+	// benchmarkParameters['size'] = ['16', '32', '64', '128', '256']
 	resultFormat = 'JSON'
 	// jvmArgs = '-XX:FreqInlineSize=0'
 }

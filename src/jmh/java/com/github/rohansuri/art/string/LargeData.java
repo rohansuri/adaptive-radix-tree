@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ import java.util.function.Supplier;
 
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 public class LargeData {
 
@@ -41,6 +44,14 @@ public class LargeData {
 
 		@Param
 		MapType mapType;
+
+		public enum DistributionType {
+			SHUFFLE,
+			SORTED
+		}
+
+		@Param
+		DistributionType distributionType;
 
 		public enum File {
 			WORDS("/words.txt", 235886),
@@ -83,6 +94,15 @@ public class LargeData {
 			keys = s.toArray(String[]::new);
 			if (keys.length != file.size) {
 				throw new AssertionError("expected " + file.size + " words from the file, got " + keys.length);
+			}
+			if (distributionType == DistributionType.SORTED) {
+				Arrays.sort(keys);
+			}
+			else if (distributionType == DistributionType.SHUFFLE) {
+				ArrayUtils.shuffle(keys);
+			}
+			else {
+				throw new IllegalArgumentException("not a valid distribution type");
 			}
 		}
 	}

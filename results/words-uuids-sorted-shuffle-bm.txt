@@ -1,0 +1,35 @@
+Benchmark         (distributionType)  (file)      (mapType)  Mode  Cnt          Score          Error  Units
+LargeData.insert             SHUFFLE   WORDS       HASH_MAP  avgt    5   72809980.950 ± 21255315.771  ns/op
+LargeData.insert             SHUFFLE   WORDS            ART  avgt    5  151704690.057 ± 15154777.011  ns/op
+LargeData.insert             SHUFFLE   WORDS       TREE_MAP  avgt    5  272932665.500 ± 29614846.734  ns/op
+LargeData.insert             SHUFFLE   WORDS  PATRICIA_TRIE  avgt    5  229040250.400 ± 12187017.403  ns/op
+LargeData.insert             SHUFFLE   UUIDs       HASH_MAP  avgt    5   29165223.138 ±  4355296.912  ns/op
+LargeData.insert             SHUFFLE   UUIDs            ART  avgt    5   45602584.168 ±  2392743.235  ns/op
+LargeData.insert             SHUFFLE   UUIDs       TREE_MAP  avgt    5   84339577.717 ±  2314121.792  ns/op
+LargeData.insert             SHUFFLE   UUIDs  PATRICIA_TRIE  avgt    5   67382027.093 ±  2349232.407  ns/op
+LargeData.insert              SORTED   WORDS       HASH_MAP  avgt    5   61608398.616 ± 24632788.174  ns/op
+LargeData.insert              SORTED   WORDS            ART  avgt    5   61081777.497 ± 28044413.279  ns/op
+LargeData.insert              SORTED   WORDS       TREE_MAP  avgt    5   74265933.786 ±  4958044.683  ns/op
+LargeData.insert              SORTED   WORDS  PATRICIA_TRIE  avgt    5   53073151.000 ±   735321.124  ns/op
+LargeData.insert              SORTED   UUIDs       HASH_MAP  avgt    5   29156502.607 ±  3143963.747  ns/op
+LargeData.insert              SORTED   UUIDs            ART  avgt    5   25776248.136 ±  2469571.464  ns/op
+LargeData.insert              SORTED   UUIDs       TREE_MAP  avgt    5   34055267.700 ±   172708.493  ns/op
+LargeData.insert              SORTED   UUIDs  PATRICIA_TRIE  avgt    5   22923050.582 ±   315858.044  ns/op
+LargeData.lookup             SHUFFLE   WORDS       HASH_MAP  avgt    5   20307508.129 ±   311284.544  ns/op
+LargeData.lookup             SHUFFLE   WORDS            ART  avgt    5  150498766.429 ± 11668029.856  ns/op
+LargeData.lookup             SHUFFLE   WORDS       TREE_MAP  avgt    5  206495507.080 ±  3212677.612  ns/op
+LargeData.lookup             SHUFFLE   WORDS  PATRICIA_TRIE  avgt    5  152652000.343 ±  2091105.551  ns/op
+LargeData.lookup             SHUFFLE   UUIDs       HASH_MAP  avgt    5    5904349.718 ±   117734.207  ns/op
+LargeData.lookup             SHUFFLE   UUIDs            ART  avgt    5   44247157.096 ±   836148.984  ns/op
+LargeData.lookup             SHUFFLE   UUIDs       TREE_MAP  avgt    5   77321294.907 ±  1596236.048  ns/op
+LargeData.lookup             SHUFFLE   UUIDs  PATRICIA_TRIE  avgt    5   46673257.118 ±  1001492.831  ns/op
+LargeData.lookup              SORTED   WORDS       HASH_MAP  avgt    5   12475826.916 ±   182794.575  ns/op
+LargeData.lookup              SORTED   WORDS            ART  avgt    5   45116683.635 ±   912093.980  ns/op
+LargeData.lookup              SORTED   WORDS       TREE_MAP  avgt    5   42318731.517 ±   484501.070  ns/op
+LargeData.lookup              SORTED   WORDS  PATRICIA_TRIE  avgt    5   33625186.500 ±  2099860.657  ns/op
+LargeData.lookup              SORTED   UUIDs       HASH_MAP  avgt    5    5938117.063 ±   225955.745  ns/op
+LargeData.lookup              SORTED   UUIDs            ART  avgt    5   25103231.296 ±   790411.831  ns/op
+LargeData.lookup              SORTED   UUIDs       TREE_MAP  avgt    5   22149650.552 ±   440277.530  ns/op
+LargeData.lookup              SORTED   UUIDs  PATRICIA_TRIE  avgt    5   21355335.913 ±   288408.231  ns/op
+
+
