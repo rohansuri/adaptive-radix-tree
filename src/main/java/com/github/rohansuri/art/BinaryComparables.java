@@ -30,7 +30,7 @@ public class BinaryComparables {
 	}
 
 	public static BinaryComparable<String> forUTF8() {
-		return (key) -> key.getBytes(StandardCharsets.UTF_8);
+		return UTF8;
 	}
 
 	private static final BinaryComparable<Integer> INTEGER = (key) -> BinaryComparableUtils
@@ -60,6 +60,5 @@ public class BinaryComparables {
 	// to mark a key end (8 bytes spare) so that it works for all keys.
 	// It'll also simplify the Node implementations, since they no longer have to
 	// explicitly interpret everything as "unsigned"
-	private static final BinaryComparable<String> UTF8 = (key) -> BinaryComparableUtils
-			.terminateUTF8(key.getBytes(StandardCharsets.UTF_8));
+	private static final BinaryComparable<String> UTF8 = (key) -> key.getBytes(StandardCharsets.UTF_8);
 }
