@@ -61,6 +61,8 @@ abstract class Node {
 	 */
 	abstract Node first();
 
+	abstract Node firstOrLeaf();
+
 	/**
 	 * @return child pointer for the largest partialKey stored in this Node.
 	 * 			Returns null if this node has no children.
@@ -92,7 +94,7 @@ abstract class Node {
 
 	// for upwards traversal
 	// dev note: wherever you setup downlinks, you setup uplinks as well
-	private Node parent;
+	private InnerNode parent;
 	private byte partialKey;
 
 	Node(){}
@@ -103,13 +105,19 @@ abstract class Node {
 		this.parent = node.parent;
 	}
 
-	static void createUplink(Node parent, Node child, byte partialKey) {
+	// do we need partial key for leaf nodes? we'll find out
+	static void createUplink(InnerNode parent, LeafNode<?, ?> child) {
+		Node c = child;
+		c.parent = parent;
+	}
+
+	static void createUplink(InnerNode parent, Node child, byte partialKey) {
 		child.parent = parent;
 		child.partialKey = partialKey;
 	}
 
 	// called when growing/shrinking and all children now have a new parent
-	static void replaceUplink(Node parent, Node child) {
+	static void replaceUplink(InnerNode parent, Node child) {
 		child.parent = parent;
 	}
 
@@ -120,7 +128,7 @@ abstract class Node {
 	/**
 	 * @return the parent of this node. Returns null for root node.
 	 */
-	public Node parent() {
+	public InnerNode parent() {
 		return parent;
 	}
 

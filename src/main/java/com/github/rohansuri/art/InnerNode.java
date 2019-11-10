@@ -18,17 +18,27 @@ abstract class InnerNode extends Node {
 	// using it specifically on an AbstractNode level? (are we?)
 	short noOfChildren; // 2 bytes
 
-	InnerNode() {
+	final Node[] child;
+
+	InnerNode(int size) {
 		prefixKeys = new byte[PESSIMISTIC_PATH_COMPRESSION_LIMIT];
+		child = new Node[size + 1];
 	}
 
 	// copy ctor. called when growing/shrinking
-	InnerNode(InnerNode node) {
+	InnerNode(InnerNode node, int size) {
 		super(node);
+		child = new Node[size + 1];
 		// copy header
 		this.noOfChildren = node.noOfChildren;
 		this.prefixLen = node.prefixLen;
 		this.prefixKeys = node.prefixKeys;
+
+		// copy leaf & replace uplink
+		child[size] = node.getLeaf();
+		if (child[size] != null) {
+			replaceUplink(this, child[size]);
+		}
 	}
 
 	// CLEANUP: move to test utils
@@ -39,4 +49,29 @@ abstract class InnerNode extends Node {
 		return valid;
 	}
 
+	public void setLeaf(LeafNode<?, ?> leaf) {
+		child[child.length - 1] = leaf;
+		createUplink(this, leaf);
+	}
+
+	public void removeLeaf() {
+		removeUplink(child[child.length - 1]);
+		child[child.length - 1] = null;
+	}
+
+	public boolean hasLeaf() {
+		return child[child.length - 1] != null;
+	}
+
+	public LeafNode<?, ?> getLeaf() {
+		return (LeafNode<?, ?>) child[child.length - 1];
+	}
+
+	@Override
+	public Node firstOrLeaf() {
+		if (hasLeaf()) {
+			return getLeaf();
+		}
+		return first();
+	}
 }

@@ -86,6 +86,11 @@ class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 		return null;
 	}
 
+	@Override
+	public Node firstOrLeaf() {
+		return null;
+	}
+
 	/**
 	 Dev note: last() is implemented to detect end of the SortedMap.lastKey()
 	 */

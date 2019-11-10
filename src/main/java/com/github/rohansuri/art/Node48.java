@@ -10,8 +10,6 @@ class Node48 extends InnerNode {
 	static final int NODE_SIZE = 48;
 	static final int KEY_INDEX_SIZE = 256;
 
-	private final Node child[] = new Node[NODE_SIZE];
-
 	// for partial keys of one byte size, you index directly into this array to find the
 	// array index of the child pointer array
 	// the index value can only be between 0 to 47 (to index into the child pointer array)
@@ -22,7 +20,7 @@ class Node48 extends InnerNode {
 	static final byte ABSENT = -1;
 
 	Node48(Node16 node) {
-		super(node);
+		super(node, NODE_SIZE);
 		assert node.isFull();
 
 		Arrays.fill(keyIndex, ABSENT);
@@ -41,7 +39,7 @@ class Node48 extends InnerNode {
 	}
 
 	Node48(Node256 node256) {
-		super(node256);
+		super(node256, NODE_SIZE);
 		assert node256.shouldShrink();
 		Arrays.fill(keyIndex, ABSENT);
 
