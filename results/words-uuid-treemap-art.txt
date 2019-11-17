@@ -1,0 +1,18 @@
+Benchmark         (distributionType)  (file)  (mapType)  Mode  Cnt          Score          Error  Units
+LargeData.insert             SHUFFLE   WORDS        ART  avgt    5  148216913.314 ±  8822754.613  ns/op
+LargeData.insert             SHUFFLE   WORDS   TREE_MAP  avgt    5  255044707.040 ± 16824115.064  ns/op
+LargeData.insert             SHUFFLE   UUIDs        ART  avgt    5   42496975.917 ±  1271601.765  ns/op
+LargeData.insert             SHUFFLE   UUIDs   TREE_MAP  avgt    5   82579584.785 ±  1287628.898  ns/op
+LargeData.insert              SORTED   WORDS        ART  avgt    5   61497051.894 ±  2154254.412  ns/op
+LargeData.insert              SORTED   WORDS   TREE_MAP  avgt    5   74338045.229 ±  2569487.713  ns/op
+LargeData.insert              SORTED   UUIDs        ART  avgt    5   26219532.602 ±   624712.524  ns/op
+LargeData.insert              SORTED   UUIDs   TREE_MAP  avgt    5   34085436.100 ±   338359.884  ns/op
+LargeData.lookup             SHUFFLE   WORDS        ART  avgt    5  138876234.225 ±  2944738.791  ns/op
+LargeData.lookup             SHUFFLE   WORDS   TREE_MAP  avgt    5  194835207.000 ±  4090163.638  ns/op
+LargeData.lookup             SHUFFLE   UUIDs        ART  avgt    5   41196220.096 ±   569104.779  ns/op
+LargeData.lookup             SHUFFLE   UUIDs   TREE_MAP  avgt    5   73227139.343 ±  1346267.167  ns/op
+LargeData.lookup              SORTED   WORDS        ART  avgt    5   45646319.571 ±   430954.558  ns/op
+LargeData.lookup              SORTED   WORDS   TREE_MAP  avgt    5   42447844.408 ±  4086270.844  ns/op
+LargeData.lookup              SORTED   UUIDs        ART  avgt    5   25011191.703 ±   245831.632  ns/op
+LargeData.lookup              SORTED   UUIDs   TREE_MAP  avgt    5   22218828.557 ±   300971.312  ns/op
+

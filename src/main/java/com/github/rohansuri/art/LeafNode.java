@@ -2,6 +2,7 @@ package com.github.rohansuri.art;
 
 // CLEANUP: better design to avoid LeafNode not having those UnsupportedExceptions?
 
+import java.util.Arrays;
 import java.util.Map;
 
 /*
@@ -21,7 +22,8 @@ class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 
 	LeafNode(byte[] keyBytes, K key, V value) {
 		this.value = value;
-		this.keyBytes = keyBytes;
+		// defensive copy
+		this.keyBytes = Arrays.copyOf(keyBytes, keyBytes.length);
 		this.key = key;
 	}
 
