@@ -1,4 +1,4 @@
-package com.github.rohansuri.art.integer;
+package com.github.rohansuri.art.Long;
 
 import com.github.rohansuri.art.AdaptiveRadixTree;
 import com.github.rohansuri.art.BinaryComparables;
@@ -22,9 +22,9 @@ public class Lookup {
 
 	@State(Scope.Benchmark)
 	public static class Data {
-		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
-		Integer[] keys;
-		Map<Integer, Object> m;
+		Set<Long> keySet; // for the purpose of dedup when preparing random sparse data set
+		Long[] keys;
+		Map<Long, Object> m;
 		@Param({"100", "1000", "10000", "100000", "1000000"})
 		int size;
 
@@ -32,7 +32,7 @@ public class Lookup {
 			HASH_MAP,
 			ART,
 			TREE_MAP,
-			PATRICIA_TRIE
+			// PATRICIA_TRIE
 		}
 
 		public enum DistributionType {
@@ -53,36 +53,36 @@ public class Lookup {
 				m = new HashMap<>();
 				break;
 			case ART:
-				m = new AdaptiveRadixTree<>(BinaryComparables.forInteger());
+				m = new AdaptiveRadixTree<>(BinaryComparables.forLong());
 				break;
 			case TREE_MAP:
 				m = new TreeMap<>();
 				break;
-			case PATRICIA_TRIE:
+			/*case PATRICIA_TRIE:
 				m = new GenericPatriciaTrie<Integer, Object>(IntegerKeyAnalyzer.INSTANCE);
-				break;
+				break;*/
 			default:
 				throw new AssertionError();
 			}
 			Object holder = new Object();
 			keySet = new HashSet<>(size);
-			keys = new Integer[size];
+			keys = new Long[size];
 
 			// TODO: refactor if-else block into a KeyGenerator
 			if (distributionType == DistributionType.DENSE) {
 				// dense keys
 				// 0, 1, 2, 3, 4, .... ,size
 				for (int i = 0; i < size; i++) {
-					keys[i] = i;
+					keys[i] = (long)i;
 				}
 				ArrayUtils.shuffle(keys);
 			}
 			else if (distributionType == DistributionType.SPARSE) {
 				// sparse keys
-				int x;
+				long x;
 				for (int i = 0; i < size; i++) {
 					do {
-						x = ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE);
+						x = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
 					}
 					while (keySet.contains(x));
 					keys[i] = x;
@@ -93,7 +93,7 @@ public class Lookup {
 				throw new IllegalArgumentException("not a valid distribution type");
 			}
 			// insert into map
-			for (int key : keys) {
+			for (long key : keys) {
 				m.put(key, holder);
 			}
 		}
@@ -102,7 +102,7 @@ public class Lookup {
 	@Benchmark
 	@BenchmarkMode({Mode.AverageTime})
 	@OutputTimeUnit(TimeUnit.NANOSECONDS)
-	public int integer(Blackhole bh, Data d) {
+	public int Long(Blackhole bh, Data d) {
 		for (int i = 0; i < d.size; i++) {
 			bh.consume(d.m.get(d.keys[i]));
 		}

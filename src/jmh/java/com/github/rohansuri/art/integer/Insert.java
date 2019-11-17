@@ -28,8 +28,8 @@ public class Insert {
 		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
 		Integer[] keys;
 		Supplier<Map<Integer, Object>> supplier;
-		@Param({"65000", "16000000"}) // 16m
-				int size;
+		@Param({"100", "1000", "10000", "100000", "1000000"})
+		int size;
 
 		public enum MapType {
 			HASH_MAP,
