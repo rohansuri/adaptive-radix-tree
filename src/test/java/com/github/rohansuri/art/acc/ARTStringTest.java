@@ -21,7 +21,7 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 
 	@Override
 	public NavigableMap<String, String> makeObject() {
-		return new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		return new AdaptiveRadixTree<>(BinaryComparables.forString());
 	}
 
 	/*

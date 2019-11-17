@@ -11,7 +11,7 @@ public class ARTUnitTest {
 
 	@Test
 	public void testCompare() {
-		BinaryComparable<String> bc = BinaryComparables.forUTF8();
+		BinaryComparable<String> bc = BinaryComparables.forString();
 		byte[] a = bc.get("pqrxyabce");
 		byte[] b = bc.get("zabcd");
 		// abc, abc (i == aTo && j == bTo)
@@ -34,7 +34,7 @@ public class ARTUnitTest {
 	@Test
 	public void testCompareCompressedPath() {
 		InnerNode node = new Node4();
-		BinaryComparable<String> bc = BinaryComparables.forUTF8();
+		BinaryComparable<String> bc = BinaryComparables.forString();
 
 		// 0 (even when key length more than compressed path)
 		String compressedPath = "abcd";
@@ -78,50 +78,50 @@ public class ARTUnitTest {
 		// common prefix len more than pessimistic storage
 		String leafKey = "xxabcdefghijk";
 		String key = "xxabcdefghijp";
-		LeafNode<String, String> leaf = new LeafNode<>(BinaryComparables.forUTF8().get(leafKey), leafKey, "value");
+		LeafNode<String, String> leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
 		Node4 pathCompressed = new Node4();
 		Assertions.assertEquals(10, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forUTF8().get(key), pathCompressed, 2));
+				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
 		Assertions.assertEquals(10, pathCompressed.prefixLen);
 		Assertions.assertArrayEquals("abcdefgh".getBytes(), pathCompressed.getValidPrefixKey());
 
 		// early break
 		leafKey = "xxabcd";
 		key = "xxabcz";
-		leaf = new LeafNode<>(BinaryComparables.forUTF8().get(leafKey), leafKey, "value");
+		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
 		pathCompressed = new Node4();
 		Assertions.assertEquals(3, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forUTF8().get(key), pathCompressed, 2));
+				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
 		Assertions.assertEquals(3, pathCompressed.prefixLen);
 		Assertions.assertArrayEquals("abc".getBytes(), pathCompressed.getValidPrefixKey());
 
 		// leaf ends first
 		leafKey = "xxabc";
 		key = "xxabcdef";
-		leaf = new LeafNode<>(BinaryComparables.forUTF8().get(leafKey), leafKey, "value");
+		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
 		pathCompressed = new Node4();
 		Assertions.assertEquals(3, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forUTF8().get(key), pathCompressed, 2));
+				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
 		Assertions.assertEquals(3, pathCompressed.prefixLen);
 		Assertions.assertArrayEquals("abc".getBytes(), pathCompressed.getValidPrefixKey());
 
 		// new key ends first
 		leafKey = "xxabcdef";
 		key = "xxabc";
-		leaf = new LeafNode<>(BinaryComparables.forUTF8().get(leafKey), leafKey, "value");
+		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
 		pathCompressed = new Node4();
 		Assertions.assertEquals(3, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forUTF8().get(key), pathCompressed, 2));
+				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
 		Assertions.assertEquals(3, pathCompressed.prefixLen);
 		Assertions.assertArrayEquals("abc".getBytes(), pathCompressed.getValidPrefixKey());
 
 		// no match
 		leafKey = "xxz";
 		key = "xxa";
-		leaf = new LeafNode<>(BinaryComparables.forUTF8().get(leafKey), leafKey, "value");
+		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
 		pathCompressed = new Node4();
 		Assertions.assertEquals(0, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forUTF8().get(key), pathCompressed, 2));
+				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
 		Assertions.assertEquals(0, pathCompressed.prefixLen);
 		Assertions.assertArrayEquals("".getBytes(), pathCompressed.getValidPrefixKey());
 	}
@@ -269,7 +269,7 @@ public class ARTUnitTest {
 		String prevDepth = "prevdepthbytes";
 		String optimisticPath = "0123456789";
 		String key = prevDepth + compressedPath + optimisticPath + "ik";
-		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forUTF8().get(key), key, "value");
+		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forString().get(key), key, "value");
 		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
 		nodeLeft.addChild((byte) 'l', Mockito.spy(Node.class));
 
@@ -301,7 +301,7 @@ public class ARTUnitTest {
 		String prevDepth = "prevdepthbytes";
 		String optimisticPath = "01";
 		String key = prevDepth + compressedPath + optimisticPath + "ik";
-		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forUTF8().get(key), key, "value");
+		LeafNode<String, String> nodeLeftLeft = new LeafNode<>(BinaryComparables.forString().get(key), key, "value");
 		nodeLeft.addChild((byte) 'k', nodeLeftLeft);
 		nodeLeft.addChild((byte) 'l', Mockito.spy(Node.class));
 
@@ -316,7 +316,7 @@ public class ARTUnitTest {
 	@Test
 	public void testBranchOutPessimistic() {
 		InnerNode node = new Node4();
-		BinaryComparable<String> bc = BinaryComparables.forUTF8();
+		BinaryComparable<String> bc = BinaryComparables.forString();
 		String compressedPath = "abcxyz";
 		System.arraycopy(compressedPath.getBytes(), 0, node.prefixKeys, 0, compressedPath.length());
 		node.prefixLen = compressedPath.length();
@@ -350,7 +350,7 @@ public class ARTUnitTest {
 
 	@Test
 	public void testReplace() {
-		BinaryComparable<String> bc = BinaryComparables.forUTF8();
+		BinaryComparable<String> bc = BinaryComparables.forString();
 		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(bc);
 		String key = "foo";
 		String value = "value";

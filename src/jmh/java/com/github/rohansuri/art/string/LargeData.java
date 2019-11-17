@@ -76,7 +76,7 @@ public class LargeData {
 				supplier = () -> new HashMap<>();
 				break;
 			case ART:
-				supplier = () -> new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+				supplier = () -> new AdaptiveRadixTree<>(BinaryComparables.forString());
 				break;
 			case TREE_MAP:
 				supplier = () -> new TreeMap<>();

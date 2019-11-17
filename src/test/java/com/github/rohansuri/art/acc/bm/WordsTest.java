@@ -81,6 +81,6 @@ public class WordsTest extends AbstractNavigableMapShortTest<String, String> {
 
 	@Override
 	public NavigableMap<String, String> makeObject() {
-		return new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		return new AdaptiveRadixTree<>(BinaryComparables.forString());
 	}
 }

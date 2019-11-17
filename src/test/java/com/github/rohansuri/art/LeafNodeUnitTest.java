@@ -10,7 +10,7 @@ public class LeafNodeUnitTest {
 
 	private final String key = "foo";
 	private final String value = "bar";
-	private final LeafNode<String, String> node = new LeafNode<>(BinaryComparables.forUTF8().get(key), key, value);
+	private final LeafNode<String, String> node = new LeafNode<>(BinaryComparables.forString().get(key), key, value);
 
 	// although unnecessary but for coverage
 	@Test

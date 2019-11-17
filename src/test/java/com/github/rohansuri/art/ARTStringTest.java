@@ -14,7 +14,7 @@ public class ARTStringTest {
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildLeaf() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forString());
 
 		assertNull(art.put(BAR, "1"));
 		assertNull(art.put(BAZ, "2"));
@@ -36,7 +36,7 @@ public class ARTStringTest {
 
 	@Test
 	public void testSharedPrefixRemove_onlyChildInnerNode() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forString());
 
 		assertNull(art.put(BARCA, "1"));
 		assertNull(art.put(BAZ, "2"));
@@ -85,7 +85,7 @@ public class ARTStringTest {
 	 */
 	@Test
 	public void testSharedPrefixInsert() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forString());
 
 		assertNull(art.put(BAR, "1"));
 		assertNull(art.put(BAZ, "2"));
@@ -95,7 +95,7 @@ public class ARTStringTest {
 
 	@Test
 	public void testBreakCompressedPath() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forString());
 
 		assertNull(art.put(BAR, "1"));
 		assertNull(art.put(BAZ, "2"));
@@ -107,7 +107,7 @@ public class ARTStringTest {
 
 	@Test
 	public void testPrefixesInsert() {
-		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forUTF8());
+		AdaptiveRadixTree<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forString());
 
 		assertNull(art.put(BAR, "1"));
 		assertEquals("1", art.get(BAR));
