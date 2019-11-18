@@ -323,7 +323,7 @@ public class ARTUnitTest {
 		String key = "xxabcdef";
 		String value = "value";
 		// lcp == "abc"
-		Node newNode = AdaptiveRadixTree.branchOutPessimistic(node, bc.get(key), key, value, 3, 5);
+		InnerNode newNode = AdaptiveRadixTree.branchOutPessimistic(node, bc.get(key), key, value, 3, 5);
 		Assertions.assertEquals(2, newNode.size());
 		Assertions.assertEquals(node, newNode.findChild((byte) 'x'));
 		Node leaf = newNode.findChild((byte) 'd');

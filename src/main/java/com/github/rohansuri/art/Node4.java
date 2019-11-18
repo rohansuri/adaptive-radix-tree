@@ -96,11 +96,10 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
-	public Node grow() {
+	public InnerNode grow() {
 		assert isFull();
 		// grow from Node4 to Node16
-		Node node = new Node16(this);
-		return node;
+		return new Node16(this);
 	}
 
 	@Override
@@ -109,7 +108,7 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
-	public Node shrink() {
+	public InnerNode shrink() {
 		throw new UnsupportedOperationException("Node4 is smallest node type");
 	}
 

@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class Node4UnitTest extends NodeUnitTest {
+public class Node4UnitTest extends InnerNodeUnitTest {
 
 	Node4UnitTest() {
 		super(2);

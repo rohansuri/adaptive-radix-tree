@@ -12,43 +12,6 @@ public class LeafNodeUnitTest {
 	private final String value = "bar";
 	private final LeafNode<String, String> node = new LeafNode<>(BinaryComparables.forString().get(key), key, value);
 
-	// although unnecessary but for coverage
-	@Test
-	public void testInnerNodeMethodsSupported() {
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				() -> node.addChild((byte) 0, Mockito.mock(Node.class)));
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				() -> node.removeChild((byte) 0));
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				node::grow);
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				node::shrink);
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				node::shouldShrink);
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				() -> node.replace((byte) 0, Mockito.mock(Node.class)));
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				() -> node.findChild((byte) 0));
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				node::isFull);
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				node::size);
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				() -> node.lesser((byte) 0));
-
-		Assertions.assertThrows(UnsupportedOperationException.class,
-				() -> node.greater((byte) 0));
-	}
-
 	@Test
 	public void testFirst() {
 		Assertions.assertNull(node.first());

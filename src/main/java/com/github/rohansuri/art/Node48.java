@@ -106,10 +106,9 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
-	public Node grow() {
+	public InnerNode grow() {
 		assert isFull();
-		Node node = new Node256(this);
-		return node;
+		return new Node256(this);
 	}
 
 	@Override
@@ -118,10 +117,9 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
-	public Node shrink() {
+	public InnerNode shrink() {
 		assert shouldShrink();
-		Node16 node16 = new Node16(this);
-		return node16;
+		return new Node16(this);
 	}
 
 	@Override

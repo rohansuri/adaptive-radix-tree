@@ -86,4 +86,61 @@ abstract class InnerNode extends Node {
 	public short size() {
 		return noOfChildren;
 	}
+
+	/**
+	 *
+	 * @param partialKey search if this node has an entry for given partialKey
+	 * @return if it does, then return the following child pointer.
+	 * Returns null if there is no corresponding entry.
+	 */
+	abstract Node findChild(byte partialKey);
+
+	/**
+	 * @param partialKey partialKey to be mapped
+	 * @param child the child node to be added
+	 * @return true if add succeeded, false if node size full (in the event of which you call grow)
+	 */
+	abstract boolean addChild(byte partialKey, Node child);
+
+	/**
+	 * @param partialKey for which the child pointer mapping is to be updated
+	 * @param newChild the new mapping to be added for given partialKey
+	 */
+	abstract void replace(byte partialKey, Node newChild);
+
+	/**
+	 * @param partialKey for which the child pointer mapping is to be removed
+	 */
+	abstract void removeChild(byte partialKey);
+
+	/**
+	 * creates and returns the next larger node type with the same mappings as this node
+	 * @return a new node with the same mappings
+	 */
+	abstract InnerNode grow();
+
+	abstract boolean shouldShrink();
+
+	/**
+	 * creates and returns the a smaller node type with the same mappings as this node
+	 * @return a smaller node with the same mappings
+	 */
+	abstract InnerNode shrink();
+
+	/**
+	 * @return true if Node has reached it's capacity
+	 */
+	abstract boolean isFull();
+
+	/**
+	 * @return returns the smallest child node for the partialKey strictly greater than the partialKey passed.
+	 * Returns null if no such child.
+	 */
+	abstract Node greater(byte partialKey);
+
+	/**
+	 * @return returns the greatest child node for the partialKey strictly lesser than the partialKey passed.
+	 * Returns null if no such child.
+	 */
+	abstract Node lesser(byte partialKey);
 }
