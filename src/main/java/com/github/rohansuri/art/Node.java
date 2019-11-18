@@ -86,12 +86,6 @@ abstract class Node {
 	 */
 	abstract Node lesser(byte partialKey);
 
-	/**
-	 *
-	 * @return no of children this Node has
-	 */
-	abstract short size();
-
 	// for upwards traversal
 	// dev note: wherever you setup downlinks, you setup uplinks as well
 	private InnerNode parent;

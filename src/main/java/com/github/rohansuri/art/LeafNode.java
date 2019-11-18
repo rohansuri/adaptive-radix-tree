@@ -112,11 +112,6 @@ class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 	}
 
 	@Override
-	public short size() {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
 	public boolean isFull() {
 		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}

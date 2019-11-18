@@ -146,21 +146,12 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
-	public short size() {
-		return noOfChildren;
-	}
-
-	@Override
 	public boolean isFull() {
 		return noOfChildren == NODE_SIZE;
 	}
 
 	byte[] getKeys() {
 		return keys;
-	}
-
-	Node[] getChild() {
-		return child;
 	}
 
 	byte getOnlyChildKey() {

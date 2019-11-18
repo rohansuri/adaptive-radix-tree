@@ -149,11 +149,6 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
-	public short size() {
-		return noOfChildren;
-	}
-
-	@Override
 	public boolean isFull() {
 		return noOfChildren == NODE_SIZE;
 	}
@@ -181,9 +176,5 @@ class Node48 extends InnerNode {
 
 	byte[] getKeyIndex() {
 		return keyIndex;
-	}
-
-	Node[] getChild() {
-		return child;
 	}
 }

@@ -132,17 +132,7 @@ class Node256 extends InnerNode {
 	}
 
 	@Override
-	public short size() {
-		return noOfChildren;
-	}
-
-	@Override
 	public boolean isFull() {
 		return noOfChildren == NODE_SIZE;
 	}
-
-	Node[] getChild() {
-		return child;
-	}
-
 }
