@@ -1016,13 +1016,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	void deleteEntry(LeafNode<K, V> leaf) {
 		size--;
 		modCount++;
-		Node p = leaf.parent();
-		if (p == null) {
+		InnerNode parent = leaf.parent();
+		if (parent == null) {
 			// means root == leaf
 			root = null;
 			return;
 		}
-		InnerNode parent = (InnerNode) p;
 		if (parent.getLeaf() == leaf) {
 			parent.removeLeaf();
 		}

@@ -74,4 +74,16 @@ abstract class InnerNode extends Node {
 		}
 		return first();
 	}
+
+	Node[] getChild() {
+		return child;
+	}
+
+	/**
+	 *
+	 * @return no of children this Node has
+	 */
+	public short size() {
+		return noOfChildren;
+	}
 }
