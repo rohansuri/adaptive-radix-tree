@@ -236,7 +236,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				nextNode = innerNode.getLeaf();
 			}
 			else {
-				nextNode = node.findChild(key[depth]);
+				nextNode = innerNode.findChild(key[depth]);
 			}
 			if (nextNode == null) {
 				return null;
@@ -274,7 +274,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 
-	void replace(int depth, byte[] key, Node prevDepth, Node replaceWith) {
+	void replace(int depth, byte[] key, InnerNode prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
 			assert depth == 0;
 			root = replaceWith;
@@ -287,7 +287,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// replace down link
-	private void replace(byte partialKey, Node prevDepth, Node replaceWith) {
+	private void replace(byte partialKey, InnerNode prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
 			root = replaceWith;
 			Node.replaceUplink(null, root);
@@ -297,7 +297,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	private V put(Node node, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
+	private V put(Node node, byte[] keyBytes, K key, V value, int depth, InnerNode prevDepth) {
 		while (true) {
 			if (node instanceof LeafNode) {
 				@SuppressWarnings("unchecked")
@@ -329,13 +329,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return oldValue;
 			}
 			byte partialKey = keyBytes[newDepth];
-			Node child = node.findChild(partialKey);
+			Node child = innerNode.findChild(partialKey);
 			if (child == null) {
-				addChild(node, partialKey, keyBytes, key, value, depth, prevDepth);
+				addChild(innerNode, partialKey, keyBytes, key, value, depth, prevDepth);
 				return null;
 			}
 			// set fields for next iteration
-			prevDepth = node;
+			prevDepth = innerNode;
 			depth = newDepth + 1;
 			node = child;
 		}
@@ -353,7 +353,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Let's see, we'll refactor if we face trouble later.
 		Or rather let's keep the entire key's reference?
 	*/
-	private void addChild(Node node, byte partialKey, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
+	private void addChild(InnerNode node, byte partialKey, byte[] keyBytes, K key, V value, int depth, InnerNode prevDepth) {
 		Node leaf = new LeafNode<>(keyBytes, key, value);
 		// CLEANUP: check isFull before calling addChild? to be consistent with paper?
 		if (!node.addChild(partialKey, leaf)) {
@@ -443,13 +443,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 		 2) pessimistic path did not match, we have to split
 	 */
-	private int matchCompressedPath(InnerNode node, byte[] keyBytes, K key, V value, int depth, Node prevDepth) {
+	private int matchCompressedPath(InnerNode node, byte[] keyBytes, K key, V value, int depth, InnerNode prevDepth) {
 		int lcp = 0;
 		int end = Math.min(node.prefixLen, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
 		// first match pessimistic compressed path
 		for (; depth < keyBytes.length && lcp < end && keyBytes[depth] == node.prefixKeys[lcp]; lcp++, depth++)
 			;
-		Node newNode = null;
+		InnerNode newNode = null;
 		if (lcp == node.prefixLen) {
 			if (depth == keyBytes.length && !node.hasLeaf()) { // key ended, it means it is a prefix
 				LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
@@ -500,7 +500,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// called when lcp has become more than InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT
-	static <K, V> Node branchOutOptimistic(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth,
+	static <K, V> InnerNode branchOutOptimistic(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth,
 			byte[] leafBytes) {
 		// prefix doesn't match entirely, we have to branch
 		assert lcp < node.prefixLen && lcp >= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT : lcp + ", " + node.prefixLen;
@@ -525,7 +525,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return branchOut;
 	}
 
-	static <K, V> Node branchOutPessimistic(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth) {
+	static <K, V> InnerNode branchOutPessimistic(InnerNode node, byte[] keyBytes, K key, V value, int lcp, int depth) {
 		// pessimistic prefix doesn't match entirely, we have to branch
 		// BAR, BAZ inserted, now inserting BOZ
 		assert lcp < node.prefixLen && lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT;
@@ -830,10 +830,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			if (depth == key.length) {
 				return ceil ? getFirstEntry(innerNode) : getFirstEntry(innerNode.first());
 			}
-			Node child = node.findChild(key[depth]);
+			Node child = innerNode.findChild(key[depth]);
 			if (child == null) { // same child not found, can we find a greater child at this node level itself?
 				// CLEANUP: Node could also support a ceil(partialKey) in this case to combine the findChild + next
-				Node next = node.greater(key[depth]);
+				Node next = innerNode.greater(key[depth]);
 				if (next != null) {
 					return getFirstEntry(next);
 				}
@@ -1029,9 +1029,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			parent.removeChild(leaf.uplinkKey());
 		}
 		if (parent.shouldShrink()) {
-			Node newParent = parent.shrink();
+			InnerNode newParent = parent.shrink();
 			// newParent should have copied the uplink to same grandParent of oldParent
-			Node grandParent = newParent.parent();
+			InnerNode grandParent = newParent.parent();
 			replace(newParent.uplinkKey(), grandParent, newParent);
 		}
 		else if (parent.size() == 1 && !parent.hasLeaf()) {

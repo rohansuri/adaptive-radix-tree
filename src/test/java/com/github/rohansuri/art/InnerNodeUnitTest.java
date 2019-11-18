@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 
-public abstract class NodeUnitTest {
+public abstract class InnerNodeUnitTest {
 	protected static class Pair implements Comparable<Pair> {
 		final byte partialKey;
 		final Node child;
@@ -29,11 +29,11 @@ public abstract class NodeUnitTest {
 		}
 	}
 
-	protected Node node;
+	protected InnerNode node;
 	protected Pair[] existingData;
 
-	NodeUnitTest(int nodeSize) {
-		Node node = new Node4();
+	InnerNodeUnitTest(int nodeSize) {
+		InnerNode node = new Node4();
 		existingData = new Pair[nodeSize + 1];
 		for (int j = 0, i = -nodeSize / 2; j < nodeSize + 1; i++, j++) {
 			if (node.isFull()) {
@@ -89,7 +89,7 @@ public abstract class NodeUnitTest {
 			but we don't care as a generic test suite.
 			we base our assertions on invariants.
 		 */
-	void verifyUnsignedLexicographicOrder(Node node) {
+	void verifyUnsignedLexicographicOrder(InnerNode node) {
 		boolean negExist = false;
 		byte prev = node.first().uplinkKey();
 		if (prev < 0) {
@@ -272,7 +272,7 @@ public abstract class NodeUnitTest {
 		assertFalse(node.addChild(pair.partialKey, pair.child));
 
 		// hence we need to grow
-		Node grown = node.grow();
+		InnerNode grown = node.grow();
 		assertEquals(node.size(), grown.size());
 		assertEqualHeader(node, grown);
 
@@ -304,7 +304,7 @@ public abstract class NodeUnitTest {
 			node.removeChild(pairs.remove(0).partialKey);
 		}
 		assertTrue(node.shouldShrink());
-		Node shrunk = node.shrink();
+		InnerNode shrunk = node.shrink();
 
 		assertEquals(shrunk.size(), node.size());
 		assertEqualHeader(node, shrunk);

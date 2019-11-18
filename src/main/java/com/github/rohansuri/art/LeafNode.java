@@ -14,8 +14,6 @@ import java.util.Map;
 class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 	private V value;
 
-	private static final String EXCEPTION_MSG = "should not be called on LeafNode";
-
 	// we have to save the keyBytes, because leaves are lazy expanded at times
 	private final byte[] keyBytes;
 	private final K key;
@@ -45,41 +43,6 @@ class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 		return key;
 	}
 
-	@Override
-	public Node findChild(byte partialKey) {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public boolean addChild(byte partialKey, Node child) {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public void replace(byte partialKey, Node newChild) {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public void removeChild(byte partialKey) {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public Node grow() {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public boolean shouldShrink() {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public Node shrink() {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
 	/**
 	 Dev note: first() is implemented to detect end of the SortedMap.firstKey()
 	 */
@@ -99,21 +62,6 @@ class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 	@Override
 	public Node last() {
 		return null;
-	}
-
-	@Override
-	public Node greater(byte partialKey) {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public Node lesser(byte partialKey) {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
-	}
-
-	@Override
-	public boolean isFull() {
-		throw new UnsupportedOperationException(EXCEPTION_MSG);
 	}
 
 	/**
