@@ -236,8 +236,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				nextNode = innerNode.getLeaf();
 			}
 			else {
-				nextNode = findChild(innerNode, key[depth]);
-				// nextNode = innerNode.findChild(key[depth]);
+				//nextNode = findChild2(innerNode, key[depth]);
+				nextNode = innerNode.findChild(key[depth]);
 			}
 			if (nextNode == null) {
 				return null;
@@ -246,6 +246,24 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			depth++;
 			node = nextNode;
 		}
+	}
+
+	// support C2 call site type profiling (and inlining)
+	// having explicit checks so that each call site becomes monomorphic.
+	private Node findChild2(InnerNode node, byte partialKey){
+		if(node instanceof Node4){
+			return node.findChild(partialKey);
+		}
+		if(node instanceof Node16){
+			return node.findChild(partialKey);
+		}
+		if(node instanceof Node48){
+			return node.findChild(partialKey);
+		}
+		if(node instanceof Node256){
+			return node.findChild(partialKey);
+		}
+		throw new IllegalArgumentException("node type " + node.getClass() + "  not supported");
 	}
 
 
