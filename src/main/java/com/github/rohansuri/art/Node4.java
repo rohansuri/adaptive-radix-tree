@@ -6,7 +6,7 @@ class Node4 extends InnerNode {
 
 	// each array element would contain the partial byte key to match
 	// if key matches then take up the same index from the child pointer array
-	private final byte[] keys = new byte[NODE_SIZE];
+	final byte[] keys = new byte[NODE_SIZE];
 
 	Node4() {
 		super(NODE_SIZE);

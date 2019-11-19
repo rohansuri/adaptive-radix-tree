@@ -13,7 +13,7 @@ class Node48 extends InnerNode {
 	// for partial keys of one byte size, you index directly into this array to find the
 	// array index of the child pointer array
 	// the index value can only be between 0 to 47 (to index into the child pointer array)
-	private final byte[] keyIndex = new byte[KEY_INDEX_SIZE];
+	final byte[] keyIndex = new byte[KEY_INDEX_SIZE];
 
 	// so that when you use the partial key to index into keyIndex
 	// and you see a -1, you know there's no mapping for this key

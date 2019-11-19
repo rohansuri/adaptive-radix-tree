@@ -236,7 +236,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				nextNode = innerNode.getLeaf();
 			}
 			else {
-				nextNode = innerNode.findChild(key[depth]);
+				nextNode = findChild(innerNode, key[depth]);
+				// nextNode = innerNode.findChild(key[depth]);
 			}
 			if (nextNode == null) {
 				return null;
@@ -245,6 +246,48 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			depth++;
 			node = nextNode;
 		}
+	}
+
+
+	// avoid dynamic dispatch by self inlining
+	private Node findChild(InnerNode node, byte partialKey) {
+		if (node instanceof Node4) {
+			partialKey = BinaryComparableUtils.unsigned(partialKey);
+			// paper does simple loop over because it's a tiny array of size 4
+			Node4 node4 = (Node4) node;
+			for (int i = 0; i < node4.noOfChildren; i++) {
+				if (node4.keys[i] == partialKey) {
+					return node4.child[i];
+				}
+			}
+			return null;
+		}
+		if (node instanceof Node16) {
+			partialKey = BinaryComparableUtils.unsigned(partialKey);
+			// paper does simple loop over because it's a tiny array of size 4
+			Node16 node16 = (Node16) node;
+			for (int i = 0; i < node16.noOfChildren; i++) {
+				if (node16.keys[i] == partialKey) {
+					return node16.child[i];
+				}
+			}
+			return null;
+		}
+		if (node instanceof Node48) {
+			Node48 node48 = (Node48) node;
+			byte index = node48.keyIndex[Byte.toUnsignedInt(partialKey)];
+			if (index == Node48.ABSENT) {
+				return null;
+			}
+
+			assert index >= 0 && index <= 47;
+			return node48.child[index];
+		}
+		if (node instanceof Node256) {
+			int index = Byte.toUnsignedInt(partialKey);
+			return node.child[index];
+		}
+		throw new IllegalArgumentException("node type " + node.getClass() + "  not supported");
 	}
 
 	// is compressed path equal/more/lesser (0, 1, -1) than key
@@ -316,13 +359,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return null;
 			}
 			// compare with compressed path
-			InnerNode innerNode = (InnerNode)node;
+			InnerNode innerNode = (InnerNode) node;
 			int newDepth = matchCompressedPath(innerNode, keyBytes, key, value, depth, prevDepth);
 			if (newDepth == -1) { // matchCompressedPath already inserted the leaf node for us
 				return null;
 			}
 			// we're now at line 26 in paper
-			if(keyBytes.length == newDepth){
+			if (keyBytes.length == newDepth) {
 				LeafNode<K, V> leaf = (LeafNode<K, V>) innerNode.getLeaf();
 				V oldValue = leaf.getValue();
 				leaf.setValue(value);
@@ -480,7 +523,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 					// matched entirely, but key is left
 					return depth;
 				}
-			} else {
+			}
+			else {
 				newNode = branchOutOptimistic(node, keyBytes, key, value, lcp, depth, leafBytes);
 			}
 		}
@@ -712,9 +756,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	private LeafNode<K, V> leafOrPredecessor(InnerNode innerNode){
-		if(innerNode.hasLeaf()){
-			return (LeafNode<K, V>)innerNode.getLeaf();
+	private LeafNode<K, V> leafOrPredecessor(InnerNode innerNode) {
+		if (innerNode.hasLeaf()) {
+			return (LeafNode<K, V>) innerNode.getLeaf();
 		}
 		return predecessor(innerNode);
 	}
@@ -1003,7 +1047,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			Node lesser = uplink.lesser(node.uplinkKey());
 			if (lesser != null) {
 				return getLastEntry(lesser);
-			} else if(uplink.hasLeaf()){
+			}
+			else if (uplink.hasLeaf()) {
 				return (LeafNode<K, V>) uplink.getLeaf();
 			}
 			node = uplink;

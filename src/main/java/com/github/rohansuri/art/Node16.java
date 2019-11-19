@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 class Node16 extends InnerNode {
 	static final int NODE_SIZE = 16;
-	private final byte[] keys = new byte[NODE_SIZE];
+	final byte[] keys = new byte[NODE_SIZE];
 
 	Node16(Node4 node) {
 		super(node, NODE_SIZE);
