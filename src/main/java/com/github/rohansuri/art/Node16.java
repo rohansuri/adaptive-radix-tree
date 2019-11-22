@@ -8,8 +8,8 @@ class Node16 extends InnerNode {
 
 	Node16(Node4 node) {
 		super(node, NODE_SIZE);
-		assert node.isFull();
-		byte[] keys = node.getKeys();
+		assert Node4.isFull(node);
+		byte[] keys = Node4.getKeys(node);
 		Node[] child = node.getChild();
 		System.arraycopy(keys, 0, this.keys, 0, node.noOfChildren);
 		System.arraycopy(child, 0, this.child, 0, node.noOfChildren);
@@ -22,8 +22,8 @@ class Node16 extends InnerNode {
 
 	Node16(Node48 node48) {
 		super(node48, NODE_SIZE);
-		assert node48.shouldShrink();
-		byte[] keyIndex = node48.getKeyIndex();
+		assert Node48.shouldShrink(node48);
+		byte[] keyIndex = Node48.getKeyIndex(node48);
 		Node[] children = node48.getChild();
 
 		// keyIndex by virtue of being "array indexed" is already sorted
@@ -38,127 +38,115 @@ class Node16 extends InnerNode {
 		}
 	}
 
-	@Override
-	public Node findChild(byte partialKey) {
+	public static Node findChild(Node16 node16, byte partialKey) {
 		// TODO: use simple loop to see if -XX:+SuperWord applies SIMD JVM instrinsics
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		for(int i = 0; i < noOfChildren; i++){
-			if(keys[i] == partialKey){
-				return child[i];
+		for(int i = 0; i < node16.noOfChildren; i++){
+			if(node16.keys[i] == partialKey){
+				return node16.child[i];
 			}
 		}
 		return null;
 	}
 
-	@Override
-	public boolean addChild(byte partialKey, Node child) {
-		if (isFull()) {
+	public static boolean addChild(Node16 node16, byte partialKey, Node child) {
+		if (Node16.isFull(node16)) {
 			return false;
 		}
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
 
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
+		int index = Arrays.binarySearch(node16.keys, 0, node16.noOfChildren, unsignedPartialKey);
 		// the partialKey should not exist
 		assert index < 0;
 		int insertionPoint = -(index + 1);
 		// shift elements from this point to right by one place
-		assert insertionPoint <= noOfChildren;
-		for (int i = noOfChildren; i > insertionPoint; i--) {
-			keys[i] = keys[i - 1];
-			this.child[i] = this.child[i - 1];
+		assert insertionPoint <= node16.noOfChildren;
+		for (int i = node16.noOfChildren; i > insertionPoint; i--) {
+			node16.keys[i] = node16.keys[i - 1];
+			node16.child[i] = node16.child[i - 1];
 		}
-		keys[insertionPoint] = unsignedPartialKey;
-		this.child[insertionPoint] = child;
-		noOfChildren++;
-		createUplink(this, child, partialKey);
+		node16.keys[insertionPoint] = unsignedPartialKey;
+		node16.child[insertionPoint] = child;
+		node16.noOfChildren++;
+		createUplink(node16, child, partialKey);
 		return true;
 	}
 
-	@Override
-	public void replace(byte partialKey, Node newChild) {
+	public static void replace(Node16 node16, byte partialKey, Node newChild) {
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
+		int index = Arrays.binarySearch(node16.keys, 0, node16.noOfChildren, unsignedPartialKey);
 		assert index >= 0;
-		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
+		node16.child[index] = newChild;
+		createUplink(node16, newChild, partialKey);
 	}
 
-	@Override
-	public void removeChild(byte partialKey) {
-		assert !shouldShrink();
+	public static void removeChild(Node16 node16, byte partialKey) {
+		assert !Node16.shouldShrink(node16);
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
+		int index = Arrays.binarySearch(node16.keys, 0, node16.noOfChildren, unsignedPartialKey);
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
 		assert index >= 0;
-		removeUplink(child[index]);
-		for (int i = index; i < noOfChildren - 1; i++) {
-			keys[i] = keys[i + 1];
-			child[i] = child[i + 1];
+		removeUplink(node16.child[index]);
+		for (int i = index; i < node16.noOfChildren - 1; i++) {
+			node16.keys[i] = node16.keys[i + 1];
+			node16.child[i] = node16.child[i + 1];
 		}
-		child[noOfChildren - 1] = null;
-		noOfChildren--;
+		node16.child[node16.noOfChildren - 1] = null;
+		node16.noOfChildren--;
 	}
 
-	@Override
-	public InnerNode grow() {
-		assert isFull();
-		return new Node48(this);
+	public static InnerNode grow(Node16 node16) {
+		assert Node16.isFull(node16);
+		return new Node48(node16);
 	}
 
-	@Override
-	public boolean shouldShrink() {
-		return noOfChildren == Node4.NODE_SIZE;
+	public static boolean shouldShrink(Node16 node16) {
+		return node16.noOfChildren == Node4.NODE_SIZE;
 	}
 
-	@Override
-	public InnerNode shrink() {
-		assert shouldShrink() : "Haven't crossed shrinking threshold yet";
-		return new Node4(this);
+	public static InnerNode shrink(Node16 node16) {
+		assert shouldShrink(node16) : "Haven't crossed shrinking threshold yet";
+		return new Node4(node16);
 	}
 
-	@Override
-	public Node first() {
-		assert noOfChildren > Node4.NODE_SIZE;
-		return child[0];
+	public static Node first(Node16 node16) {
+		assert node16.noOfChildren > Node4.NODE_SIZE;
+		return node16.child[0];
 	}
 
-	@Override
-	public Node last() {
-		assert noOfChildren > Node4.NODE_SIZE;
-		return child[noOfChildren - 1];
+	public static Node last(Node16 node16) {
+		assert node16.noOfChildren > Node4.NODE_SIZE;
+		return node16.child[node16.noOfChildren - 1];
 	}
 
-	@Override
-	public Node greater(byte partialKey) {
+	public static Node greater(Node16 node16, byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		// TODO: consider using binary search here
-		for (int i = 0; i < noOfChildren; i++) {
-			if (keys[i] > partialKey) {
-				return child[i];
+		for (int i = 0; i < node16.noOfChildren; i++) {
+			if (node16.keys[i] > partialKey) {
+				return node16.child[i];
 			}
 		}
 		return null;
 	}
 
-	@Override
-	public Node lesser(byte partialKey) {
+	public static Node lesser(Node16 node16, byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		// TODO: consider using binary search here
-		for (int i = noOfChildren - 1; i >= 0; i--) {
-			if (keys[i] < partialKey) {
-				return child[i];
+		for (int i = node16.noOfChildren - 1; i >= 0; i--) {
+			if (node16.keys[i] < partialKey) {
+				return node16.child[i];
 			}
 		}
 		return null;
 	}
 
-	@Override
-	public boolean isFull() {
-		return noOfChildren == NODE_SIZE;
+	public static boolean isFull(Node16 node16) {
+		return node16.noOfChildren == NODE_SIZE;
 	}
 
-	byte[] getKeys() {
-		return keys;
+	static byte[] getKeys(Node16 node16) {
+		return node16.keys;
 	}
 }

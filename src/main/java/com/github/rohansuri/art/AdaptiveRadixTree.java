@@ -172,7 +172,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node onlyChild = toCompress.getChild()[0];
 		assert onlyChild != null;
 		if (!(onlyChild instanceof LeafNode)) {
-			byte partialKeyToOnlyChild = toCompress.getOnlyChildKey();// toCompress.getKeys()[0]; // R
+			byte partialKeyToOnlyChild = Node4.getOnlyChildKey(toCompress);// toCompress.getKeys()[0]; // R
 			InnerNode oc = (InnerNode) onlyChild;
 			// update nextNode's compressed path with toCompress'
 			int toCopy = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, toCompress.prefixLen + 1);
@@ -578,9 +578,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			branchOut.setLeaf(leafNode);
 		}
 		else {
-			branchOut.addChild(keyBytes[depth], leafNode);
+			Node4.addChild(branchOut, keyBytes[depth], leafNode);
 		}
-		branchOut.addChild(leafBytes[depth], node); // reusing "this" node
+		Node4.addChild(branchOut, leafBytes[depth], node); // reusing "this" node
 
 		// remove lcp common prefix key from "this" node
 		removeOptimisticLCPFromCompressedPath(node, depth, lcp, leafBytes);
@@ -607,9 +607,9 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			branchOut.setLeaf(leafNode);
 		}
 		else {
-			branchOut.addChild(keyBytes[depth], leafNode);
+			Node4.addChild(branchOut, keyBytes[depth], leafNode);
 		}
-		branchOut.addChild(node.prefixKeys[lcp], node); // reusing "this" node
+		Node4.addChild(branchOut, node.prefixKeys[lcp], node); // reusing "this" node
 
 		// remove lcp common prefix key from "this" node
 		removePessimisticLCPFromCompressedPath(node, depth, lcp);
@@ -624,16 +624,16 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// set barca's parent to be this path compressed node
 			// setup uplink whenever we set downlink
 			pathCompressedNode.setLeaf(newLeaf);
-			pathCompressedNode.addChild(leaf.getKeyBytes()[depth + lcp], leaf); // l
+			Node4.addChild(pathCompressedNode, leaf.getKeyBytes()[depth + lcp], leaf); // l
 		}
 		else if (depth + lcp == leaf.getKeyBytes().length) {
 			// barcalona to be inserted, barca already exists
 			pathCompressedNode.setLeaf(leaf);
-			pathCompressedNode.addChild(keyBytes[depth + lcp], newLeaf); // l
+			Node4.addChild(pathCompressedNode, keyBytes[depth + lcp], newLeaf); // l
 		}
 		else {
-			pathCompressedNode.addChild(leaf.getKeyBytes()[depth + lcp], leaf);
-			pathCompressedNode.addChild(keyBytes[depth + lcp], newLeaf);
+			Node4.addChild(pathCompressedNode, leaf.getKeyBytes()[depth + lcp], leaf);
+			Node4.addChild(pathCompressedNode, keyBytes[depth + lcp], newLeaf);
 		}
 	}
 

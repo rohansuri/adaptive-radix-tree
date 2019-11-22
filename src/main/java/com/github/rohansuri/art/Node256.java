@@ -5,9 +5,9 @@ class Node256 extends InnerNode {
 
 	Node256(Node48 node) {
 		super(node, NODE_SIZE);
-		assert node.isFull();
+		assert Node48.isFull(node);
 
-		byte[] keyIndex = node.getKeyIndex();
+		byte[] keyIndex = Node48.getKeyIndex(node);
 		Node[] child = node.getChild();
 
 		for (int i = 0; i < Node48.KEY_INDEX_SIZE; i++) {
@@ -24,22 +24,20 @@ class Node256 extends InnerNode {
 		}
 	}
 
-	@Override
-	public Node findChild(byte partialKey) {
+	public static Node findChild(Node256 node256, byte partialKey) {
 		// convert byte to 8 bit integer
 		// and then index into that array position
 		// We should treat the 8 bits as unsigned int
 		// since we've got 256 slots, we need to go from 00000000 to 11111111
 		int index = Byte.toUnsignedInt(partialKey);
-		return child[index];
+		return node256.child[index];
 	}
 
-	@Override
-	public boolean addChild(byte partialKey, Node child) {
+	public static boolean addChild(Node256 node256, byte partialKey, Node child) {
 		// addChild would never be called on a full Node256
 		// since the corresponding findChild for any byte key
 		// would always find the byte since the Node is full!
-		assert !isFull();
+		assert !isFull(node256);
 		// byte in Java is signed
 		// but we want no interpretation of the partialKey
 		// we just want to treat it as raw binary bits
@@ -48,90 +46,77 @@ class Node256 extends InnerNode {
 		// convert it to a bigger container type
 		// or can we do something better?
 		int index = Byte.toUnsignedInt(partialKey);
-		assert this.child[index] == null;
-		createUplink(this, child, partialKey);
-		this.child[index] = child;
-		noOfChildren++;
+		assert node256.child[index] == null;
+		createUplink(node256, child, partialKey);
+		node256.child[index] = child;
+		node256.noOfChildren++;
 		return true;
 	}
 
-	@Override
-	public void replace(byte partialKey, Node newChild) {
+	public static void replace(Node256 node256, byte partialKey, Node newChild) {
 		int index = Byte.toUnsignedInt(partialKey);
-		assert child[index] != null;
-		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
+		assert node256.child[index] != null;
+		node256.child[index] = newChild;
+		createUplink(node256, newChild, partialKey);
 	}
 
-	@Override
-	public void removeChild(byte partialKey) {
+	public static void removeChild(Node256 node256, byte partialKey) {
 		int index = Byte.toUnsignedInt(partialKey);
-		assert child[index] != null;
-		removeUplink(child[index]);
-		child[index] = null;
-		noOfChildren--;
+		assert node256.child[index] != null;
+		removeUplink(node256.child[index]);
+		node256.child[index] = null;
+		node256.noOfChildren--;
 	}
 
-	@Override
-	public InnerNode grow() {
-		throw new UnsupportedOperationException("Span of ART is 8 bits, so Node256 is the largest node type.");
+
+	public static boolean shouldShrink(Node256 node256) {
+		return node256.noOfChildren == Node48.NODE_SIZE;
 	}
 
-	@Override
-	public boolean shouldShrink() {
-		return noOfChildren == Node48.NODE_SIZE;
+	public static InnerNode shrink(Node256 node256) {
+		assert Node256.shouldShrink(node256);
+		return new Node48(node256);
 	}
 
-	@Override
-	public InnerNode shrink() {
-		assert shouldShrink();
-		return new Node48(this);
-	}
-
-	@Override
-	public Node first() {
-		assert noOfChildren > Node48.NODE_SIZE;
+	public static Node first(Node256 node256) {
+		assert node256.noOfChildren > Node48.NODE_SIZE;
 		for (int i = 0; i < NODE_SIZE; i++) {
-			if (child[i] != null) {
-				return child[i];
+			if (node256.child[i] != null) {
+				return node256.child[i];
 			}
 		}
 		throw new IllegalStateException("Node256 should contain more than " + Node48.NODE_SIZE + " elements");
 	}
 
-	@Override
-	public Node last() {
-		assert noOfChildren > Node48.NODE_SIZE;
+	public static Node last(Node256 node256) {
+		assert node256.noOfChildren > Node48.NODE_SIZE;
 		for (int i = NODE_SIZE - 1; i >= 0; i--) {
-			if (child[i] != null) {
-				return child[i];
+			if (node256.child[i] != null) {
+				return node256.child[i];
 			}
 		}
 		throw new IllegalStateException("Node256 should contain more than " + Node48.NODE_SIZE + " elements");
 	}
 
-	@Override
-	public Node greater(byte partialKey) {
+	public static Node greater(Node256 node256, byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < NODE_SIZE; i++) {
-			if (child[i] != null) {
-				return child[i];
+			if (node256.child[i] != null) {
+				return node256.child[i];
 			}
 		}
 		return null;
 	}
 
-	@Override
-	public Node lesser(byte partialKey) {
+	public static Node lesser(Node256 node256, byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
-			if (child[i] != null) {
-				return child[i];
+			if (node256.child[i] != null) {
+				return node256.child[i];
 			}
 		}
 		return null;
 	}
 
-	@Override
-	public boolean isFull() {
-		return noOfChildren == NODE_SIZE;
+	public static boolean isFull(Node256 node256) {
+		return node256.noOfChildren == NODE_SIZE;
 	}
 }

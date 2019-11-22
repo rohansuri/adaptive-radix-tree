@@ -142,7 +142,7 @@ public class ARTUnitTest {
 		System.arraycopy(toCompressPrefix.getBytes(), 0, node.prefixKeys, 0, toCompressPrefix.length());
 		InnerNode onlyChild = new Node4();
 		byte linkingKey = 1;
-		node.addChild(linkingKey, onlyChild);
+		Node4.addChild(node, linkingKey, onlyChild);
 		onlyChild.prefixLen = 3;
 		String onlyChildPrefix = "pqr";
 		System.arraycopy(onlyChildPrefix.getBytes(), 0, onlyChild.prefixKeys, 0, onlyChildPrefix.length());
@@ -156,7 +156,7 @@ public class ARTUnitTest {
 		toCompressPrefix = "abcdefg";
 		System.arraycopy(toCompressPrefix.getBytes(), 0, node.prefixKeys, 0, toCompressPrefix.length());
 		onlyChild = new Node4();
-		node.addChild(linkingKey, onlyChild);
+		Node4.addChild(node, linkingKey, onlyChild);
 		onlyChild.prefixLen = 3;
 		onlyChildPrefix = "pqr";
 		System.arraycopy(onlyChildPrefix.getBytes(), 0, onlyChild.prefixKeys, 0, onlyChildPrefix.length());
@@ -175,7 +175,7 @@ public class ARTUnitTest {
 		toCompressPrefix = "abcd";
 		System.arraycopy(toCompressPrefix.getBytes(), 0, node.prefixKeys, 0, toCompressPrefix.length());
 		onlyChild = new Node4();
-		node.addChild(linkingKey, onlyChild);
+		Node4.addChild(node, linkingKey, onlyChild);
 		onlyChild.prefixLen = 5;
 		onlyChildPrefix = "pqrst";
 		System.arraycopy(onlyChildPrefix.getBytes(), 0, onlyChild.prefixKeys, 0, onlyChildPrefix.length());
@@ -198,7 +198,7 @@ public class ARTUnitTest {
 		toCompressPrefix = "abcd";
 		System.arraycopy(toCompressPrefix.getBytes(), 0, node.prefixKeys, 0, toCompressPrefix.length());
 		onlyChild = new Node4();
-		node.addChild(linkingKey, onlyChild);
+		Node4.addChild(node, linkingKey, onlyChild);
 		onlyChild.prefixLen = 2;
 		onlyChildPrefix = "pq";
 		System.arraycopy(onlyChildPrefix.getBytes(), 0, onlyChild.prefixKeys, 0, onlyChildPrefix.length());
@@ -364,14 +364,14 @@ public class ARTUnitTest {
 		Node4 root = new Node4();
 		art.replace(0, new byte[] {}, null, leafNode);
 		Node child = Mockito.spy(Node.class);
-		root.addChild((byte) 'x', child);
+		Node4.addChild(root, (byte) 'x', child);
 
 		// replace root's x downlink with new child (for various reasons, for example because we just grew this child)
 		Node newChild = Mockito.spy(Node.class);
 		art.replace(1, bc.get("x"), root, newChild);
 
 		Assertions.assertEquals(1, root.size());
-		Assertions.assertSame(newChild, root.findChild((byte) 'x'));
+		Assertions.assertSame(newChild, Node4.findChild(root, (byte) 'x'));
 	}
 
 }

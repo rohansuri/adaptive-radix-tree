@@ -21,11 +21,11 @@ class Node48 extends InnerNode {
 
 	Node48(Node16 node) {
 		super(node, NODE_SIZE);
-		assert node.isFull();
+		assert Node16.isFull(node);
 
 		Arrays.fill(keyIndex, ABSENT);
 
-		byte[] keys = node.getKeys();
+		byte[] keys = Node16.getKeys(node);
 		Node[] child = node.getChild();
 
 		for (int i = 0; i < Node16.NODE_SIZE; i++) {
@@ -40,7 +40,7 @@ class Node48 extends InnerNode {
 
 	Node48(Node256 node256) {
 		super(node256, NODE_SIZE);
-		assert node256.shouldShrink();
+		assert Node256.shouldShrink(node256);
 		Arrays.fill(keyIndex, ABSENT);
 
 		Node[] children = node256.getChild();
@@ -56,123 +56,111 @@ class Node48 extends InnerNode {
 		assert j == NODE_SIZE;
 	}
 
-	@Override
-	public Node findChild(byte partialKey) {
-		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
+	public static Node findChild(Node48 node48, byte partialKey) {
+		byte index = node48.keyIndex[Byte.toUnsignedInt(partialKey)];
 		if (index == ABSENT) {
 			return null;
 		}
 
 		assert index >= 0 && index <= 47;
-		return child[index];
+		return node48.child[index];
 	}
 
-	@Override
-	public boolean addChild(byte partialKey, Node child) {
-		if (isFull()) {
+	public static boolean addChild(Node48 node48, byte partialKey, Node child) {
+		if (isFull(node48)) {
 			return false;
 		}
 		int index = Byte.toUnsignedInt(partialKey);
-		assert keyIndex[index] == ABSENT;
+		assert node48.keyIndex[index] == ABSENT;
 		// find a null place, left fragmented by a removeChild or has always been null
 		byte insertPosition = 0;
-		for (; this.child[insertPosition] != null && insertPosition < NODE_SIZE; insertPosition++) ;
+		for (; node48.child[insertPosition] != null && insertPosition < NODE_SIZE; insertPosition++) ;
 
-		this.child[insertPosition] = child;
-		keyIndex[index] = insertPosition;
-		noOfChildren++;
-		createUplink(this, child, partialKey);
+		node48.child[insertPosition] = child;
+		node48.keyIndex[index] = insertPosition;
+		node48.noOfChildren++;
+		createUplink(node48, child, partialKey);
 		return true;
 	}
 
-	@Override
-	public void replace(byte partialKey, Node newChild) {
-		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
+	public static void replace(Node48 node48, byte partialKey, Node newChild) {
+		byte index = node48.keyIndex[Byte.toUnsignedInt(partialKey)];
 		assert index >= 0 && index <= 47;
-		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
+		node48.child[index] = newChild;
+		createUplink(node48, newChild, partialKey);
 	}
 
-	@Override
-	public void removeChild(byte partialKey) {
-		assert !shouldShrink();
+	public static void removeChild(Node48 node48, byte partialKey) {
+		assert !shouldShrink(node48);
 		int index = Byte.toUnsignedInt(partialKey);
-		int pos = keyIndex[index];
+		int pos = node48.keyIndex[index];
 		assert pos != ABSENT;
-		removeUplink(child[pos]);
-		child[pos] = null; // fragment
-		keyIndex[index] = ABSENT;
-		noOfChildren--;
+		removeUplink(node48.child[pos]);
+		node48.child[pos] = null; // fragment
+		node48.keyIndex[index] = ABSENT;
+		node48.noOfChildren--;
 	}
 
-	@Override
-	public InnerNode grow() {
-		assert isFull();
-		return new Node256(this);
+	public static InnerNode grow(Node48 node48) {
+		assert isFull(node48);
+		return new Node256(node48);
 	}
 
-	@Override
-	public boolean shouldShrink() {
-		return noOfChildren == Node16.NODE_SIZE;
+	public static boolean shouldShrink(Node48 node48) {
+		return node48.noOfChildren == Node16.NODE_SIZE;
 	}
 
-	@Override
-	public InnerNode shrink() {
-		assert shouldShrink();
-		return new Node16(this);
+	public static InnerNode shrink(Node48 node48) {
+		assert Node48.shouldShrink(node48);
+		return new Node16(node48);
 	}
 
-	@Override
-	public Node first() {
-		assert noOfChildren > Node16.NODE_SIZE;
+	public static Node first(Node48 node48) {
+		assert node48.noOfChildren > Node16.NODE_SIZE;
 		for (int i = 0; i < KEY_INDEX_SIZE; i++) {
-			byte index = keyIndex[i];
+			byte index = node48.keyIndex[i];
 			if (index != ABSENT) {
-				return child[index];
+				return node48.child[index];
 			}
 		}
 		throw new IllegalStateException("Node48 should contain more than " + Node16.NODE_SIZE + " elements");
 	}
 
-	@Override
-	public Node last() {
-		assert noOfChildren > Node16.NODE_SIZE;
+	public static Node last(Node48 node48) {
+		assert node48.noOfChildren > Node16.NODE_SIZE;
 		for (int i = KEY_INDEX_SIZE - 1; i >= 0; i--) {
-			byte index = keyIndex[i];
+			byte index = node48.keyIndex[i];
 			if (index != ABSENT) {
-				return child[index];
+				return node48.child[index];
 			}
 		}
 		throw new IllegalStateException("Node48 should contain more than " + Node16.NODE_SIZE + " elements");
 	}
 
-	@Override
-	public boolean isFull() {
-		return noOfChildren == NODE_SIZE;
+	public static boolean isFull(Node48 node48) {
+		return node48.noOfChildren == NODE_SIZE;
 	}
 
-	@Override
-	public Node greater(byte partialKey) {
+	public static Node greater(Node48 node48, byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < KEY_INDEX_SIZE; i++) {
-			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
+			if (node48.keyIndex[i] != ABSENT) {
+				return node48.child[node48.keyIndex[i]];
 			}
 		}
 		return null;
 	}
 
-	@Override
-	public Node lesser(byte partialKey) {
+	public static Node lesser(Node48 node48, byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
-			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
+			if (node48.keyIndex[i] != ABSENT) {
+				return node48.child[node48.keyIndex[i]];
 			}
 		}
 		return null;
 	}
 
 
-	byte[] getKeyIndex() {
-		return keyIndex;
+	static byte[] getKeyIndex(Node48 node48) {
+		return node48.keyIndex;
 	}
 }
