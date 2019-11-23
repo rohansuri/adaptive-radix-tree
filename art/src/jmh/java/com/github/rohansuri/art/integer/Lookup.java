@@ -8,6 +8,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
 import org.apache.commons.lang3.ArrayUtils;
+import org.openjdk.jol.info.GraphLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,6 +97,7 @@ public class Lookup {
 			for (int key : keys) {
 				m.put(key, holder);
 			}
+			System.out.printf("\n\tmapType:%s, distributionType:%s, size:%d\n%s\n", mapType, distributionType, size, GraphLayout.parseInstance(m).toFootprint());
 		}
 	}
 

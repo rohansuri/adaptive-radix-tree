@@ -8,6 +8,8 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
 import org.apache.commons.collections4.trie.*;
 import org.apache.commons.io.IOUtils;
+import org.openjdk.jol.info.GraphLayout;
+
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -116,6 +118,7 @@ public class LargeData {
 				m.put(keys[i], holder);
 			}
 			supplier = () -> m;
+			System.out.printf("\n\tmapType:%s, distributionType:%s, file:%s\n%s\n", mapType, distributionType, file, GraphLayout.parseInstance(m).toFootprint());
 		}
 
 	}
