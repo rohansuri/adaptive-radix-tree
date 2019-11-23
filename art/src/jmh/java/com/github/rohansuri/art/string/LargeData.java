@@ -44,19 +44,24 @@ public class LargeData {
 			PATRICIA_TRIE
 		}
 
-		@Param
+		@Param({"ART", "TREE_MAP"})
 		MapType mapType;
 
 		public enum DistributionType {
 			SHUFFLE,
-			SORTED
+			SORTED // not in paper
 		}
 
-		@Param
+		@Param({"SHUFFLE"})
 		DistributionType distributionType;
 
 		public enum File {
+			// words are dense
 			WORDS("/words.txt", 235886),
+			SMALLWORDLIST("/words-20068.txt", 20068),
+			MEDIUMWORDLIST("/wordlist-224714.txt", 224714),
+			LARGEWORDLIST("/words.645,288.utf-8.txt", 645288),
+			// uuids are sparse
 			UUIDs("/uuid.txt", 100000);
 
 			private final String fileName;
@@ -68,7 +73,7 @@ public class LargeData {
 			}
 		}
 
-		@Param
+		@Param({"SMALLWORDLIST", "MEDIUMWORDLIST", "LARGEWORDLIST", "UUIDs"})
 		File file;
 
 		@Setup
@@ -118,7 +123,9 @@ public class LargeData {
 				m.put(keys[i], holder);
 			}
 			supplier = () -> m;
-			System.out.printf("\n\tmapType:%s, distributionType:%s, file:%s\n%s\n", mapType, distributionType, file, GraphLayout.parseInstance(m).toFootprint());
+			System.out
+					.printf("\n\tmapType:%s, distributionType:%s, file:%s\n%s\n", mapType, distributionType, file, GraphLayout
+							.parseInstance(m).toFootprint());
 		}
 
 	}

@@ -14,15 +14,17 @@ plugins {
 }
 
 jmh {
-	include = ['com.github.rohansuri.art.string.LargeData.lookup']
+	include = ['com.github.rohansuri.art.string.LargeData', 'com.github.rohansuri.art.integer']
 	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
 	fork = 1
 	warmup = '1s'
+	warmupIterations = 5
 	// profilers = ['perfasm:hotThreshold=.1']
 	timeOnIteration = '1s'
+	iterations = 5
 	benchmarkParameters = [:]
-	benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
-	benchmarkParameters['file'] = ['WORDS']
+	// benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
+	// benchmarkParameters['file'] = ['WORDS']
 	// benchmarkParameters['size'] = ['16', '32', '64', '128', '256']
 	resultFormat = 'JSON'
 	// jvmArgs = '-XX:FreqInlineSize=0'
@@ -56,7 +58,6 @@ dependencies {
 	jmh group: 'commons-io', name: 'commons-io', version: '2.6'
 
 	jmh group: 'org.openjdk.jol', name: 'jol-core', version: '0.9'
-
 
 }
 

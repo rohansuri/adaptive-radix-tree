@@ -28,7 +28,7 @@ public class Insert {
 		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
 		Integer[] keys;
 		Supplier<Map<Integer, Object>> supplier;
-		@Param({"100", "1000", "10000", "100000", "1000000"})
+		@Param({"100", "1000", "10000", "100000", "1000000", "10000000"})
 		int size;
 
 		public enum MapType {
@@ -40,14 +40,14 @@ public class Insert {
 
 		public enum DistributionType {
 			SPARSE,
-			DENSE_SORTED,
+			DENSE_SORTED, // not in paper
 			DENSE_SHUFFLE
 		}
 
-		@Param
+		@Param({"SPARSE", "DENSE_SHUFFLE"})
 		DistributionType distributionType;
 
-		@Param
+		@Param({"ART", "TREE_MAP"})
 		MapType mapType;
 
 		@Setup

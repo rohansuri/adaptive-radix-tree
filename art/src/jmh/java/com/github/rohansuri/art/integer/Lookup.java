@@ -26,7 +26,7 @@ public class Lookup {
 		Set<Integer> keySet; // for the purpose of dedup when preparing random sparse data set
 		Integer[] keys;
 		Map<Integer, Object> m;
-		@Param({"100", "1000", "10000", "100000", "1000000"})
+		@Param({"100", "1000", "10000", "100000", "1000000", "10000000"})
 		int size;
 
 		public enum MapType {
@@ -44,7 +44,7 @@ public class Lookup {
 		@Param
 		DistributionType distributionType;
 
-		@Param
+		@Param({"ART", "TREE_MAP"})
 		MapType mapType;
 
 		@Setup
@@ -97,7 +97,9 @@ public class Lookup {
 			for (int key : keys) {
 				m.put(key, holder);
 			}
-			System.out.printf("\n\tmapType:%s, distributionType:%s, size:%d\n%s\n", mapType, distributionType, size, GraphLayout.parseInstance(m).toFootprint());
+			System.out
+					.printf("\n\tmapType:%s, distributionType:%s, size:%d\n%s\n", mapType, distributionType, size, GraphLayout
+							.parseInstance(m).toFootprint());
 		}
 	}
 

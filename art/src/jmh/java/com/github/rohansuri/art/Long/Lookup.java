@@ -8,6 +8,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.*;
 import org.apache.commons.lang3.ArrayUtils;
+import org.openjdk.jol.info.GraphLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class Lookup {
 		Set<Long> keySet; // for the purpose of dedup when preparing random sparse data set
 		Long[] keys;
 		Map<Long, Object> m;
-		@Param({"100", "1000", "10000", "100000", "1000000"})
+		@Param({"100", "1000", "10000", "100000", "1000000", "10000000"})
 		int size;
 
 		public enum MapType {
@@ -43,7 +44,7 @@ public class Lookup {
 		@Param
 		DistributionType distributionType;
 
-		@Param
+		@Param({"ART", "TREE_MAP"})
 		MapType mapType;
 
 		@Setup
@@ -96,6 +97,9 @@ public class Lookup {
 			for (long key : keys) {
 				m.put(key, holder);
 			}
+			System.out
+					.printf("\n\tmapType:%s, distributionType:%s, size:%d\n%s\n", mapType, distributionType, size, GraphLayout
+							.parseInstance(m).toFootprint());
 		}
 	}
 
