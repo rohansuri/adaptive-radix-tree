@@ -358,7 +358,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// CLEANUP: check isFull before calling addChild? to be consistent with paper?
 		if (!node.addChild(partialKey, leaf)) {
 			node = node.grow();
-			assert node.addChild(partialKey, leaf);
+			node.addChild(partialKey, leaf);
 
 			// Important NOTE: depth != height of tree
 			// depth is the depth/index in partialKey
