@@ -42,7 +42,7 @@ public class ARTStringTest extends AbstractNavigableMapTest<String, String> {
 	 */
 	@Override
 	public String[] getSampleKeys() {
-		Object[] result = new String[] {"fooooooooz", "fooooooood", "fooooooooe", "fooooooooee", "baaar", "baaaz", "tmp", "baoz", "hello", "goodbye", "we'll", "see", "you", "all", "again", "key", "key2", "nonnullkey"};
+		Object[] result = new String[] {"fooooooooz", "fooooooood", "fooooooooe", "fooooooooee", "baaar", "baaaz", "tmp", "baoz", "hello", "goodbye", "we'll", "see", "you", "all", "", "key", "key2", "nonnullkey"};
 		return (String[]) result;
 	}
 
