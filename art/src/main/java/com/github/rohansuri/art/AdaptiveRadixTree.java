@@ -4,6 +4,7 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -13,10 +14,58 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 
-// document that we don't allow null keys
-// check which methods of TreeMap throw NPE
-// we throw there too
-
+/**
+ * An Adaptive Radix tree based {@link NavigableMap} implementation.
+ * The map is sorted according to the {@linkplain BinaryComparable} provided at map
+ * creation time.
+ *
+ * <p>This implementation provides log(k) time cost for the
+ * {@code containsKey}, {@code get}, {@code put} and {@code remove}
+ * operations where k is the length of the key.
+ * Algorithms are adaptations of those as described in the
+ *  <a href="https://db.in.tum.de/~leis/papers/ART.pdf">paper</a>
+ * <em>"The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases"</em>
+ *  by Dr. Viktor Leis.
+ *
+ * <p><strong>Note that this implementation is not synchronized.</strong>
+ * If multiple threads access a map concurrently, and at least one of the
+ * threads modifies the map structurally, it <em>must</em> be synchronized
+ * externally.  (A structural modification is any operation that adds or
+ * deletes one or more mappings; merely changing the value associated
+ * with an existing key is not a structural modification.)
+ *
+ * <p>The iterators returned by the {@code iterator} method of the collections
+ * returned by all of this class's "collection view methods" are
+ * <em>fail-fast</em>: if the map is structurally modified at any time after
+ * the iterator is created, in any way except through the iterator's own
+ * {@code remove} method, the iterator will throw a {@link
+ * ConcurrentModificationException}.  Thus, in the face of concurrent
+ * modification, the iterator fails quickly and cleanly, rather than risking
+ * arbitrary, non-deterministic behavior at an undetermined time in the future.
+ *
+ * <p>Note that the fail-fast behavior of an iterator cannot be guaranteed
+ * as it is, generally speaking, impossible to make any hard guarantees in the
+ * presence of unsynchronized concurrent modification.  Fail-fast iterators
+ * throw {@code ConcurrentModificationException} on a best-effort basis.
+ * Therefore, it would be wrong to write a program that depended on this
+ * exception for its correctness:   <em>the fail-fast behavior of iterators
+ * should be used only to detect bugs.</em>
+ *
+ * <p>Note that null keys are not permitted.
+ *
+ * <p>All {@code Map.Entry} pairs returned by methods in this class
+ * and its views represent snapshots of mappings at the time they were
+ * produced. They do <strong>not</strong> support the {@code Entry.setValue}
+ * method. (Note however that it is possible to change mappings in the
+ * associated map using {@code put}.)
+ *
+ * @param <K> the type of keys maintained by this map
+ * @param <V> the type of mapped values
+ *
+ * @author Rohan Suri
+ * @see NavigableMap
+ * @see BinaryComparable
+ */
 public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements NavigableMap<K, V> {
 	private final BinaryComparable<K> binaryComparable;
 	private transient EntrySet<K, V> entrySet;
@@ -37,9 +86,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	// TODO: offer a bulk create constructor
 
 	public AdaptiveRadixTree(BinaryComparable<K> binaryComparable) {
-		// TODO: allow keys themselves to be BinaryComparable
-		Objects.requireNonNull(binaryComparable, "Specifying a BinaryComparable is necessary. Support for having keys themselves"
-				+ " being BinaryComparable will come soon.");
+		Objects.requireNonNull(binaryComparable, "Specifying a BinaryComparable is necessary");
 		this.binaryComparable = binaryComparable;
 	}
 
@@ -50,6 +97,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			throw new NullPointerException();
 		}
 		byte[] bytes = binaryComparable.get(key);
+		if (root == null) {
+			// create leaf node and set root to that
+			root = new LeafNode<>(bytes, key, value);
+			size = 1;
+			modCount++;
+			return null;
+		}
 		return put(bytes, key, value);
 	}
 
@@ -108,17 +162,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return (c != null) ? c : (values = new Values<>(this));
 	}
 
-	private V put(byte[] keyBytes, K key, V value) {
-		if (root == null) {
-			// create leaf node and set root to that
-			root = new LeafNode<>(keyBytes, key, value);
-			size = 1;
-			modCount++;
-			return null;
-		}
-		return put(root, keyBytes, key, value, 0, null);
-	}
-
 	@Override
 	public V get(Object key) {
 		LeafNode<K, V> entry = getEntry(key);
@@ -134,8 +177,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	 * @throws ClassCastException if the specified key cannot be compared
 	 *         with the keys currently in the map
 	 * @throws NullPointerException if the specified key is null
-	 *         and this map uses natural ordering, or its comparator
-	 *         does not permit null keys
 	 */
 	LeafNode<K, V> getEntry(Object key) {
 		if (key == null)
@@ -146,7 +187,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		@SuppressWarnings("unchecked")
 		K k = (K) key;
 		byte[] bytes = binaryComparable.get(k);
-		return getEntry(root, bytes, 0);
+		return getEntry(root, bytes);
 	}
 
 	@Override
@@ -159,17 +200,28 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return oldValue;
 	}
 
-	// do we really need prevDepth to be passed around in call stack?
-	// if the uplinks have already been setup, then we could use them
+	/*
+		given node only has one child and has a parent.
+		we eliminate this node and pull up it's only child,
+		linking it with the parent.
 
-	private void pathCompress(Node4 toCompress) {
-		updateCompressedPathOfOnlyChild(toCompress);
+		transform: parent --> partial key to this node --> partialKey to only child
+		to: parent --> same partial key to this node, but now directly to only child
+
+		also update child's compressed path updated to:
+		this node's compressed path + partialKey to child + child's own compressed path)
+	 */
+	private void pathCompressOnlyChild(Node4 toCompress) {
 		Node onlyChild = toCompress.getChild()[0];
+		updateCompressedPathOfOnlyChild(toCompress, onlyChild);
 		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
 	}
 
-	static void updateCompressedPathOfOnlyChild(Node4 toCompress) {
-		Node onlyChild = toCompress.getChild()[0];
+	/*
+		updates given node's only child's compressed path to:
+		given node's compressed path + partialKey to child + child's own compressed path)
+	 */
+	static void updateCompressedPathOfOnlyChild(Node4 toCompress, Node onlyChild) {
 		assert onlyChild != null;
 		if (!(onlyChild instanceof LeafNode)) {
 			byte partialKeyToOnlyChild = toCompress.getOnlyChildKey();// toCompress.getKeys()[0]; // R
@@ -192,16 +244,16 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	private LeafNode<K, V> getEntry(Node node, byte[] key, int depth) {
+	private LeafNode<K, V> getEntry(Node node, byte[] key) {
+		int depth = 0;
 		while (true) {
 			if (node instanceof LeafNode) {
 				// match key to leaf
-				// IDEA: this is where the complete matching can be optimized
-				// if we keep track of what parts of key have already matched.
-				// Because of optimistic path compression, it may not be necessary
-				// that at depth D, first D bytes of key and this leaf node totally match.
-				// but we could skip matching the pessimistic parts of the key
-				// also the parts of the key that were directly taken traversed over (findChild)
+				// IDEA: complete matching here can be optimized.
+				// we can pass around the first depth where optimistic jump
+				// was taken and match from there (since everything before is surely matched).
+				// I'd expect most keys wouldn't have compressed paths longer than 8
+				// and hence would benefit from faster leaf matches.
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
 				if (Arrays.equals(leaf.getKeyBytes(), key)) {
@@ -297,7 +349,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	private V put(Node node, byte[] keyBytes, K key, V value, int depth, InnerNode prevDepth) {
+	private V put(byte[] keyBytes, K key, V value) {
+		int depth = 0;
+		InnerNode prevDepth = null;
+		Node node = root;
 		while (true) {
 			if (node instanceof LeafNode) {
 				@SuppressWarnings("unchecked")
@@ -347,11 +402,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		because even if we're left with X partial keys (each of 1 byte),
 		we're not going to branch down and create X new levels down the road.
 		Nope. We reduce the height of the tree by lazy expanding.
-		IDEA: Could we just keep the left over part of the key in the leaf?
-		We could use byte buffer to do this (for index manipulation).
-		The paper suggests storing complete key.
-		Let's see, we'll refactor if we face trouble later.
-		Or rather let's keep the entire key's reference?
 	*/
 	private void addChild(InnerNode node, byte partialKey, byte[] keyBytes, K key, V value, int depth, InnerNode prevDepth) {
 		Node leaf = new LeafNode<>(keyBytes, key, value);
@@ -534,7 +584,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		int initialDepth = depth - lcp;
 
 		// create new lazy leaf node for unmatched key?
-		// IDEA: put context of "how much matched" into the LeafNode? for faster leaf key matching lookups?
 		LeafNode leafNode = new LeafNode<>(keyBytes, key, value);
 
 		// new node with updated prefix len, compressed path
@@ -1024,12 +1073,14 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			root = null;
 			return;
 		}
+
 		if (parent.getLeaf() == leaf) {
 			parent.removeLeaf();
 		}
 		else {
 			parent.removeChild(leaf.uplinkKey());
 		}
+
 		if (parent.shouldShrink()) {
 			InnerNode newParent = parent.shrink();
 			// newParent should have copied the uplink to same grandParent of oldParent
@@ -1037,12 +1088,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			replace(newParent.uplinkKey(), grandParent, newParent);
 		}
 		else if (parent.size() == 1 && !parent.hasLeaf()) {
-			// this node can be path compressed
-			// so now: grandParent --> partial key to parent --> partialKey to only leaf left
-			// to path compress
-			// grandParent --> same partial key, but now to leaf
-			// leaf's compressed path updated to (parent's compressed path + partialKey to leaf + leaf's own compressed path)
-			pathCompress((Node4) parent);
+			pathCompressOnlyChild((Node4) parent);
 		}
 		else if (parent.size() == 0) {
 			assert parent.hasLeaf();

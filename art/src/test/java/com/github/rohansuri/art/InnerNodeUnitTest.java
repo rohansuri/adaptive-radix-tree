@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
+import static com.github.rohansuri.art.InnerNodeUtils.*;
 
 public abstract class InnerNodeUnitTest {
 	protected static class Pair implements Comparable<Pair> {
@@ -325,7 +325,7 @@ public abstract class InnerNodeUnitTest {
 		InnerNode aa = (InnerNode) a;
 		InnerNode bb = (InnerNode) b;
 		assertEquals(aa.prefixLen, bb.prefixLen);
-		assertArrayEquals(aa.getValidPrefixKey(), bb.getValidPrefixKey());
+		assertArrayEquals(getValidPrefixKey(aa), getValidPrefixKey(bb));
 		assertEquals(aa.parent(), bb.parent());
 		assertEquals(aa.uplinkKey(), bb.uplinkKey());
 	}

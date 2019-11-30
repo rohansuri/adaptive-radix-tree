@@ -1,19 +1,5 @@
 package com.github.rohansuri.art;
 
-/*
-	These are internal contracts/interfaces
- 	They've been written with only what they're used for internally
- 	For example Node#remove could have returned a false indicative of a failed remove
- 	due to partialKey entry not actually existing, but the return value is of no use in code till now
- 	and is sure to be called from places where it'll surely exist.
- 	since they're internal, we could change them later if a better contract makes more sense.
-
-	The impls have assert conditions all around to make sure the methods are called being in the right
-	state. For example you should not call shrink() if the Node is not ready to shrink, etc.
-	Or for example when calling last() on Node16 or higher, we're sure we'll have at least
-	X amount of children hence safe to return child[noOfChildren-1], without worrying about bounds.
-
- */
 abstract class Node {
 	/**
 	 * @return child pointer for the smallest partialKey stored in this Node.

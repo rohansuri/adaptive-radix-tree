@@ -1,14 +1,9 @@
 package com.github.rohansuri.art;
 
-// CLEANUP: better design to avoid LeafNode not having those UnsupportedExceptions?
-
 import java.util.Arrays;
 import java.util.Map;
 
 /*
-    avoid this LeafNode extra hop? rather use child pointers as Object? (read notes below)
-    i.e using the same pointer for both pointing to child Nodes as well as value
-
     currently we use what the paper mentions as "Single-value" leaves
  */
 class LeafNode<K, V> extends Node implements Map.Entry<K, V> {

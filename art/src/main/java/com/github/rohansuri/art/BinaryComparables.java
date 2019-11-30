@@ -6,6 +6,9 @@ import java.nio.charset.Charset;
 import static com.github.rohansuri.art.BinaryComparableUtils.unsigned;
 
 // noninstantiable companion class
+/**
+ * Provides implementation of {@link BinaryComparable} for primitives and {@link String}
+ */
 public class BinaryComparables {
 
 	private BinaryComparables() {

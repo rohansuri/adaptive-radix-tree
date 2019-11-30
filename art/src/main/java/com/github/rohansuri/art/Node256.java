@@ -26,10 +26,7 @@ class Node256 extends InnerNode {
 
 	@Override
 	public Node findChild(byte partialKey) {
-		// convert byte to 8 bit integer
-		// and then index into that array position
-		// We should treat the 8 bits as unsigned int
-		// since we've got 256 slots, we need to go from 00000000 to 11111111
+		// We treat the 8 bits as unsigned int since we've got 256 slots
 		int index = Byte.toUnsignedInt(partialKey);
 		return child[index];
 	}
@@ -38,15 +35,8 @@ class Node256 extends InnerNode {
 	public boolean addChild(byte partialKey, Node child) {
 		// addChild would never be called on a full Node256
 		// since the corresponding findChild for any byte key
-		// would always find the byte since the Node is full!
+		// would always find the byte since the Node is full.
 		assert !isFull();
-		// byte in Java is signed
-		// but we want no interpretation of the partialKey
-		// we just want to treat it as raw binary bits
-		// but since byte is signed, numerically when we index using it
-		// it can be negative once it goes over 127, therefore we need to
-		// convert it to a bigger container type
-		// or can we do something better?
 		int index = Byte.toUnsignedInt(partialKey);
 		assert this.child[index] == null;
 		createUplink(this, child, partialKey);

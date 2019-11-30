@@ -1,7 +1,19 @@
 package com.github.rohansuri.art;
 
-// should be 16 bytes only
+/*
+	These are internal contracts/interfaces
+ 	They've been written with only what they're used for internally
+ 	For example InnerNode#remove could have returned a false indicative of a failed remove
+ 	due to partialKey entry not actually existing, but the return value is of no use in code till now
+ 	and is sure to be called from places where it'll surely exist.
+ 	since they're internal, we could change them later if a better contract makes more sense.
 
+	The impls have assert conditions all around to make sure the methods are called being in the right
+	state. For example you should not call shrink() if the Node is not ready to shrink, etc.
+	Or for example when calling last() on Node16 or higher, we're sure we'll have at least
+	X amount of children hence safe to return child[noOfChildren-1], without worrying about bounds.
+
+ */
 abstract class InnerNode extends Node {
 
 	static final int PESSIMISTIC_PATH_COMPRESSION_LIMIT = 8;
@@ -12,11 +24,9 @@ abstract class InnerNode extends Node {
 	// Optimistic
 	int prefixLen; // 4 bytes
 
-	// to decide to grow or not
-	// TODO: we could save space by making this a short for Node256 and byte for other node types?
-	// since noOfChildren will never be more than 256 and we don't seem to be
-	// using it specifically on an AbstractNode level? (are we?)
-	short noOfChildren; // 2 bytes
+	// TODO: we could save space by making this a byte and returning
+	// Byte.toUnsignedInt wherever comparison with it is done.
+	short noOfChildren;
 
 	final Node[] child;
 
@@ -39,14 +49,6 @@ abstract class InnerNode extends Node {
 		if (child[size] != null) {
 			replaceUplink(this, child[size]);
 		}
-	}
-
-	// CLEANUP: move to test utils
-	byte[] getValidPrefixKey() {
-		int limit = Math.min(PESSIMISTIC_PATH_COMPRESSION_LIMIT, prefixLen);
-		byte[] valid = new byte[limit];
-		System.arraycopy(prefixKeys, 0, valid, 0, limit);
-		return valid;
 	}
 
 	public void setLeaf(LeafNode<?, ?> leaf) {

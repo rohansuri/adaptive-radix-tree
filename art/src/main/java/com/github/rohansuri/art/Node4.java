@@ -158,10 +158,3 @@ class Node4 extends InnerNode {
 		return BinaryComparableUtils.signed(keys[0]);
 	}
 }
-
-/*
-    any optimisations possible for these Node structures?
-    get rid of bounds checking etc? (off-heap?)
-    megamorphic call sites?
-    combine into single node?
-*/

@@ -132,7 +132,6 @@ class Node16 extends InnerNode {
 	@Override
 	public Node greater(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		// TODO: consider using binary search here
 		for (int i = 0; i < noOfChildren; i++) {
 			if (keys[i] > partialKey) {
 				return child[i];
@@ -144,7 +143,6 @@ class Node16 extends InnerNode {
 	@Override
 	public Node lesser(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		// TODO: consider using binary search here
 		for (int i = noOfChildren - 1; i >= 0; i--) {
 			if (keys[i] < partialKey) {
 				return child[i];

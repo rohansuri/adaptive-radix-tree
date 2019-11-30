@@ -1,32 +1,26 @@
 package com.github.rohansuri.art;
 
-import java.io.ByteArrayOutputStream;
-
+/**
+ * Contains utilities to help with {@link BinaryComparable} key transformation.
+ */
 class BinaryComparableUtils {
 	private BinaryComparableUtils() {
 		// Effective Java Item 4
 		throw new AssertionError();
 	}
 
-	// terminator should be the smallest allowed byte value to obey binary comparability of strings
-	static final byte[] TERMINATOR = new byte[] {0, 0};
-	// smallest allowed byte value 0 will have to be mapped to 01
-	// see paper's null value idea
-	static final byte[] ZERO = new byte[] {0, 1};
-
 	private static int countZeroBytes(byte[] key) {
 		int count = 0;
-		for (int i = 0; i < key.length; i++) {
-			count += key[i] == 0 ? 1 : 0;
+		for (byte b : key) {
+			count += b == 0 ? 1 : 0;
 		}
 		return count;
 	}
 
 	// in UTF-8 encoding, other than the 0 byte from the ASCII subset
-	// no codepoint ever will have a 0 byte!
+	// no codepoint ever will have a 0 byte
 	// because of the continuation bytes which always have a 1 MSB.
-	// so this is safe to do
-	static byte[] terminateUTF8(byte[] key) {
+	static byte[] terminate(byte[] key) {
 		int count = countZeroBytes(key);
 		int end = key.length + count; // to add ZERO byte 1
 		byte[] terminatedKey = new byte[end + 2];
@@ -41,6 +35,8 @@ class BinaryComparableUtils {
 				}
 			}
 		}
+		// terminator should be the smallest allowed byte value to obey binary comparability
+		// of variable length keys
 		terminatedKey[end] = 0;
 		terminatedKey[end + 1] = 0;
 		return terminatedKey;
@@ -49,12 +45,19 @@ class BinaryComparableUtils {
 	// 2^7 = 128
 	private static final int BYTE_SHIFT = 1 << Byte.SIZE - 1;
 
+	/**
+	 * For signed types to be interpreted as unsigned
+	 */
 	static byte[] unsigned(byte[] key) {
 		key[0] = unsigned(key[0]);
 		return key;
 	}
 
-	// For Node4, Node16 to interpret every byte as unsigned
+	/**
+	 * For Node4, Node16 to interpret every byte as unsigned when storing partial keys.
+	 * Node 48, Node256 simply use {@link Byte#toUnsignedInt(byte)}
+	 * to index into their key arrays.
+	 */
 	static byte unsigned(byte b) {
 		return (byte) (b ^ BYTE_SHIFT);
 	}
