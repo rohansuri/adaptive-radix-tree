@@ -1,0 +1,1244 @@
+[
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_1000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 43485.41988283326,
+            "scoreError" : 2205.860538380339,
+            "scoreConfidence" : [
+                41279.55934445292,
+                45691.280421213596
+            ],
+            "scorePercentiles" : {
+                "0.0" : 41841.60809065533,
+                "50.0" : 43197.226187758344,
+                "90.0" : 45912.3769023014,
+                "95.0" : 45976.404467070264,
+                "99.0" : 45976.404467070264,
+                "99.9" : 45976.404467070264,
+                "99.99" : 45976.404467070264,
+                "99.999" : 45976.404467070264,
+                "99.9999" : 45976.404467070264,
+                "100.0" : 45976.404467070264
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    43580.32062955255,
+                    42118.088987857656,
+                    43877.87903049394,
+                    41841.60809065533,
+                    44695.91155581364,
+                    42530.91981672394,
+                    45336.128819381665,
+                    42814.131745964136,
+                    45976.404467070264,
+                    42082.80568481952
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_5000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 248001.90729810932,
+            "scoreError" : 15409.385624266055,
+            "scoreConfidence" : [
+                232592.52167384326,
+                263411.2929223754
+            ],
+            "scorePercentiles" : {
+                "0.0" : 238102.42775935575,
+                "50.0" : 245316.87559559033,
+                "90.0" : 266664.35481328616,
+                "95.0" : 267491.4746531483,
+                "99.0" : 267491.4746531483,
+                "99.9" : 267491.4746531483,
+                "99.99" : 267491.4746531483,
+                "99.999" : 267491.4746531483,
+                "99.9999" : 267491.4746531483,
+                "100.0" : 267491.4746531483
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    239370.94169653524,
+                    247835.27849037986,
+                    248804.69309145128,
+                    242798.47270080078,
+                    257280.25287944716,
+                    239958.33898709985,
+                    259220.27625452663,
+                    239156.9164683484,
+                    267491.4746531483,
+                    238102.42775935575
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_10000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 629483.5373305494,
+            "scoreError" : 169462.85196566058,
+            "scoreConfidence" : [
+                460020.68536488886,
+                798946.38929621
+            ],
+            "scorePercentiles" : {
+                "0.0" : 548810.4257641921,
+                "50.0" : 589387.553552113,
+                "90.0" : 888189.1442437932,
+                "95.0" : 908300.6730072463,
+                "99.0" : 908300.6730072463,
+                "99.9" : 908300.6730072463,
+                "99.99" : 908300.6730072463,
+                "99.999" : 908300.6730072463,
+                "99.9999" : 908300.6730072463,
+                "100.0" : 908300.6730072463
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    551757.9912184413,
+                    663085.2933421226,
+                    908300.6730072463,
+                    619900.2174721189,
+                    548810.4257641921,
+                    555417.6966167499,
+                    622823.804213135,
+                    707185.3853727145,
+                    558874.889632107,
+                    558678.9966666667
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_50000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 4745264.492976142,
+            "scoreError" : 728343.5773211874,
+            "scoreConfidence" : [
+                4016920.9156549545,
+                5473608.07029733
+            ],
+            "scorePercentiles" : {
+                "0.0" : 4150380.5661157025,
+                "50.0" : 4734774.558152378,
+                "90.0" : 5420103.912236918,
+                "95.0" : 5427363.259459459,
+                "99.0" : 5427363.259459459,
+                "99.9" : 5427363.259459459,
+                "99.99" : 5427363.259459459,
+                "99.999" : 5427363.259459459,
+                "99.9999" : 5427363.259459459,
+                "100.0" : 5427363.259459459
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    4957855.802955665,
+                    4443688.202643172,
+                    4951282.54679803,
+                    4329670.620689655,
+                    5427363.259459459,
+                    4169449.0,
+                    5149918.574358975,
+                    4518266.569506726,
+                    4150380.5661157025,
+                    5354769.787234043
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_100000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 1.7605302837084018E7,
+            "scoreError" : 2592377.8766474086,
+            "scoreConfidence" : [
+                1.5012924960436609E7,
+                2.0197680713731427E7
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.6282987774193548E7,
+                "50.0" : 1.691245602259887E7,
+                "90.0" : 2.1457984418143135E7,
+                "95.0" : 2.1787070319148935E7,
+                "99.0" : 2.1787070319148935E7,
+                "99.9" : 2.1787070319148935E7,
+                "99.99" : 2.1787070319148935E7,
+                "99.999" : 2.1787070319148935E7,
+                "99.9999" : 2.1787070319148935E7,
+                "100.0" : 2.1787070319148935E7
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1.6801283333333332E7,
+                    1.7023628711864408E7,
+                    1.849621130909091E7,
+                    1.632146891935484E7,
+                    1.8439310054545455E7,
+                    1.808472764285714E7,
+                    1.6282987774193548E7,
+                    1.6346604E7,
+                    2.1787070319148935E7,
+                    1.6469736306451613E7
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_500000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 1.4253536738214287E8,
+            "scoreError" : 1.8534548064936962E7,
+            "scoreConfidence" : [
+                1.240008193172059E8,
+                1.6106991544707984E8
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.311791695E8,
+                "50.0" : 1.3726875175E8,
+                "90.0" : 1.6148695657142857E8,
+                "95.0" : 1.6150547985714287E8,
+                "99.0" : 1.6150547985714287E8,
+                "99.9" : 1.6150547985714287E8,
+                "99.99" : 1.6150547985714287E8,
+                "99.999" : 1.6150547985714287E8,
+                "99.9999" : 1.6150547985714287E8,
+                "100.0" : 1.6150547985714287E8
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1.330934895E8,
+                    1.31611144375E8,
+                    1.34247617375E8,
+                    1.311791695E8,
+                    1.551423287142857E8,
+                    1.40289886125E8,
+                    1.341845385E8,
+                    1.42779772875E8,
+                    1.61320247E8,
+                    1.6150547985714287E8
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_1000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 3.6923337503333336E8,
+            "scoreError" : 3.948862969409602E7,
+            "scoreConfidence" : [
+                3.2974474533923733E8,
+                4.087220047274294E8
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3.501896243333333E8,
+                "50.0" : 3.559194323333334E8,
+                "90.0" : 4.1648260143333334E8,
+                "95.0" : 4.17238181E8,
+                "99.0" : 4.17238181E8,
+                "99.9" : 4.17238181E8,
+                "99.99" : 4.17238181E8,
+                "99.999" : 4.17238181E8,
+                "99.9999" : 4.17238181E8,
+                "100.0" : 4.17238181E8
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    3.54927631E8,
+                    3.53487892E8,
+                    3.569112336666667E8,
+                    3.501896243333333E8,
+                    3.516328316666667E8,
+                    3.571005123333333E8,
+                    3.50939006E8,
+                    3.90224453E8,
+                    4.17238181E8,
+                    4.096823853333333E8
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_5000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 2.0401575711E9,
+            "scoreError" : 1.6865916040365803E8,
+            "scoreConfidence" : [
+                1.871498410696342E9,
+                2.208816731503658E9
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.847904388E9,
+                "50.0" : 2.089662379E9,
+                "90.0" : 2.138924398E9,
+                "95.0" : 2.139134458E9,
+                "99.0" : 2.139134458E9,
+                "99.9" : 2.139134458E9,
+                "99.99" : 2.139134458E9,
+                "99.999" : 2.139134458E9,
+                "99.9999" : 2.139134458E9,
+                "100.0" : 2.139134458E9
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1.861031796E9,
+                    1.965490571E9,
+                    1.847904388E9,
+                    2.03054911E9,
+                    2.101217637E9,
+                    2.117894398E9,
+                    2.139134458E9,
+                    2.137033858E9,
+                    2.123212374E9,
+                    2.078107121E9
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_10000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 4.6179223127E9,
+            "scoreError" : 5.122165770388434E8,
+            "scoreConfidence" : [
+                4.1057057356611567E9,
+                5.130138889738843E9
+            ],
+            "scorePercentiles" : {
+                "0.0" : 4.335577649E9,
+                "50.0" : 4.3957788645E9,
+                "90.0" : 5.105909529E9,
+                "95.0" : 5.107846686E9,
+                "99.0" : 5.107846686E9,
+                "99.9" : 5.107846686E9,
+                "99.99" : 5.107846686E9,
+                "99.999" : 5.107846686E9,
+                "99.9999" : 5.107846686E9,
+                "100.0" : 5.107846686E9
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    5.088475116E9,
+                    5.085325434E9,
+                    5.107846686E9,
+                    4.638690012E9,
+                    4.335577649E9,
+                    4.358789511E9,
+                    4.389864518E9,
+                    4.397531243E9,
+                    4.383096472E9,
+                    4.394026486E9
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "ART",
+            "workloadFile" : "c_uniform_50000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 3.47342046578E10,
+            "scoreError" : 2.895874326009772E9,
+            "scoreConfidence" : [
+                3.183833033179023E10,
+                3.763007898380978E10
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3.2358548206E10,
+                "50.0" : 3.4290835011E10,
+                "90.0" : 3.82862303649E10,
+                "95.0" : 3.8401433941E10,
+                "99.0" : 3.8401433941E10,
+                "99.9" : 3.8401433941E10,
+                "99.99" : 3.8401433941E10,
+                "99.999" : 3.8401433941E10,
+                "99.9999" : 3.8401433941E10,
+                "100.0" : 3.8401433941E10
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    3.3568449721E10,
+                    3.4775203134E10,
+                    3.5643406957E10,
+                    3.2903506204E10,
+                    3.4971845914E10,
+                    3.8401433941E10,
+                    3.2358548206E10,
+                    3.3806466888E10,
+                    3.724939818E10,
+                    3.3663787433E10
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_1000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 73691.65604787708,
+            "scoreError" : 524.8233404932067,
+            "scoreConfidence" : [
+                73166.83270738387,
+                74216.4793883703
+            ],
+            "scorePercentiles" : {
+                "0.0" : 73281.18912391129,
+                "50.0" : 73655.39551075462,
+                "90.0" : 74329.4589099732,
+                "95.0" : 74340.99563609468,
+                "99.0" : 74340.99563609468,
+                "99.9" : 74340.99563609468,
+                "99.99" : 74340.99563609468,
+                "99.999" : 74340.99563609468,
+                "99.9999" : 74340.99563609468,
+                "100.0" : 74340.99563609468
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    73281.18912391129,
+                    73401.18107176894,
+                    73391.75228619504,
+                    73518.89206255967,
+                    73646.67009400704,
+                    73709.42381477398,
+                    74225.6283748798,
+                    73664.1209275022,
+                    73736.70708707823,
+                    74340.99563609468
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_5000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 627991.3329337282,
+            "scoreError" : 1806.0499366134568,
+            "scoreConfidence" : [
+                626185.2829971148,
+                629797.3828703417
+            ],
+            "scorePercentiles" : {
+                "0.0" : 626355.2117426608,
+                "50.0" : 627874.8829099,
+                "90.0" : 630170.6495206006,
+                "95.0" : 630287.5062814071,
+                "99.0" : 630287.5062814071,
+                "99.9" : 630287.5062814071,
+                "99.99" : 630287.5062814071,
+                "99.999" : 630287.5062814071,
+                "99.9999" : 630287.5062814071,
+                "100.0" : 630287.5062814071
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    628788.2095059413,
+                    627082.6533665835,
+                    626355.2117426608,
+                    627419.2775689223,
+                    629118.9386733416,
+                    627940.6883198001,
+                    630287.5062814071,
+                    626713.375156055,
+                    627809.0775,
+                    628398.3912225706
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_10000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 1613556.0183561172,
+            "scoreError" : 16041.879196910824,
+            "scoreConfidence" : [
+                1597514.1391592063,
+                1629597.897553028
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1598332.0318471338,
+                "50.0" : 1610884.51375427,
+                "90.0" : 1637847.36747589,
+                "95.0" : 1640277.790507365,
+                "99.0" : 1640277.790507365,
+                "99.9" : 1640277.790507365,
+                "99.99" : 1640277.790507365,
+                "99.999" : 1640277.790507365,
+                "99.9999" : 1640277.790507365,
+                "100.0" : 1640277.790507365
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1610104.9792,
+                    1609583.8621794872,
+                    1611614.165329053,
+                    1615246.9048387096,
+                    1614554.5682182985,
+                    1609717.4590690208,
+                    1610154.8621794872,
+                    1640277.790507365,
+                    1598332.0318471338,
+                    1615973.5601926164
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_50000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 1.2968093279087577E7,
+            "scoreError" : 141865.13336093278,
+            "scoreConfidence" : [
+                1.2826228145726644E7,
+                1.310995841244851E7
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.2845453961538462E7,
+                "50.0" : 1.2966510903846154E7,
+                "90.0" : 1.3130591573326673E7,
+                "95.0" : 1.3136644688311689E7,
+                "99.0" : 1.3136644688311689E7,
+                "99.9" : 1.3136644688311689E7,
+                "99.99" : 1.3136644688311689E7,
+                "99.999" : 1.3136644688311689E7,
+                "99.9999" : 1.3136644688311689E7,
+                "100.0" : 1.3136644688311689E7
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1.2893815923076924E7,
+                    1.2945453756410256E7,
+                    1.3136644688311689E7,
+                    1.2995719141025642E7,
+                    1.3027275282051282E7,
+                    1.2845453961538462E7,
+                    1.3076113538461538E7,
+                    1.2878732615384616E7,
+                    1.2894155833333334E7,
+                    1.2987568051282052E7
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_100000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 4.560451510217392E7,
+            "scoreError" : 595926.6057582767,
+            "scoreConfidence" : [
+                4.500858849641564E7,
+                4.62004417079322E7
+            ],
+            "scorePercentiles" : {
+                "0.0" : 4.5062353217391305E7,
+                "50.0" : 4.558302144960474E7,
+                "90.0" : 4.6399375300000004E7,
+                "95.0" : 4.644693077272727E7,
+                "99.0" : 4.644693077272727E7,
+                "99.9" : 4.644693077272727E7,
+                "99.99" : 4.644693077272727E7,
+                "99.999" : 4.644693077272727E7,
+                "99.9999" : 4.644693077272727E7,
+                "100.0" : 4.644693077272727E7
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    4.541469786956522E7,
+                    4.532071691304348E7,
+                    4.644693077272727E7,
+                    4.5062353217391305E7,
+                    4.525517856521739E7,
+                    4.557559168181818E7,
+                    4.572291473913044E7,
+                    4.5590451217391305E7,
+                    4.597137604545455E7,
+                    4.568494E7
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_500000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 5.0947505005E8,
+            "scoreError" : 4507380.376485063,
+            "scoreConfidence" : [
+                5.0496766967351496E8,
+                5.1398243042648506E8
+            ],
+            "scorePercentiles" : {
+                "0.0" : 5.05344234E8,
+                "50.0" : 5.088231525E8,
+                "90.0" : 5.1427510685E8,
+                "95.0" : 5.14337414E8,
+                "99.0" : 5.14337414E8,
+                "99.9" : 5.14337414E8,
+                "99.99" : 5.14337414E8,
+                "99.999" : 5.14337414E8,
+                "99.9999" : 5.14337414E8,
+                "100.0" : 5.14337414E8
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    5.05344234E8,
+                    5.09127731E8,
+                    5.07185977E8,
+                    5.118099025E8,
+                    5.14337414E8,
+                    5.08518574E8,
+                    5.068733025E8,
+                    5.078694725E8,
+                    5.099695505E8,
+                    5.137143425E8
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_1000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 1.2549849141E9,
+            "scoreError" : 7474874.754718856,
+            "scoreConfidence" : [
+                1.2475100393452811E9,
+                1.2624597888547187E9
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.247986262E9,
+                "50.0" : 1.2543048615E9,
+                "90.0" : 1.2641118063E9,
+                "95.0" : 1.264503086E9,
+                "99.0" : 1.264503086E9,
+                "99.9" : 1.264503086E9,
+                "99.99" : 1.264503086E9,
+                "99.999" : 1.264503086E9,
+                "99.9999" : 1.264503086E9,
+                "100.0" : 1.264503086E9
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1.249706217E9,
+                    1.252146318E9,
+                    1.254065792E9,
+                    1.260590289E9,
+                    1.257670637E9,
+                    1.254543931E9,
+                    1.247986262E9,
+                    1.252914248E9,
+                    1.255722361E9,
+                    1.264503086E9
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_5000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 6.015777104E9,
+            "scoreError" : 4.7712910768535696E7,
+            "scoreConfidence" : [
+                5.968064193231464E9,
+                6.063490014768536E9
+            ],
+            "scorePercentiles" : {
+                "0.0" : 5.97509463E9,
+                "50.0" : 6.0138333035E9,
+                "90.0" : 6.0643929292E9,
+                "95.0" : 6.065575128E9,
+                "99.0" : 6.065575128E9,
+                "99.9" : 6.065575128E9,
+                "99.99" : 6.065575128E9,
+                "99.999" : 6.065575128E9,
+                "99.9999" : 6.065575128E9,
+                "100.0" : 6.065575128E9
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    5.993510469E9,
+                    6.050367183E9,
+                    6.013601267E9,
+                    5.97509463E9,
+                    6.05375314E9,
+                    6.065575128E9,
+                    5.990655738E9,
+                    6.017799594E9,
+                    5.983348551E9,
+                    6.01406534E9
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_10000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 1.40889927141E10,
+            "scoreError" : 1.0920169287655592E8,
+            "scoreConfidence" : [
+                1.3979791021223444E10,
+                1.4198194406976557E10
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1.3919831444E10,
+                "50.0" : 1.41012473235E10,
+                "90.0" : 1.41629654405E10,
+                "95.0" : 1.4165134042E10,
+                "99.0" : 1.4165134042E10,
+                "99.9" : 1.4165134042E10,
+                "99.99" : 1.4165134042E10,
+                "99.999" : 1.4165134042E10,
+                "99.9999" : 1.4165134042E10,
+                "100.0" : 1.4165134042E10
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1.4165134042E10,
+                    1.4089748946E10,
+                    1.4112745701E10,
+                    1.4081469046E10,
+                    1.4033225821E10,
+                    1.4136667942E10,
+                    1.4143448027E10,
+                    1.4143400247E10,
+                    1.4064255925E10,
+                    1.3919831444E10
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.21",
+        "benchmark" : "com.github.rohansuri.art.ycsb.Long.C.lookup",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/jdk-12.0.1.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Xmx14g",
+            "-Xms8g"
+        ],
+        "jdkVersion" : "12.0.1",
+        "vmName" : "Java HotSpot(TM) 64-Bit Server VM",
+        "vmVersion" : "12.0.1+12",
+        "warmupIterations" : 10,
+        "warmupTime" : "1 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 10,
+        "measurementTime" : "1 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "mapType" : "TREE_MAP",
+            "workloadFile" : "c_uniform_50000000_randint_txn.dat"
+        },
+        "primaryMetric" : {
+            "score" : 1.052909656049E11,
+            "scoreError" : 1.258471531392045E10,
+            "scoreConfidence" : [
+                9.270625029097954E10,
+                1.1787568091882045E11
+            ],
+            "scorePercentiles" : {
+                "0.0" : 8.2424597028E10,
+                "50.0" : 1.07172241139E11,
+                "90.0" : 1.119909998647E11,
+                "95.0" : 1.1223032763E11,
+                "99.0" : 1.1223032763E11,
+                "99.9" : 1.1223032763E11,
+                "99.99" : 1.1223032763E11,
+                "99.999" : 1.1223032763E11,
+                "99.9999" : 1.1223032763E11,
+                "100.0" : 1.1223032763E11
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1.07099340814E11,
+                    1.07556057657E11,
+                    1.03774773772E11,
+                    8.2424597028E10,
+                    1.08633177558E11,
+                    1.1223032763E11,
+                    1.09837049977E11,
+                    1.07245141464E11,
+                    1.07045183793E11,
+                    1.07064006356E11
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+

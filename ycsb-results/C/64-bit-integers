@@ -1,0 +1,21 @@
+Benchmark      (mapType)                      (workloadFile)  Mode  Cnt             Score             Error  Units
+Long.C.lookup        ART      c_uniform_1000_randint_txn.dat  avgt   10         43485.420 ±        2205.861  ns/op
+Long.C.lookup        ART      c_uniform_5000_randint_txn.dat  avgt   10        248001.907 ±       15409.386  ns/op
+Long.C.lookup        ART     c_uniform_10000_randint_txn.dat  avgt   10        629483.537 ±      169462.852  ns/op
+Long.C.lookup        ART     c_uniform_50000_randint_txn.dat  avgt   10       4745264.493 ±      728343.577  ns/op
+Long.C.lookup        ART    c_uniform_100000_randint_txn.dat  avgt   10      17605302.837 ±     2592377.877  ns/op
+Long.C.lookup        ART    c_uniform_500000_randint_txn.dat  avgt   10     142535367.382 ±    18534548.065  ns/op
+Long.C.lookup        ART   c_uniform_1000000_randint_txn.dat  avgt   10     369233375.033 ±    39488629.694  ns/op
+Long.C.lookup        ART   c_uniform_5000000_randint_txn.dat  avgt   10    2040157571.100 ±   168659160.404  ns/op
+Long.C.lookup        ART  c_uniform_10000000_randint_txn.dat  avgt   10    4617922312.700 ±   512216577.039  ns/op
+Long.C.lookup        ART  c_uniform_50000000_randint_txn.dat  avgt   10   34734204657.800 ±  2895874326.010  ns/op
+Long.C.lookup   TREE_MAP      c_uniform_1000_randint_txn.dat  avgt   10         73691.656 ±         524.823  ns/op
+Long.C.lookup   TREE_MAP      c_uniform_5000_randint_txn.dat  avgt   10        627991.333 ±        1806.050  ns/op
+Long.C.lookup   TREE_MAP     c_uniform_10000_randint_txn.dat  avgt   10       1613556.018 ±       16041.879  ns/op
+Long.C.lookup   TREE_MAP     c_uniform_50000_randint_txn.dat  avgt   10      12968093.279 ±      141865.133  ns/op
+Long.C.lookup   TREE_MAP    c_uniform_100000_randint_txn.dat  avgt   10      45604515.102 ±      595926.606  ns/op
+Long.C.lookup   TREE_MAP    c_uniform_500000_randint_txn.dat  avgt   10     509475050.050 ±     4507380.376  ns/op
+Long.C.lookup   TREE_MAP   c_uniform_1000000_randint_txn.dat  avgt   10    1254984914.100 ±     7474874.755  ns/op
+Long.C.lookup   TREE_MAP   c_uniform_5000000_randint_txn.dat  avgt   10    6015777104.000 ±    47712910.769  ns/op
+Long.C.lookup   TREE_MAP  c_uniform_10000000_randint_txn.dat  avgt   10   14088992714.100 ±   109201692.877  ns/op
+Long.C.lookup   TREE_MAP  c_uniform_50000000_randint_txn.dat  avgt   10  105290965604.900 ± 12584715313.920  ns/op
