@@ -10,7 +10,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /*
@@ -33,11 +36,26 @@ public class C {
                 "c_uniform_50000000_randint_txn.dat"})
         String workloadFile;
 
+        // workload C
         Long[] toLookup;
+
+        // load phase
+        Supplier<NavigableMap<Long, Object>> supplier;
+        Long[] toInsert;
+        Object holder;
 
         @Setup
         public void setup() throws IOException {
-            super.loadInMap(workloadFile);
+            // load phase
+            toInsert = loadInArray(workloadFile);
+            supplier = supplier(mapType);
+            Assertions.assertEquals(0, supplier.get().size());
+            holder = new Object();
+
+            // prepare map for workload C
+            loadFromArray(toInsert);
+
+            // prepare lookup operations for workload C
             List<String> s = IOUtils
                     .readLines(new FileInputStream(workloadDirectory + workloadFile), StandardCharsets.US_ASCII);
             Assertions.assertTrue(s.stream().allMatch(line -> line.startsWith("READ")));
@@ -57,5 +75,16 @@ public class C {
             bh.consume(d.m.get(d.toLookup[i]));
         }
         return d.m.size();
+    }
+
+    @Benchmark
+    @BenchmarkMode({Mode.AverageTime})
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    public int insert(Blackhole bh, CData d) {
+        Map<Long, Object> m = d.supplier.get();
+        for (int i = 0; i < d.toInsert.length; i++) {
+            bh.consume(m.put(d.toInsert[i], d.holder));
+        }
+        return m.size();
     }
 }

@@ -54,12 +54,16 @@ public abstract class Data {
         return i.toArray(Long[]::new);
     }
 
-    public void loadInMap(String workloadFile) throws IOException {
-        Long[] i = loadInArray(workloadFile);
+    void loadFromArray(Long[] i){
         Object o = new Object();
         m = supplier(mapType).get();
         for (Long l : i) {
             m.put(l, o);
         }
+    }
+
+    public void loadInMap(String workloadFile) throws IOException {
+        Long[] i = loadInArray(workloadFile);
+        loadFromArray(i);
     }
 }
