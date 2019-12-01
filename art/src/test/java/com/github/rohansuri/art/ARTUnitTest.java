@@ -73,60 +73,6 @@ public class ARTUnitTest {
 
 	}
 
-
-	@Test
-	public void testSetLongestCommonPrefix() {
-		// common prefix len more than pessimistic storage
-		String leafKey = "xxabcdefghijk";
-		String key = "xxabcdefghijp";
-		LeafNode<String, String> leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
-		Node4 pathCompressed = new Node4();
-		Assertions.assertEquals(10, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
-		Assertions.assertEquals(10, pathCompressed.prefixLen);
-		Assertions.assertArrayEquals("abcdefgh".getBytes(), getValidPrefixKey(pathCompressed));
-
-		// early break
-		leafKey = "xxabcd";
-		key = "xxabcz";
-		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
-		pathCompressed = new Node4();
-		Assertions.assertEquals(3, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
-		Assertions.assertEquals(3, pathCompressed.prefixLen);
-		Assertions.assertArrayEquals("abc".getBytes(), getValidPrefixKey(pathCompressed));
-
-		// leaf ends first
-		leafKey = "xxabc";
-		key = "xxabcdef";
-		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
-		pathCompressed = new Node4();
-		Assertions.assertEquals(3, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
-		Assertions.assertEquals(3, pathCompressed.prefixLen);
-		Assertions.assertArrayEquals("abc".getBytes(), getValidPrefixKey(pathCompressed));
-
-		// new key ends first
-		leafKey = "xxabcdef";
-		key = "xxabc";
-		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
-		pathCompressed = new Node4();
-		Assertions.assertEquals(3, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
-		Assertions.assertEquals(3, pathCompressed.prefixLen);
-		Assertions.assertArrayEquals("abc".getBytes(), getValidPrefixKey(pathCompressed));
-
-		// no match
-		leafKey = "xxz";
-		key = "xxa";
-		leaf = new LeafNode<>(BinaryComparables.forString().get(leafKey), leafKey, "value");
-		pathCompressed = new Node4();
-		Assertions.assertEquals(0, AdaptiveRadixTree
-				.setLongestCommonPrefix(leaf, BinaryComparables.forString().get(key), pathCompressed, 2));
-		Assertions.assertEquals(0, pathCompressed.prefixLen);
-		Assertions.assertArrayEquals("".getBytes(), getValidPrefixKey(pathCompressed));
-	}
-
 	/*
 		cover all windows (toCompress, linking key, onlyChild)
 		everything from toCompress

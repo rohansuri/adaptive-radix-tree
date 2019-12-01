@@ -418,30 +418,51 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		modCount++;
 	}
 
-	/*
-		we reached a lazy expanded leaf node, we gotta expand it now.
-		but how much should we expand?
-		since we reached depth X, it means till now both leaf node and new node have same bytes.
-		now what has been stored lazily is leaf node's key(depth, end).
-		that's the part over which we need to compute longest common prefix.
-		that's the part we can path compress.
-	*/
-	private static <K, V> Node lazyExpansion(LeafNode<K, V> leaf, byte[] keyBytes, K key, V value, int depth) {
-		// we refactored creation of path compressed node before knowing if it's the same key or not
-		// so that early copying of path compressed node can be done.
-		// but what if it is the same key?
-		// then we unnecessarily have created this node.
-		// what is worse? having to copy the path compressed before and later discarding it
-		// or having to recopy the common prefix?
-		Node4 pathCompressedNode = new Node4();
-		int lcp = setLongestCommonPrefix(leaf, keyBytes, pathCompressedNode, depth);
-		if (depth + lcp == keyBytes.length && keyBytes.length == leaf.getKeyBytes().length) {
-			// we're referring to a key that already exists, replace value and return current
-			return leaf;
-		}
-		addTwoLazyLeavesToPathCompressedNode(leaf, lcp, keyBytes, pathCompressedNode, depth, key, value);
-		return pathCompressedNode;
-	}
+    /*
+        we reached a lazy expanded leaf node, we gotta expand it now.
+        but how much should we expand?
+        since we reached depth X, it means till now both leaf node and new node have same bytes.
+        now what has been stored lazily is leaf node's key(depth, end).
+        that's the part over which we need to compute longest common prefix.
+        that's the part we can path compress.
+    */
+    private static <K, V> Node lazyExpansion(LeafNode<K, V> leaf, byte[] keyBytes, K key, V value, int depth) {
+
+        // find LCP
+        int lcp = 0;
+        byte[] leafKey = leaf.getKeyBytes(); // loadKey in paper
+        int end = Math.min(leafKey.length, keyBytes.length);
+        for (; depth < end && leafKey[depth] == keyBytes[depth]; depth++, lcp++) ;
+        if (depth == keyBytes.length && depth == leafKey.length) {
+            // we're referring to a key that already exists, replace value and return current
+            return leaf;
+        }
+
+        // create new node with LCP
+        Node4 pathCompressedNode = new Node4();
+        pathCompressedNode.prefixLen = lcp;
+        int pessimisticLcp = Math.min(lcp, InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT);
+        System.arraycopy(keyBytes, depth - lcp, pathCompressedNode.prefixKeys, 0, pessimisticLcp);
+
+        // add new key and old leaf as children
+        LeafNode newLeaf = new LeafNode<>(keyBytes, key, value);
+        if (depth == keyBytes.length) {
+            // barca to be inserted, barcalona already exists
+            // set barca's parent to be this path compressed node
+            // setup uplink whenever we set downlink
+            pathCompressedNode.setLeaf(newLeaf);
+            pathCompressedNode.addChild(leafKey[depth], leaf); // l
+        } else if (depth == leafKey.length) {
+            // barcalona to be inserted, barca already exists
+            pathCompressedNode.setLeaf(leaf);
+            pathCompressedNode.addChild(keyBytes[depth], newLeaf); // l
+        } else {
+            pathCompressedNode.addChild(leafKey[depth], leaf);
+            pathCompressedNode.addChild(keyBytes[depth], newLeaf);
+        }
+
+        return pathCompressedNode;
+    }
 
 	static void removeOptimisticLCPFromCompressedPath(InnerNode node, int depth, int lcp, byte[] leafBytes) {
 		// lcp cannot be equal to node.prefixLen
@@ -602,43 +623,6 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// remove lcp common prefix key from "this" node
 		removePessimisticLCPFromCompressedPath(node, depth, lcp);
 		return branchOut;
-	}
-
-
-	private static <K, V> void addTwoLazyLeavesToPathCompressedNode(LeafNode leaf, int lcp, byte[] keyBytes, Node4 pathCompressedNode, int depth, K key, V value) {
-		LeafNode newLeaf = new LeafNode<>(keyBytes, key, value);
-		if (depth + lcp == keyBytes.length) {
-			// barca to be inserted, barcalona already exists
-			// set barca's parent to be this path compressed node
-			// setup uplink whenever we set downlink
-			pathCompressedNode.setLeaf(newLeaf);
-			pathCompressedNode.addChild(leaf.getKeyBytes()[depth + lcp], leaf); // l
-		}
-		else if (depth + lcp == leaf.getKeyBytes().length) {
-			// barcalona to be inserted, barca already exists
-			pathCompressedNode.setLeaf(leaf);
-			pathCompressedNode.addChild(keyBytes[depth + lcp], newLeaf); // l
-		}
-		else {
-			pathCompressedNode.addChild(leaf.getKeyBytes()[depth + lcp], leaf);
-			pathCompressedNode.addChild(keyBytes[depth + lcp], newLeaf);
-		}
-	}
-
-	static int setLongestCommonPrefix(LeafNode node, byte[] key, Node4 pathCompressedNode, int depth) {
-		// both leaf node's key and new node's key should be compared from depth index
-		int lcp = 0;
-		byte[] leafKey = node.getKeyBytes(); // loadKey in paper
-		int end = Math.min(leafKey.length, key.length);
-		for (; depth < end && leafKey[depth] == key[depth]; depth++, lcp++) {
-			// this should be nicely branch predicted since PESSIMISTIC_PATH_COMPRESSION_LIMIT
-			// is a constant
-			if (lcp < InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
-				pathCompressedNode.prefixKeys[lcp] = key[depth];
-			}
-		}
-		pathCompressedNode.prefixLen = lcp;
-		return lcp;
 	}
 
 	/*
