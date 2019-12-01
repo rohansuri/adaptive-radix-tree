@@ -68,10 +68,8 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
-	public boolean addChild(byte partialKey, Node child) {
-		if (isFull()) {
-			return false;
-		}
+	public void addChild(byte partialKey, Node child) {
+		assert !isFull();
 		int index = Byte.toUnsignedInt(partialKey);
 		assert keyIndex[index] == ABSENT;
 		// find a null place, left fragmented by a removeChild or has always been null
@@ -82,7 +80,6 @@ class Node48 extends InnerNode {
 		keyIndex[index] = insertPosition;
 		noOfChildren++;
 		createUplink(this, child, partialKey);
-		return true;
 	}
 
 	@Override

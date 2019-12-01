@@ -31,19 +31,18 @@ class Node256 extends InnerNode {
 		return child[index];
 	}
 
-	@Override
-	public boolean addChild(byte partialKey, Node child) {
-		// addChild would never be called on a full Node256
-		// since the corresponding findChild for any byte key
-		// would always find the byte since the Node is full.
-		assert !isFull();
-		int index = Byte.toUnsignedInt(partialKey);
-		assert this.child[index] == null;
-		createUplink(this, child, partialKey);
-		this.child[index] = child;
-		noOfChildren++;
-		return true;
-	}
+    @Override
+    public void addChild(byte partialKey, Node child) {
+        // addChild would never be called on a full Node256
+        // since the corresponding findChild for any byte key
+        // would always find the byte since the Node is full.
+        assert !isFull();
+        int index = Byte.toUnsignedInt(partialKey);
+        assert this.child[index] == null;
+        createUplink(this, child, partialKey);
+        this.child[index] = child;
+        noOfChildren++;
+    }
 
 	@Override
 	public void replace(byte partialKey, Node newChild) {

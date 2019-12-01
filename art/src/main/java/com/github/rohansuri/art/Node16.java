@@ -51,10 +51,8 @@ class Node16 extends InnerNode {
 	}
 
 	@Override
-	public boolean addChild(byte partialKey, Node child) {
-		if (isFull()) {
-			return false;
-		}
+	public void addChild(byte partialKey, Node child) {
+		assert !isFull();
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
 
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
@@ -71,7 +69,6 @@ class Node16 extends InnerNode {
 		this.child[insertionPoint] = child;
 		noOfChildren++;
 		createUplink(this, child, partialKey);
-		return true;
 	}
 
 	@Override

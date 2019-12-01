@@ -39,10 +39,8 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
-	public boolean addChild(byte partialKey, Node child) {
-		if (isFull()) {
-			return false;
-		}
+	public void addChild(byte partialKey, Node child) {
+		assert !isFull();
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
 		// shift elements from this point to right by one place
 		// noOfChildren here would never be == Node_SIZE (since we have isFull() check)
@@ -55,7 +53,6 @@ class Node4 extends InnerNode {
 		this.child[i] = child;
 		noOfChildren++;
 		createUplink(this, child, partialKey);
-		return true;
 	}
 
 	@Override

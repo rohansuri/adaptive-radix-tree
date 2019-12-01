@@ -98,11 +98,12 @@ abstract class InnerNode extends Node {
 	abstract Node findChild(byte partialKey);
 
 	/**
+	 * Note: caller needs to check if {@link InnerNode} {@link #isFull()} before calling this.
+	 * If it is full then call {@link #grow()} followed by {@link #addChild(byte, Node)} on the new node.
 	 * @param partialKey partialKey to be mapped
 	 * @param child the child node to be added
-	 * @return true if add succeeded, false if node size full (in the event of which you call grow)
 	 */
-	abstract boolean addChild(byte partialKey, Node child);
+	abstract void addChild(byte partialKey, Node child);
 
 	/**
 	 * @param partialKey for which the child pointer mapping is to be updated

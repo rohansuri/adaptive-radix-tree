@@ -41,7 +41,7 @@ public abstract class InnerNodeUnitTest {
 			}
 			Pair p = new Pair((byte) i, Mockito.spy(Node.class));
 			existingData[j] = p;
-			Assertions.assertTrue(node.addChild(p.partialKey, p.child));
+			node.addChild(p.partialKey, p.child);
 		}
 		this.node = node;
 	}
@@ -220,7 +220,7 @@ public abstract class InnerNodeUnitTest {
 			}
 		}
 		Pair p = new Pair((byte)(minByte-1), Mockito.spy(Node.class));
-		assertTrue(node.addChild(p.partialKey, p.child));
+		node.addChild(p.partialKey, p.child);
 		p = new Pair((byte)(maxByte+1), Mockito.spy(Node.class));
 		if(!node.isFull()){ // need for Node4 since we add 3 elements in test setup already
 			node.addChild(p.partialKey, p.child);
@@ -265,19 +265,19 @@ public abstract class InnerNodeUnitTest {
 				break;
 			}
 			pairs.add(pair);
-			assertTrue(node.addChild(pair.partialKey, pair.child));
+			node.addChild(pair.partialKey, pair.child);
 		}
 
-		// adding more will fail since capacity reached
-		assertFalse(node.addChild(pair.partialKey, pair.child));
+		// capacity reached
+		assertTrue(node.isFull());
 
 		// hence we need to grow
 		InnerNode grown = node.grow();
 		assertEquals(node.size(), grown.size());
 		assertEqualHeader(node, grown);
 
-		// now add will succeed
-		assertTrue(grown.addChild(pair.partialKey, pair.child));
+		// add child on newly grown node
+		grown.addChild(pair.partialKey, pair.child);
 		pairs.add(pair);
 
 		// verify same key, child mappings exist
