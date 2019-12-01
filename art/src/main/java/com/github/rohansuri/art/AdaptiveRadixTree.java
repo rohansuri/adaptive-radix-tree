@@ -465,9 +465,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		// we need to "bring up" more of it what we can take
 		node.prefixLen = node.prefixLen - lcp - 1;
 		int end = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
-		for (int i = 0; i < end; i++) {
-			node.prefixKeys[i] = leafBytes[i + depth + 1];
-		}
+		System.arraycopy(leafBytes, depth+1, node.prefixKeys, 0, end);
 	}
 
 	static void removePessimisticLCPFromCompressedPath(InnerNode node, int depth, int lcp) {
@@ -476,9 +474,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		assert lcp < Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
 		if (node.prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT) {
 			node.prefixLen = node.prefixLen - lcp - 1;
-			for (int i = 0; i < node.prefixLen; i++) {
-				node.prefixKeys[i] = node.prefixKeys[i + lcp + 1];
-			}
+			System.arraycopy(node.prefixKeys, lcp + 1, node.prefixKeys, 0, node.prefixLen);
 		}
 		else {
 			// since there's more compressed path left
@@ -486,9 +482,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			node.prefixLen = node.prefixLen - lcp - 1;
 			byte[] leafBytes = getFirstEntry(node).getKeyBytes();
 			int end = Math.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, node.prefixLen);
-			for (int i = 0; i < end; i++) {
-				node.prefixKeys[i] = leafBytes[i + depth + 1];
-			}
+			System.arraycopy(leafBytes, depth + 1, node.prefixKeys, 0, end);
 		}
 	}
 
