@@ -244,19 +244,16 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
+
 	private LeafNode<K, V> getEntry(Node node, byte[] key) {
 		int depth = 0;
+		boolean skippedPrefix = false;
 		while (true) {
 			if (node instanceof LeafNode) {
-				// match key to leaf
-				// IDEA: complete matching here can be optimized.
-				// we can pass around the first depth where optimistic jump
-				// was taken and match from there (since everything before is surely matched).
-				// I'd expect most keys wouldn't have compressed paths longer than 8
-				// and hence would benefit from faster leaf matches.
-				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
-				if (Arrays.equals(leaf.getKeyBytes(), key)) {
+				byte[] leafBytes = leaf.getKeyBytes();
+				int startFrom = skippedPrefix ? 0 : depth;
+				if (Arrays.equals(leafBytes, startFrom, leafBytes.length, key, startFrom, key.length)) {
 					return leaf;
 				}
 				return null;
@@ -264,37 +261,38 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 			InnerNode innerNode = (InnerNode) node;
 
-			// if key.length == depth + innerNode.prefixLen
-			// that'd only mean the key is a prefix, but we don't have that prefix
-			// the key must be greater for us to take optimistic jump
-			// and carry out comparisons
 			if (key.length < depth + innerNode.prefixLen) {
 				return null;
 			}
 
-			// matches pessimistic compressed path completely?
-			byte[] prefix = innerNode.prefixKeys;
-			int upperLimitForPessimisticMatch = Math
-					.min(InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT, innerNode.prefixLen);
-			for (int i = 0; i < upperLimitForPessimisticMatch; i++) {
-				if (prefix[i] != key[depth + i])
-					return null;
+			if(innerNode.prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT){
+				// match pessimistic compressed path completely
+				for (int i = 0; i < innerNode.prefixLen; i++) {
+					if (innerNode.prefixKeys[i] != key[depth + i])
+						return null;
+				}
+			} else {
+				// else take optimistic jump
+				skippedPrefix = true;
 			}
 
-			// complete match, continue search
+			// took pessimistic match or optimistic jump, continue search
 			depth = depth + innerNode.prefixLen;
 			Node nextNode;
 			if (depth == key.length) {
 				nextNode = innerNode.getLeaf();
+				if(!skippedPrefix){
+					return (LeafNode<K, V>)nextNode;
+				}
 			}
 			else {
 				nextNode = innerNode.findChild(key[depth]);
+				depth++;
 			}
 			if (nextNode == null) {
 				return null;
 			}
 			// set fields for next iteration
-			depth++;
 			node = nextNode;
 		}
 	}
