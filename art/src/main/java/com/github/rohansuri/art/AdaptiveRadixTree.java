@@ -378,44 +378,36 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				modCount++;
 				return null;
 			}
-			// we're now at line 26 in paper
+
 			if (keyBytes.length == newDepth) {
 				LeafNode<K, V> leaf = (LeafNode<K, V>) innerNode.getLeaf();
 				V oldValue = leaf.getValue();
 				leaf.setValue(value);
 				return oldValue;
 			}
+
+			// we're now at line 26 in paper
 			byte partialKey = keyBytes[newDepth];
 			Node child = innerNode.findChild(partialKey);
-			if (child == null) {
-				addChild(innerNode, partialKey, keyBytes, key, value, depth, prevDepth);
-				return null;
+			if(child != null){
+				// set fields for next iteration
+				prevDepth = innerNode;
+				depth = newDepth + 1;
+				node = child;
+				continue;
 			}
-			// set fields for next iteration
-			prevDepth = innerNode;
-			depth = newDepth + 1;
-			node = child;
-		}
-	}
 
-	/*
-		create leaf node and add it lazy expanded?
-		why do we say add it lazy expanded?
-		because even if we're left with X partial keys (each of 1 byte),
-		we're not going to branch down and create X new levels down the road.
-		Nope. We reduce the height of the tree by lazy expanding.
-	*/
-	private void addChild(InnerNode node, byte partialKey, byte[] keyBytes, K key, V value, int depth, InnerNode prevDepth) {
-		Node leaf = new LeafNode<>(keyBytes, key, value);
-		if(node.isFull()){
-			node = node.grow();
-			// Important NOTE: depth != height of tree
-			// depth is the depth/index in partialKey
-			replace(depth, keyBytes, prevDepth, node);
+			// add this key as child
+			Node leaf = new LeafNode<>(keyBytes, key, value);
+			if(innerNode.isFull()){
+				innerNode = innerNode.grow();
+				replace(depth, keyBytes, prevDepth, innerNode);
+			}
+			innerNode.addChild(partialKey, leaf);
+			size++;
+			modCount++;
+			return null;
 		}
-		node.addChild(partialKey, leaf);
-		size++;
-		modCount++;
 	}
 
     /*
