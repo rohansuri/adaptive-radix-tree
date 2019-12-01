@@ -81,23 +81,17 @@ class Node256 extends InnerNode {
 	@Override
 	public Node first() {
 		assert noOfChildren > Node48.NODE_SIZE;
-		for (int i = 0; i < NODE_SIZE; i++) {
-			if (child[i] != null) {
-				return child[i];
-			}
-		}
-		throw new IllegalStateException("Node256 should contain more than " + Node48.NODE_SIZE + " elements");
+		int i = 0;
+		while(child[i] == null)i++;
+		return child[i];
 	}
 
 	@Override
 	public Node last() {
 		assert noOfChildren > Node48.NODE_SIZE;
-		for (int i = NODE_SIZE - 1; i >= 0; i--) {
-			if (child[i] != null) {
-				return child[i];
-			}
-		}
-		throw new IllegalStateException("Node256 should contain more than " + Node48.NODE_SIZE + " elements");
+		int i = NODE_SIZE - 1;
+		while(child[i] == null)i--;
+		return child[i];
 	}
 
 	@Override

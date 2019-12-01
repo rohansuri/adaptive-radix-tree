@@ -125,25 +125,17 @@ class Node48 extends InnerNode {
 	@Override
 	public Node first() {
 		assert noOfChildren > Node16.NODE_SIZE;
-		for (int i = 0; i < KEY_INDEX_SIZE; i++) {
-			byte index = keyIndex[i];
-			if (index != ABSENT) {
-				return child[index];
-			}
-		}
-		throw new IllegalStateException("Node48 should contain more than " + Node16.NODE_SIZE + " elements");
+		int i = 0;
+		while(keyIndex[i] == ABSENT)i++;
+		return child[keyIndex[i]];
 	}
 
 	@Override
 	public Node last() {
 		assert noOfChildren > Node16.NODE_SIZE;
-		for (int i = KEY_INDEX_SIZE - 1; i >= 0; i--) {
-			byte index = keyIndex[i];
-			if (index != ABSENT) {
-				return child[index];
-			}
-		}
-		throw new IllegalStateException("Node48 should contain more than " + Node16.NODE_SIZE + " elements");
+		int i = KEY_INDEX_SIZE - 1;
+        while(keyIndex[i] == ABSENT)i--;
+		return child[keyIndex[i]];
 	}
 
 	@Override
