@@ -14,24 +14,24 @@ plugins {
 }
 
 jmh {
-	include = ['com.github.rohansuri.art.ycsb.integer.Load', 'com.github.rohansuri.art.Long.Insert']
+	include = ['com.github.rohansuri.art.ycsb.Long.C']
 	// include = ['com.github.rohansuri.art.ycsb.integer.Load']
 	// include = ['com.github.rohansuri.art.Long.Insert']
 	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
 	fork = 1
 	warmup = '1s'
-	warmupIterations = 5
+	warmupIterations = 10
 	// profilers = ['perfasm:hotThreshold=.1']
 	timeOnIteration = '1s'
-	iterations = 5
+	iterations = 10
 	benchmarkParameters = [:]
-	benchmarkParameters['distributionType'] = ['SPARSE']
-	// benchmarkParameters['workloadFile'] = ['c_uniform_1000_randint_load.dat']
+	// benchmarkParameters['distributionType'] = ['SPARSE']
+	// benchmarkParameters['workloadFile'] = ['c_uniform_1000_randint_txn.dat']
 	benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
 	// benchmarkParameters['file'] = ['WORDS']
-	benchmarkParameters['size'] = ['1000', '10000', '100000', '1000000', '10000000']
+	// benchmarkParameters['size'] = ['1000', '10000', '100000', '1000000', '10000000']
 	resultFormat = 'JSON'
-	// jvmArgs = '-XX:FreqInlineSize=0'
+	jvmArgs = '-Xmx14g -Xms8g'
 }
 
 dependencies {
