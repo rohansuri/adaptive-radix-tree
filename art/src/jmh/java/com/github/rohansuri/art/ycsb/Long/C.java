@@ -37,7 +37,7 @@ public class C {
 
         @Setup
         public void setup() throws IOException {
-            super.loadFor(workloadFile);
+            super.loadInMap(workloadFile);
             List<String> s = IOUtils
                     .readLines(new FileInputStream(workloadDirectory + workloadFile), StandardCharsets.US_ASCII);
             Assertions.assertTrue(s.stream().allMatch(line -> line.startsWith("READ")));

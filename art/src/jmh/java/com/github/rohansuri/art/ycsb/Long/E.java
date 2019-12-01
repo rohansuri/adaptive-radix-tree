@@ -37,7 +37,7 @@ public class E {
 
         @Setup
         public void setup() throws IOException {
-            super.loadFor(workloadFile);
+            super.loadInMap(workloadFile);
             holder = new Object();
             List<String> s = IOUtils
                     .readLines(new FileInputStream(workloadDirectory + workloadFile), StandardCharsets.US_ASCII);

@@ -37,12 +37,7 @@ public class Load {
 
         @Setup
         public void setup() throws IOException {
-            super.loadFor(workloadFile);
-            toInsert = new Long[m.size()];
-            int i = 0;
-            for (Long l : m.keySet()) {
-                toInsert[i++] = l;
-            }
+            toInsert = loadInArray(workloadFile);
             supplier = supplier(mapType);
             Assertions.assertEquals(0, supplier.get().size());
             holder = new Object();

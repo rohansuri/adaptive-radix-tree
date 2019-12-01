@@ -42,10 +42,7 @@ public abstract class Data {
         }
     }
 
-    public void loadFor(String workloadFile) throws IOException {
-        m = supplier(mapType).get();
-        Object o = new Object();
-
+    public Long[] loadInArray(String workloadFile) throws IOException {
         String loadFile = workloadFile.endsWith("load.dat") ? workloadFile : workloadFile.replace("txn.dat", "load.dat");
 
         List<String> s = IOUtils
@@ -54,6 +51,13 @@ public abstract class Data {
         List<Long> i = s.stream().map(line -> line.substring(line.indexOf(" ") + 1))
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
+        return i.toArray(Long[]::new);
+    }
+
+    public void loadInMap(String workloadFile) throws IOException {
+        Long[] i = loadInArray(workloadFile);
+        Object o = new Object();
+        m = supplier(mapType).get();
         for (Long l : i) {
             m.put(l, o);
         }
