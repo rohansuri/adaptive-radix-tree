@@ -39,21 +39,9 @@ public class C {
         // workload C
         Long[] toLookup;
 
-        // load phase
-        Supplier<NavigableMap<Long, Object>> supplier;
-        Long[] toInsert;
-        Object holder;
-
         @Setup
         public void setup() throws IOException {
-            // load phase
-            toInsert = loadInArray(workloadFile);
-            supplier = supplier(mapType);
-            Assertions.assertEquals(0, supplier.get().size());
-            holder = new Object();
-
-            // prepare map for workload C
-            loadFromArray(toInsert);
+            super.loadInMap(workloadFile);
 
             // prepare lookup operations for workload C
             List<String> s = IOUtils
@@ -77,14 +65,4 @@ public class C {
         return d.m.size();
     }
 
-    @Benchmark
-    @BenchmarkMode({Mode.AverageTime})
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    public int insert(Blackhole bh, CData d) {
-        Map<Long, Object> m = d.supplier.get();
-        for (int i = 0; i < d.toInsert.length; i++) {
-            bh.consume(m.put(d.toInsert[i], d.holder));
-        }
-        return m.size();
-    }
 }
