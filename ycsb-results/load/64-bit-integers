@@ -1,0 +1,21 @@
+Benchmark         (mapType)                       (workloadFile)  Mode  Cnt            Score            Error  Units
+Long.Load.insert        ART      c_uniform_1000_randint_load.dat  avgt   10        66173.215 ±       2727.879  ns/op
+Long.Load.insert        ART      c_uniform_5000_randint_load.dat  avgt   10       382830.067 ±      20077.659  ns/op
+Long.Load.insert        ART     c_uniform_10000_randint_load.dat  avgt   10       781737.317 ±      52157.275  ns/op
+Long.Load.insert        ART     c_uniform_50000_randint_load.dat  avgt   10      6746476.231 ±     188210.390  ns/op
+Long.Load.insert        ART    c_uniform_100000_randint_load.dat  avgt   10     22729275.328 ±    6213599.121  ns/op
+Long.Load.insert        ART    c_uniform_500000_randint_load.dat  avgt   10    171137281.467 ±    1110766.672  ns/op
+Long.Load.insert        ART   c_uniform_1000000_randint_load.dat  avgt   10    346156133.542 ±   43579589.587  ns/op
+Long.Load.insert        ART   c_uniform_5000000_randint_load.dat  avgt   10   1780064886.700 ±  207902975.147  ns/op
+Long.Load.insert        ART  c_uniform_10000000_randint_load.dat  avgt   10   4058840458.000 ±  358604473.276  ns/op
+Long.Load.insert        ART  c_uniform_50000000_randint_load.dat  avgt   10  47072454524.100 ± 7181894966.515  ns/op
+Long.Load.insert   TREE_MAP      c_uniform_1000_randint_load.dat  avgt   10        71854.042 ±       4443.040  ns/op
+Long.Load.insert   TREE_MAP      c_uniform_5000_randint_load.dat  avgt   10       564915.480 ±      10056.781  ns/op
+Long.Load.insert   TREE_MAP     c_uniform_10000_randint_load.dat  avgt   10      1453891.209 ±     129414.412  ns/op
+Long.Load.insert   TREE_MAP     c_uniform_50000_randint_load.dat  avgt   10     11073782.347 ±     458014.207  ns/op
+Long.Load.insert   TREE_MAP    c_uniform_100000_randint_load.dat  avgt   10     27750982.342 ±    2831823.006  ns/op
+Long.Load.insert   TREE_MAP    c_uniform_500000_randint_load.dat  avgt   10    322696484.475 ±    4728407.934  ns/op
+Long.Load.insert   TREE_MAP   c_uniform_1000000_randint_load.dat  avgt   10    867561454.000 ±   30886317.350  ns/op
+Long.Load.insert   TREE_MAP   c_uniform_5000000_randint_load.dat  avgt   10   6949189795.400 ±  653137798.995  ns/op
+Long.Load.insert   TREE_MAP  c_uniform_10000000_randint_load.dat  avgt   10  15696158479.600 ± 1196907386.959  ns/op
+Long.Load.insert   TREE_MAP  c_uniform_50000000_randint_load.dat  avgt   10  95636923323.000 ± 1045115073.290  ns/op
