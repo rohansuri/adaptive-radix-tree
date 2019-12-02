@@ -107,21 +107,19 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	 * versions that invert senses for descending maps
 	 */
 
-	// TODO: pass loBytes, hiBytes into getCeilingEntry, getHigherEntry
-
 	final LeafNode<K, V> absLowest() {
 		LeafNode<K, V> e =
 				(fromStart ? m.getFirstEntry() :
-						(loInclusive ? m.getCeilingEntry(lo) :
-								m.getHigherEntry(lo)));
+						(loInclusive ? m.getCeilingEntry(loBytes) :
+								m.getHigherEntry(loBytes)));
 		return (e == null || tooHigh(e.getKey())) ? null : e;
 	}
 
 	final LeafNode<K, V> absHighest() {
 		LeafNode<K, V> e =
 				(toEnd ? m.getLastEntry() :
-						(hiInclusive ? m.getFloorEntry(hi) :
-								m.getLowerEntry(hi)));
+						(hiInclusive ? m.getFloorEntry(hiBytes) :
+								m.getLowerEntry(hiBytes)));
 		return (e == null || tooLow(e.getKey())) ? null : e;
 	}
 
@@ -156,15 +154,15 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	/** Returns the absolute high fence for ascending traversal */
 	final LeafNode<K, V> absHighFence() {
 		return (toEnd ? null : (hiInclusive ?
-				m.getHigherEntry(hi) :
-				m.getCeilingEntry(hi))); // then hi itself (but we want the entry, hence traversal is required)
+				m.getHigherEntry(hiBytes) :
+				m.getCeilingEntry(hiBytes))); // then hi itself (but we want the entry, hence traversal is required)
 	}
 
 	/** Return the absolute low fence for descending traversal  */
 	final LeafNode<K, V> absLowFence() {
 		return (fromStart ? null : (loInclusive ?
-				m.getLowerEntry(lo) :
-				m.getFloorEntry(lo))); // then lo itself (but we want the entry, hence traversal is required)
+				m.getLowerEntry(loBytes) :
+				m.getFloorEntry(loBytes))); // then lo itself (but we want the entry, hence traversal is required)
 	}
 
 	// Abstract methods defined in ascending vs descending classes

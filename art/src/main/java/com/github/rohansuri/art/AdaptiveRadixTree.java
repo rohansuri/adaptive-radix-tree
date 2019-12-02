@@ -675,15 +675,26 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getLowerOrFloorEntry(true, k);
 	}
 
+	LeafNode<K, V> getLowerEntry(byte[] k) {
+		if(isEmpty()){
+			return null;
+		}
+		return getLowerOrFloorEntry(true, k);
+	}
+
 	LeafNode<K, V> getFloorEntry(K k) {
 		return getLowerOrFloorEntry(false, k);
 	}
 
-	private LeafNode<K, V> getLowerOrFloorEntry(boolean lower, K k) {
-		if (isEmpty()) {
+	LeafNode<K, V> getFloorEntry(byte[] k) {
+		if(isEmpty()){
 			return null;
 		}
-		byte[] key = binaryComparable.get(k);
+		return getLowerOrFloorEntry(false, k);
+	}
+
+	// note: caller needs to check if map is empty
+	private LeafNode<K, V> getLowerOrFloorEntry(boolean lower, byte[] key) {
 		int depth = 0;
 		Node node = root;
 		while (true) {
@@ -726,6 +737,14 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			depth++;
 			node = child;
 		}
+	}
+
+	private LeafNode<K, V> getLowerOrFloorEntry(boolean lower, K k) {
+		if (isEmpty()) {
+			return null;
+		}
+		byte[] key = binaryComparable.get(k);
+		return getLowerOrFloorEntry(lower, key);
 	}
 
 	private LeafNode<K, V> leafOrPredecessor(InnerNode innerNode) {
@@ -783,9 +802,24 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getHigherOrCeilEntry(false, k);
 	}
 
+	LeafNode<K, V> getHigherEntry(byte[] key) {
+		if(isEmpty()){
+			return null;
+		}
+		return getHigherOrCeilEntry(false, key);
+	}
+
 	LeafNode<K, V> getCeilingEntry(K k) {
 		return getHigherOrCeilEntry(true, k);
 	}
+
+	LeafNode<K, V> getCeilingEntry(byte[] key) {
+		if(isEmpty()){
+			return null;
+		}
+		return getHigherOrCeilEntry(true, key);
+	}
+
 
 	/*
 		On level X match compressed path of "this" node
@@ -814,11 +848,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 		so it seems the uplinking traversal is same in all cases
 	  */
-	private LeafNode<K, V> getHigherOrCeilEntry(boolean ceil, K k) {
-		if (isEmpty()) {
-			return null;
-		}
-		byte[] key = binaryComparable.get(k);
+	// note: caller needs to check if map is empty
+	private LeafNode<K, V> getHigherOrCeilEntry(boolean ceil, byte[] key) {
 		int depth = 0;
 		Node node = root;
 		while (true) {
@@ -858,6 +889,14 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			depth++;
 			node = child;
 		}
+	}
+
+	private LeafNode<K, V> getHigherOrCeilEntry(boolean ceil, K k) {
+		if (isEmpty()) {
+			return null;
+		}
+		byte[] key = binaryComparable.get(k);
+		return getHigherOrCeilEntry(ceil, key);
 	}
 
 	@Override
