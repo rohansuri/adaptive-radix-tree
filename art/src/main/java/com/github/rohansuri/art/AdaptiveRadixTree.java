@@ -703,7 +703,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
 				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) >= (lower ? 1 : 0)) {
+				if (compare(key, depth, key.length, leafKey, depth, leafKey.length) >= (lower ? 1 : 0)) {
 					return leafNode;
 				}
 				return predecessor(leafNode);
@@ -855,7 +855,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
 				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, 0, key.length, leafKey, 0, leafKey.length) < (ceil ? 1 : 0)) {
+				if (compare(key, depth, key.length, leafKey, depth, leafKey.length) < (ceil ? 1 : 0)) {
 					return leafNode;
 				}
 				return successor(leafNode);
