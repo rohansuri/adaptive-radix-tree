@@ -105,6 +105,13 @@ abstract class InnerNode extends Node {
 	abstract Node ceil(byte partialKey);
 
 	/**
+	 *
+	 * @param partialKey
+	 * @return a child which is equal or lesser than given partial key, or null if there is no such child
+	 */
+	abstract Node floor(byte partialKey);
+
+	/**
 	 * Note: caller needs to check if {@link InnerNode} {@link #isFull()} before calling this.
 	 * If it is full then call {@link #grow()} followed by {@link #addChild(byte, Node)} on the new node.
 	 * @param partialKey partialKey to be mapped

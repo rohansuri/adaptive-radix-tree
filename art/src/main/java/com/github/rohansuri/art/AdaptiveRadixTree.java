@@ -725,15 +725,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				}
 				return predecessor(innerNode);
 			}
-			Node child = innerNode.findChild(key[depth]);
-			if (child == null) { // same child not found, can we find a lesser child at this node level itself?
-				// CLEANUP: Node could also support a floor(partialKey) in this case to combine the findChild + lesser
-				Node lesser = innerNode.lesser(key[depth]);
-				if (lesser != null) {
-					return getLastEntry(lesser);
-				}
-				return leafOrPredecessor(innerNode);
-			}
+            Node child = innerNode.floor(key[depth]);
+			if(child == null){
+                return leafOrPredecessor(innerNode);
+            } else if(child.uplinkKey() != key[depth]){
+                return getLastEntry(child);
+            }
 			depth++;
 			node = child;
 		}

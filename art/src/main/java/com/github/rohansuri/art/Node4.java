@@ -153,6 +153,17 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
+	public Node floor(byte partialKey) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+		for (int i = noOfChildren - 1; i >= 0; i--) {
+			if (keys[i] <= partialKey) {
+				return child[i];
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public boolean isFull() {
 		return noOfChildren == NODE_SIZE;
 	}

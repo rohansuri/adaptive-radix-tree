@@ -124,6 +124,16 @@ class Node256 extends InnerNode {
 	}
 
 	@Override
+	public Node floor(byte partialKey) {
+		for (int i = Byte.toUnsignedInt(partialKey); i >= 0; i--) {
+			if (child[i] != null) {
+				return child[i];
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public boolean isFull() {
 		return noOfChildren == NODE_SIZE;
 	}
