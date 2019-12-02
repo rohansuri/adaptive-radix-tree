@@ -863,28 +863,29 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				}
 				return successor(leafNode);
 			}
+			InnerNode innerNode = (InnerNode) node;
 			// compare compressed path
-			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
+			int compare = compareOptimisticCompressedPath(innerNode, key, depth);
 			if (compare > 0) { // greater
 				return getFirstEntry(node);
 			}
 			else if (compare < 0) { // lesser, that means all children of this node will be lesser than key
 				return successor(node);
 			}
-			InnerNode innerNode = (InnerNode) node;
+
 			// compressed path matches completely
 			depth += innerNode.prefixLen;
 			if (depth == key.length) {
+				// if ceil is true, then we are allowed to return the prefix ending here (leaf of this node)
+				// if ceil is false, then we need something higher and not the prefix, hence we start traversal
+				// from first()
 				return ceil ? getFirstEntry(innerNode) : getFirstEntry(innerNode.first());
 			}
-			Node child = innerNode.findChild(key[depth]);
-			if (child == null) { // same child not found, can we find a greater child at this node level itself?
-				// CLEANUP: Node could also support a ceil(partialKey) in this case to combine the findChild + next
-				Node next = innerNode.greater(key[depth]);
-				if (next != null) {
-					return getFirstEntry(next);
-				}
+			Node child = innerNode.ceil(key[depth]);
+			if(child == null){ // on this level, no child is greater or equal
 				return successor(node);
+			} else if(child.uplinkKey() != key[depth]){ // ceil returned a greater child
+				return getFirstEntry(child);
 			}
 			depth++;
 			node = child;

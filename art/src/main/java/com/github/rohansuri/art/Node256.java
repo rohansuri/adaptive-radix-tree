@@ -94,6 +94,16 @@ class Node256 extends InnerNode {
 	}
 
 	@Override
+	public Node ceil(byte partialKey) {
+		for (int i = Byte.toUnsignedInt(partialKey); i < NODE_SIZE; i++) {
+			if (child[i] != null) {
+				return child[i];
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public Node greater(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < NODE_SIZE; i++) {
 			if (child[i] != null) {
