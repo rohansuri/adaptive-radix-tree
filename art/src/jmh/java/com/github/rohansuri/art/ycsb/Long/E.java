@@ -41,30 +41,30 @@ public class E {
             holder = new Object();
             List<String> s = IOUtils
                     .readLines(new FileInputStream(workloadDirectory + workloadFile), StandardCharsets.US_ASCII);
-            int lastInsert = 0;
-            int lastScan = 0;
             int i = 0;
             operation = new boolean[s.size()];
-            scanStart = new Long[s.size()];
-            scanRange = new Integer[s.size()];
-            toInsert = new Long[s.size()];
+            List<Long> scanStartList = new ArrayList<>();
+            List<Integer> scanRangeList = new ArrayList<>();
+            List<Long> toInsertList = new ArrayList<>();
             for (String op : s) {
                 if (op.startsWith("SCAN")) {
                     operation[i] = true;
                     int scan = op.indexOf(" ");
                     int range = op.lastIndexOf(" ");
-                    scanStart[lastScan] = Long.parseLong(op.substring(scan + 1, range));
-                    scanRange[lastScan] = Integer.parseInt(op.substring(range + 1));
-                    lastScan++;
+                    scanStartList.add(Long.parseLong(op.substring(scan + 1, range)));
+                    scanRangeList.add(Integer.parseInt(op.substring(range + 1)));
                 } else if (op.startsWith("INSERT")) {
                     operation[i] = false;
                     String toInsert = op.substring(op.indexOf(" ") + 1);
-                    this.toInsert[lastInsert++] = Long.parseLong(toInsert);
+                    toInsertList.add(Long.parseLong(toInsert));
                 } else {
                     throw new RuntimeException("expected either SCAN or INSERT operations in workload E");
                 }
                 i++;
             }
+            scanStart = scanStartList.toArray(Long[]::new);
+            scanRange = scanRangeList.toArray(Integer[]::new);
+            toInsert = toInsertList.toArray(Long[]::new);
         }
 
     }
@@ -76,15 +76,16 @@ public class E {
         int lastInsert = 0;
         int lastScan = 0;
         for (int i = 0; i < d.operation.length; i++) {
-            if (d.operation[i]) {
+            if (d.operation[i]) { // scan
                 NavigableMap<Long, Object> tailMap = d.m.tailMap(d.scanStart[lastScan], true);
-                int rangeLimit = Math.min(tailMap.size(), d.scanRange[lastScan]);
+                // creation of iterator results in one getCeilingEntry call
                 Iterator<Map.Entry<Long, Object>> tail = tailMap.entrySet().iterator();
-                for (int j = 0; j < rangeLimit; j++) {
+                for (int j = 0; j < d.scanRange[lastScan]-1 && tail.hasNext() ; j++) {
+                    // all next calls, call successors (which calls first on Node)
                     bh.consume(tail.next());
                 }
                 lastScan++;
-            } else {
+            } else { // insert
                 bh.consume(d.m.put(d.toInsert[lastInsert++], d.holder));
             }
         }
