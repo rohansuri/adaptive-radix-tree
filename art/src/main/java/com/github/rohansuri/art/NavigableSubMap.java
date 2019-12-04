@@ -290,6 +290,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		LeafNode<K, V> e = subLowest();
 		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(e);
 		if (e != null)
+			// straightforward, we need a version of subLowest that returns the stack of last-two-level node iterators
 			m.deleteEntry(e);
 		return result;
 	}
@@ -299,6 +300,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		LeafNode<K, V> e = subHighest();
 		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(e);
 		if (e != null)
+			// straightforward, we need a version of subHighest that returns the stack of last-two-level node iterators
 			m.deleteEntry(e);
 		return result;
 	}
@@ -400,6 +402,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			LeafNode<K, V> node = m.getEntry(key);
 			if (node != null && AdaptiveRadixTree.valEquals(node.getValue(),
 					entry.getValue())) {
+				// straightforward, we need a version of getEntry that returns the stack of last-two-level node iterators
 				m.deleteEntry(node);
 				return true;
 			}

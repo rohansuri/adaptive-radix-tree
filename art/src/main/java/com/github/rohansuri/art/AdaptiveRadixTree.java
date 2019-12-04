@@ -130,6 +130,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		LeafNode<K, V> p = getFirstEntry();
 		Map.Entry<K, V> result = exportEntry(p);
 		if (p != null)
+			// straightforward, we need a version of getFirstEntry that returns the stack of last-two-level node iterators
 			deleteEntry(p);
 		return result;
 	}
@@ -139,6 +140,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		LeafNode<K, V> p = getLastEntry();
 		Map.Entry<K, V> result = exportEntry(p);
 		if (p != null)
+			// straightforward, we need a version of getFirstEntry that returns the stack of last-two-level node iterators
 			deleteEntry(p);
 		return result;
 	}
@@ -196,6 +198,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if (p == null)
 			return null;
 		V oldValue = p.getValue();
+		// straightforward, we need a version of getEntry that returns the stack of last-two-level node iterators
 		deleteEntry(p);
 		return oldValue;
 	}
@@ -1067,10 +1070,20 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	// leaf should not be null
 	// neither should tree be empty when calling this
+	/*
+		requires stack of iterators of current depth-2 history and an optional bool flag to indicate
+		whether the iterator needs to be updated or not.
+
+		callers currently are either Map.remove (pollFirst, pollLast, remove)
+		or iterator.remove
+	 */
 	void deleteEntry(LeafNode<K, V> leaf) {
+		// deleteEntry would take a stack of node iterators representing
+		// the depth we've reached (stack size)
+		// and each of the node iterators keeping cursor over the currently iterating child position.
 		size--;
 		modCount++;
-		InnerNode parent = leaf.parent();
+		InnerNode parent = leaf.parent(); // prevDepth (stack.pop().Node)
 		if (parent == null) {
 			// means root == leaf
 			root = null;
@@ -1081,13 +1094,27 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			parent.removeLeaf();
 		}
 		else {
+			// (map stack.pop().cursor to partial key)
 			parent.removeChild(leaf.uplinkKey());
 		}
 
 		if (parent.shouldShrink()) {
 			InnerNode newParent = parent.shrink();
+			/*
+				deleteEntry(leaf, iterator, updateIterator)
+
+				if the iterator is throw away (from example the calls from Map.remove)
+				then we don't need to update the iterators.
+				If it is a it.remove, then we need to go up and fix cursors.
+				We'll always need to do the Node.replace calls, but no need to have the "create uplink"
+				inside them.
+				Moreover for Map.remove operations we only need current depth-2 history.
+				So the iterator being sent could be optimized and can be of size two only.
+			 */
 			// newParent should have copied the uplink to same grandParent of oldParent
+			// (stack.pop().pop().Node)
 			InnerNode grandParent = newParent.parent();
+			// (map stack.pop().pop().cursor to partial key)
 			replace(newParent.uplinkKey(), grandParent, newParent);
 		}
 		else if (parent.size() == 1 && !parent.hasLeaf()) {
