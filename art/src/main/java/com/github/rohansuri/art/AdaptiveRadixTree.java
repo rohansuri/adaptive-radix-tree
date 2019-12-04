@@ -1,18 +1,6 @@
 package com.github.rohansuri.art;
 
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.NavigableSet;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.*;
 
 /**
  * An Adaptive Radix tree based {@link NavigableMap} implementation.
@@ -192,6 +180,18 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getEntry(root, bytes);
 	}
 
+	Node[] getEntryParentGrantParent(Object key){
+		if (key == null)
+			throw new NullPointerException();
+		if (root == null) { // empty tree
+			return null;
+		}
+		@SuppressWarnings("unchecked")
+		K k = (K) key;
+		byte[] bytes = binaryComparable.get(k);
+		return getEntryParentGrantParent(root, bytes);
+	}
+
 	@Override
 	public V remove(Object key) {
 		LeafNode<K, V> p = getEntry(key);
@@ -245,6 +245,71 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 			oc.prefixLen += toCompress.prefixLen + 1;
 		}
+	}
+
+	private Node[] getEntryParentGrantParent(Node node, byte[] key) {
+		int depth = 0;
+		boolean skippedPrefix = false;
+		Node[] path = new Node[3]; // node[0] leaf, node[1] parent, node[2] grand parent
+		while (true) {
+			if (node instanceof LeafNode) {
+				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
+				byte[] leafBytes = leaf.getKeyBytes();
+				int startFrom = skippedPrefix ? 0 : depth;
+				if (Arrays.equals(leafBytes, startFrom, leafBytes.length, key, startFrom, key.length)) {
+					path[0] = leaf;
+					return path;
+				}
+				return null;
+			}
+
+			InnerNode innerNode = (InnerNode) node;
+
+			if (key.length < depth + innerNode.prefixLen) {
+				return null;
+			}
+
+			if(innerNode.prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT){
+				// match pessimistic compressed path completely
+				for (int i = 0; i < innerNode.prefixLen; i++) {
+					if (innerNode.prefixKeys[i] != key[depth + i])
+						return null;
+				}
+			} else {
+				// else take optimistic jump
+				skippedPrefix = true;
+			}
+
+			// took pessimistic match or optimistic jump, continue search
+			depth = depth + innerNode.prefixLen;
+			Node nextNode;
+			if (depth == key.length) {
+				nextNode = innerNode.getLeaf();
+				if(!skippedPrefix){
+					if(nextNode == null){
+						return null;
+					}
+					moveDown(path, node);
+					path[0] = nextNode;
+					return path;
+				}
+			}
+			else {
+				nextNode = innerNode.findChild(key[depth]);
+				depth++;
+			}
+			if (nextNode == null) {
+				return null;
+			}
+			moveDown(path, node);
+			// set fields for next iteration
+			node = nextNode;
+		}
+	}
+
+	private void moveDown(Node[] path, Node node){
+		path[2] = path[1]; // grand parent = parent
+		path[1] = node; // parent = current node
 	}
 
 
