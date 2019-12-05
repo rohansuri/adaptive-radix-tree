@@ -180,7 +180,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getEntry(root, bytes);
 	}
 
-	Node[] getEntryParentGrantParent(Object key){
+	Uplink getEntryWithUplink(Object key){
 		if (key == null)
 			throw new NullPointerException();
 		if (root == null) { // empty tree
@@ -189,7 +189,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		@SuppressWarnings("unchecked")
 		K k = (K) key;
 		byte[] bytes = binaryComparable.get(k);
-		return getEntryParentGrantParent(root, bytes);
+		return getEntryWithUplink(root, bytes);
 	}
 
     Path getEntryWithPath(Object key) {
@@ -259,18 +259,18 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	private Node[] getEntryParentGrantParent(Node node, byte[] key) {
+	private Uplink getEntryWithUplink(Node node, byte[] key) {
 		int depth = 0;
 		boolean skippedPrefix = false;
-		Node[] path = new Node[3]; // node[0] leaf, node[1] parent, node[2] grand parent
+		Uplink uplink = new Uplink();
 		while (true) {
 			if (node instanceof LeafNode) {
 				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
 				byte[] leafBytes = leaf.getKeyBytes();
 				int startFrom = skippedPrefix ? 0 : depth;
 				if (Arrays.equals(leafBytes, startFrom, leafBytes.length, key, startFrom, key.length)) {
-					path[0] = leaf;
-					return path;
+					uplink.from = leaf;
+					return uplink;
 				}
 				return null;
 			}
@@ -294,34 +294,29 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 			// took pessimistic match or optimistic jump, continue search
 			depth = depth + innerNode.prefixLen;
-			Node nextNode;
+			Cursor cursor;
 			if (depth == key.length) {
-				nextNode = innerNode.getLeaf();
+				cursor = innerNode.cursorIfLeaf();
 				if(!skippedPrefix){
-					if(nextNode == null){
+					if(cursor == null){
 						return null;
 					}
-					moveDown(path, node);
-					path[0] = nextNode;
-					return path;
+					uplink.moveDown(cursor);
+					uplink.from = (LeafNode)cursor.next();
+					return uplink;
 				}
 			}
 			else {
-				nextNode = innerNode.findChild(key[depth]);
+				cursor = innerNode.cursor(key[depth]);
 				depth++;
 			}
-			if (nextNode == null) {
+			if (cursor == null) {
 				return null;
 			}
-			moveDown(path, node);
+			uplink.moveDown(cursor);
 			// set fields for next iteration
-			node = nextNode;
+			node = cursor.next();
 		}
-	}
-
-	private void moveDown(Node[] path, Node node){
-		path[2] = path[1]; // grand parent = parent
-		path[1] = node; // parent = current node
 	}
 
     private Path getEntryWithPath(Node node, byte[] key) {
