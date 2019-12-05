@@ -1,12 +1,13 @@
 package com.github.rohansuri.art;
 
 class Uplink {
-    final Cursor[] path = new Cursor[2]; // parent, grand parent
     LeafNode from;
+    Cursor parent;
+    Cursor grandParent;
 
     // better name?
-    void moveDown(Cursor parent){
-        path[1] = path[0]; // new grand parent = old parent
-        path[0] = parent; // new parent = given parent
+    void moveDown(Cursor newParent){
+        grandParent = parent; // new grand parent = old parent
+        parent = newParent; // new parent = given parent
     }
 }
