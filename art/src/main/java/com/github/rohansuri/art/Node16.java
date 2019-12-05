@@ -110,6 +110,16 @@ class Node16 extends InnerNode {
 	}
 
 	@Override
+	public void remove(int index) {
+		for (int i = index; i < noOfChildren - 1; i++) {
+			keys[i] = keys[i + 1];
+			child[i] = child[i + 1];
+		}
+		child[noOfChildren - 1] = null;
+		noOfChildren--;
+	}
+
+	@Override
 	public InnerNode grow() {
 		assert isFull();
 		return new Node48(this);

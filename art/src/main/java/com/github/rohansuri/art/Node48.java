@@ -115,6 +115,16 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
+	public void remove(int index) {
+		assert !shouldShrink();
+		int pos = keyIndex[index];
+		assert pos != ABSENT;
+		child[pos] = null; // fragment
+		keyIndex[index] = ABSENT;
+		noOfChildren--;
+	}
+
+	@Override
 	public InnerNode grow() {
 		assert isFull();
 		return new Node256(this);

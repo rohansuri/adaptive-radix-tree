@@ -232,6 +232,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
 	}
 
+	private void pathCompressOnlyChild(Cursor parent, Node4 toCompress) {
+		Node onlyChild = toCompress.getChild()[0];
+		updateCompressedPathOfOnlyChild(toCompress, onlyChild);
+		replace(parent, onlyChild);
+	}
+
 	/*
 		updates given node's only child's compressed path to:
 		given node's compressed path + partialKey to child + child's own compressed path)
@@ -468,6 +474,15 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		else {
 			assert depth > 0;
 			prevDepth.replace(key[depth - 1], replaceWith);
+		}
+	}
+
+	private void replace(Cursor prevDepth, Node replaceWith){
+		if (prevDepth == null) {
+			root = replaceWith;
+		}
+		else {
+			prevDepth.replace(replaceWith);
 		}
 	}
 
@@ -1198,6 +1213,39 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			node = uplink;
 		}
 		return null;
+	}
+
+	// leaf should not be null
+	// neither should tree be empty when calling this
+	void deleteEntry(Uplink uplink) {
+		size--;
+		modCount++;
+		LeafNode leaf = uplink.from;
+		InnerNode parent = uplink.parent.node;
+		if (parent == null) {
+			// means root == leaf
+			root = null;
+			return;
+		}
+
+		if (parent.getLeaf() == leaf) {
+			parent.removeLeaf();
+		}
+		else {
+			uplink.parent.remove();
+		}
+
+		if (parent.shouldShrink()) {
+			InnerNode newParent = parent.shrink();
+			replace(uplink.grandParent, newParent);
+		}
+		else if (parent.size() == 1 && !parent.hasLeaf()) {
+			pathCompressOnlyChild(uplink.grandParent, (Node4) parent);
+		}
+		else if (parent.size() == 0) {
+			assert parent.hasLeaf();
+			replace(uplink.grandParent, parent.getLeaf());
+		}
 	}
 
 	// leaf should not be null

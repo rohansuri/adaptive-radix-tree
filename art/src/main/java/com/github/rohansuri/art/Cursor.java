@@ -39,4 +39,19 @@ class Cursor {
         }
         return ret == LEAF ? node.getLeaf() : node.child[ret];
     }
+
+    void remove(){
+        node.remove(cursor);
+    }
+
+    void replace(Node replaceWith){
+        if(node instanceof Node48){
+            Node48 node48 = (Node48)node;
+            byte i = node48.getKeyIndex()[cursor];
+            assert i >= 0 && i <= 47;
+            node.child[i] = replaceWith;
+        } else {
+            node.child[cursor] = replaceWith;
+        }
+    }
 }

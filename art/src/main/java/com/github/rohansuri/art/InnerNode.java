@@ -169,4 +169,6 @@ abstract class InnerNode extends Node {
      * Returns null if no such child.
      */
     abstract Node lesser(byte partialKey);
+
+    abstract void remove(int index);
 }

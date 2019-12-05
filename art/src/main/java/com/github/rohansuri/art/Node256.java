@@ -69,6 +69,13 @@ class Node256 extends InnerNode {
 	}
 
 	@Override
+	public void remove(int index) {
+		assert child[index] != null;
+		child[index] = null;
+		noOfChildren--;
+	}
+
+	@Override
 	public InnerNode grow() {
 		throw new UnsupportedOperationException("Span of ART is 8 bits, so Node256 is the largest node type.");
 	}
