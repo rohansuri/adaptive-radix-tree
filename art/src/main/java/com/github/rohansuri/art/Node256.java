@@ -31,6 +31,13 @@ class Node256 extends InnerNode {
 		return child[index];
 	}
 
+	@Override
+	public Cursor cursor(byte partialKey) {
+		// We treat the 8 bits as unsigned int since we've got 256 slots
+		int index = Byte.toUnsignedInt(partialKey);
+		return child[index] == null ? null : new Cursor(this, index);
+	}
+
     @Override
     public void addChild(byte partialKey, Node child) {
         // addChild would never be called on a full Node256

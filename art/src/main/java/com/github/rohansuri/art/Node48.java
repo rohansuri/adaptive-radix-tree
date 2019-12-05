@@ -68,6 +68,18 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
+	public Cursor cursor(byte partialKey) {
+		int p = Byte.toUnsignedInt(partialKey);
+		byte index = keyIndex[p];
+		if (index == ABSENT) {
+			return null;
+		}
+
+		assert index >= 0 && index <= 47;
+		return new Cursor(this, p);
+	}
+
+	@Override
 	public void addChild(byte partialKey, Node child) {
 		assert !isFull();
 		int index = Byte.toUnsignedInt(partialKey);

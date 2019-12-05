@@ -73,6 +73,10 @@ abstract class InnerNode extends Node {
         return (LeafNode<?, ?>) child[child.length - 1];
     }
 
+    public Cursor cursorIfLeaf(){
+        return hasLeaf() ? new Cursor(this) : null;
+    }
+
     @Override
     public Node firstOrLeaf() {
         if (hasLeaf()) {
@@ -98,6 +102,8 @@ abstract class InnerNode extends Node {
      * Returns null if there is no corresponding entry.
      */
     abstract Node findChild(byte partialKey);
+
+    abstract Cursor cursor(byte partialKey);
 
     /**
      * @param partialKey

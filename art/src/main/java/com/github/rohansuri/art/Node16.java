@@ -51,6 +51,18 @@ class Node16 extends InnerNode {
 	}
 
 	@Override
+	public Cursor cursor(byte partialKey) {
+		// TODO: use simple loop to see if -XX:+SuperWord applies SIMD JVM instrinsics
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+		for(int i = 0; i < noOfChildren; i++){
+			if(keys[i] == partialKey){
+				return new Cursor(this, i);
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public void addChild(byte partialKey, Node child) {
 		assert !isFull();
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);

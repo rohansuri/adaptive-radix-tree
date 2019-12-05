@@ -39,6 +39,18 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
+	public Cursor cursor(byte partialKey) {
+		partialKey = BinaryComparableUtils.unsigned(partialKey);
+		// paper does simple loop over because it's a tiny array of size 4
+		for (int i = 0; i < noOfChildren; i++) {
+			if (keys[i] == partialKey) {
+				return new Cursor(this, i);
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public void addChild(byte partialKey, Node child) {
 		assert !isFull();
 		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);

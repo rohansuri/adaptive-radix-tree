@@ -192,6 +192,18 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getEntryParentGrantParent(root, bytes);
 	}
 
+    Path getEntryWithPath(Object key) {
+        if (key == null)
+            throw new NullPointerException();
+        if (root == null) { // empty tree
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        K k = (K) key;
+        byte[] bytes = binaryComparable.get(k);
+        return getEntryWithPath(root, bytes);
+    }
+
 	@Override
 	public V remove(Object key) {
 		LeafNode<K, V> p = getEntry(key);
@@ -311,6 +323,66 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		path[2] = path[1]; // grand parent = parent
 		path[1] = node; // parent = current node
 	}
+
+    private Path getEntryWithPath(Node node, byte[] key) {
+        int depth = 0;
+        boolean skippedPrefix = false;
+        Path path = new Path();
+        while (true) {
+            if (node instanceof LeafNode) {
+                LeafNode<K, V> leaf = (LeafNode<K, V>) node;
+                byte[] leafBytes = leaf.getKeyBytes();
+                int startFrom = skippedPrefix ? 0 : depth;
+                if (Arrays.equals(leafBytes, startFrom, leafBytes.length, key, startFrom, key.length)) {
+                    path.to = leaf;
+                    return path;
+                }
+                return null;
+            }
+
+            InnerNode innerNode = (InnerNode) node;
+
+            if (key.length < depth + innerNode.prefixLen) {
+                return null;
+            }
+
+            if(innerNode.prefixLen <= InnerNode.PESSIMISTIC_PATH_COMPRESSION_LIMIT){
+                // match pessimistic compressed path completely
+                for (int i = 0; i < innerNode.prefixLen; i++) {
+                    if (innerNode.prefixKeys[i] != key[depth + i])
+                        return null;
+                }
+            } else {
+                // else take optimistic jump
+                skippedPrefix = true;
+            }
+
+            // took pessimistic match or optimistic jump, continue search
+            depth = depth + innerNode.prefixLen;
+            Cursor cursor;
+            if (depth == key.length) {
+            	cursor = innerNode.cursorIfLeaf();
+                if(!skippedPrefix){
+                	if(cursor == null){
+                		return null;
+					}
+                	path.path.add(cursor);
+                    path.to = (LeafNode)cursor.next();
+                    return path;
+                }
+            }
+            else {
+                cursor = innerNode.cursor(key[depth]);
+				depth++;
+            }
+            if (cursor == null) {
+                return null;
+            }
+            path.path.add(cursor);
+            // set fields for next iteration
+            node = cursor.next();
+        }
+    }
 
 
 	private LeafNode<K, V> getEntry(Node node, byte[] key) {
