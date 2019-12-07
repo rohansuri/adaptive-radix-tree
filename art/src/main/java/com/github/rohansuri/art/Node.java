@@ -9,6 +9,10 @@ abstract class Node {
 
     abstract Node firstOrLeaf();
 
+    abstract Cursor front();
+
+    abstract Cursor rear();
+
     /**
      * @return child pointer for the largest partialKey stored in this Node.
      * Returns null if this node has no children.

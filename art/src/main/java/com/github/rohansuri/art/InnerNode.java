@@ -73,8 +73,18 @@ abstract class InnerNode extends Node {
         return (LeafNode<?, ?>) child[child.length - 1];
     }
 
-    public Cursor cursorIfLeaf(){
-        return hasLeaf() ? new Cursor(this) : null;
+    public final Cursor cursorIfLeaf(){
+        return hasLeaf() ? Cursor.first(this) : null;
+    }
+
+    @Override
+    public final Cursor front(){
+        return Cursor.first(this);
+    }
+
+    @Override
+    public final Cursor rear(){
+        return Cursor.last(this);
     }
 
     @Override

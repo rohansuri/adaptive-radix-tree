@@ -115,21 +115,25 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	// Note: taken from TreeMap
 	public Map.Entry<K, V> pollFirstEntry() {
-		LeafNode<K, V> p = getFirstEntry();
+		Uplink<K, V> uplink = getFirstEntryWithUplink();
+		if(uplink == null){ // empty map
+			return null;
+		}
+		LeafNode<K, V> p = uplink.from;
 		Map.Entry<K, V> result = exportEntry(p);
-		if (p != null)
-			// straightforward, we need a version of getFirstEntry that returns the stack of last-two-level node iterators
-			deleteEntry(p);
+		deleteEntry(uplink);
 		return result;
 	}
 
 	// Note: taken from TreeMap
 	public Map.Entry<K, V> pollLastEntry() {
-		LeafNode<K, V> p = getLastEntry();
+		Uplink<K, V> uplink = getLastEntryWithUplink();
+		if(uplink == null){ // empty map
+			return null;
+		}
+		LeafNode<K, V> p = uplink.from;
 		Map.Entry<K, V> result = exportEntry(p);
-		if (p != null)
-			// straightforward, we need a version of getFirstEntry that returns the stack of last-two-level node iterators
-			deleteEntry(p);
+		deleteEntry(uplink);
 		return result;
 	}
 
@@ -180,7 +184,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getEntry(root, bytes);
 	}
 
-	Uplink getEntryWithUplink(Object key){
+	Uplink<K, V> getEntryWithUplink(Object key){
 		if (key == null)
 			throw new NullPointerException();
 		if (root == null) { // empty tree
@@ -206,12 +210,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 
 	@Override
 	public V remove(Object key) {
-		LeafNode<K, V> p = getEntry(key);
-		if (p == null)
+		Uplink<K, V> uplink = getEntryWithUplink(key);
+		if (uplink == null)
 			return null;
-		V oldValue = p.getValue();
-		// straightforward, we need a version of getEntry that returns the stack of last-two-level node iterators
-		deleteEntry(p);
+		V oldValue = uplink.from.getValue();
+		deleteEntry(uplink);
 		return oldValue;
 	}
 
@@ -265,12 +268,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	private Uplink getEntryWithUplink(Node node, byte[] key) {
+	private Uplink<K, V> getEntryWithUplink(Node node, byte[] key) {
 		int depth = 0;
 		boolean skippedPrefix = false;
-		Uplink uplink = new Uplink();
+		Uplink<K, V> uplink = new Uplink<>();
 		while (true) {
 			if (node instanceof LeafNode) {
+				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
 				byte[] leafBytes = leaf.getKeyBytes();
 				int startFrom = skippedPrefix ? 0 : depth;
@@ -308,7 +312,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 						return null;
 					}
 					uplink.moveDown(cursor);
-					uplink.from = (LeafNode)cursor.next();
+					uplink.from = (LeafNode<K, V>)cursor.next();
 					return uplink;
 				}
 			}
@@ -391,6 +395,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		boolean skippedPrefix = false;
 		while (true) {
 			if (node instanceof LeafNode) {
+				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leaf = (LeafNode<K, V>) node;
 				byte[] leafBytes = leaf.getKeyBytes();
 				int startFrom = skippedPrefix ? 0 : depth;
@@ -760,12 +765,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	/*
 		Returns null if the ART is empty
 	 */
-	@SuppressWarnings("unchecked")
 	LeafNode<K, V> getFirstEntry() {
 		if (isEmpty()) {
 			return null;
 		}
 		return getFirstEntry(root);
+	}
+
+	/*
+		Returns null if the ART is empty
+	 */
+	private Uplink<K, V> getFirstEntryWithUplink() {
+		if (isEmpty()) {
+			return null;
+		}
+		return getFirstEntryWithUplink(root);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -779,6 +793,20 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return (LeafNode<K, V>) node;
 	}
 
+	@SuppressWarnings("unchecked")
+	private static <K, V> Uplink<K, V> getFirstEntryWithUplink(Node startFrom) {
+		Uplink<K, V> uplink = new Uplink<>();
+		Node node = startFrom;
+		Cursor cursor = node.front();
+		while (cursor != null) {
+			uplink.moveDown(cursor);
+			node = cursor.next();
+			cursor = node.front();
+		}
+		uplink.from = (LeafNode<K, V>) node;
+		return uplink;
+	}
+
 	/*
 		Returns null if the ART is empty
 	 */
@@ -790,6 +818,17 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getLastEntry(root);
 	}
 
+	/*
+		Returns null if the ART is empty
+	 */
+	@SuppressWarnings("unchecked")
+	Uplink<K, V> getLastEntryWithUplink() {
+		if (isEmpty()) {
+			return null;
+		}
+		return getLastEntryWithUplink(root);
+	}
+
 	@SuppressWarnings("unchecked")
 	private static <K, V> LeafNode<K, V> getLastEntry(Node startFrom) {
 		Node node = startFrom;
@@ -799,6 +838,20 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			next = node.last();
 		}
 		return (LeafNode<K, V>) node;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <K, V> Uplink<K, V> getLastEntryWithUplink(Node startFrom) {
+		Uplink<K, V> uplink = new Uplink<>();
+		Node node = startFrom;
+		Cursor cursor = node.rear();
+		while (cursor != null) {
+			uplink.moveDown(cursor);
+			node = cursor.previous();
+			cursor = node.rear();
+		}
+		uplink.from = (LeafNode<K, V>) node;
+		return uplink;
 	}
 
 	@Override

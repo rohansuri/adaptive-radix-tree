@@ -12,18 +12,47 @@ class Cursor {
         this.cursor = cursor;
     }
 
-    // initial cursor from leaf, leaf must exist
-    Cursor(InnerNode node){
-        assert node.hasLeaf();
+    // for use with static factory methods
+    private Cursor(InnerNode node){
         this.node = node;
-        cursor = LEAF;
+    }
+
+    static Cursor last(InnerNode node){
+        Cursor c = new Cursor(node);
+        if(node instanceof Node4 || node instanceof Node16){
+            c.cursor = node.noOfChildren-1;
+        } else {
+            // bad: relies on the fact that we have space for leaf at the end of child array
+            // leaf position, just as placeholder for the previous call to land on the last valid child
+            c.cursor = node.child.length - 1;
+            c.previous();
+        }
+        return c;
+    }
+
+    // initialize cursor from leaf if exists
+    // else from the first child position
+    static Cursor first(InnerNode node){
+        Cursor c = new Cursor(node);
+        c.cursor = LEAF;
+        if(!node.hasLeaf()){
+            c.next();
+        }
+        return c;
+    }
+
+    private boolean reachedEnd(){
+        if(node instanceof Node4 || node instanceof Node16){
+            return cursor == node.noOfChildren;
+        }
+        return cursor == node.child.length - 1;  // end of child array
     }
 
     Node next(){
-        if (cursor == node.child.length - 1) { // end of child array
+        if (reachedEnd()) {
             return null;
         }
-        int ret = cursor++;
+        int ret = cursor++; // Node4, Node16
         if (node instanceof Node48) {
             Node48 node48 = (Node48) node;
             byte[] keyIndex = node48.getKeyIndex();
@@ -38,6 +67,38 @@ class Cursor {
             }
         }
         return ret == LEAF ? node.getLeaf() : node.child[ret];
+    }
+
+    private boolean reachedStart(){
+        int end = node.hasLeaf() ? LEAF : 0;
+        return cursor == end - 1;
+    }
+
+    Node previous(){
+        if(reachedStart()){
+            return null;
+        }
+
+        int ret = cursor--; // Node4, Node16
+
+        if(ret == LEAF){
+            return node.getLeaf();
+        }
+
+        if (node instanceof Node48) {
+            Node48 node48 = (Node48) node;
+            byte[] keyIndex = node48.getKeyIndex();
+            while (cursor >= 0  && keyIndex[cursor] == Node48.ABSENT) {
+                cursor--;
+            }
+            return node.child[keyIndex[ret]];
+        }
+        if (node instanceof Node256) {
+            while (cursor >= 0 && node.child[cursor] == null) {
+                cursor--;
+            }
+        }
+        return node.child[ret];
     }
 
     void remove(){

@@ -1,7 +1,7 @@
 package com.github.rohansuri.art;
 
-class Uplink {
-    LeafNode from;
+class Uplink<K, V> {
+    LeafNode<K, V> from;
     Cursor parent;
     Cursor grandParent;
 
