@@ -399,11 +399,14 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			Object key = entry.getKey();
 			if (!inRange((K) key))
 				return false;
-			LeafNode<K, V> node = m.getEntry(key);
-			if (node != null && AdaptiveRadixTree.valEquals(node.getValue(),
+			Uplink<K, V> uplink = m.getEntryWithUplink(key);
+			if(uplink == null){
+				return false;
+			}
+			LeafNode<K, V> node = uplink.from;
+			if (AdaptiveRadixTree.valEquals(node.getValue(),
 					entry.getValue())) {
-				// straightforward, we need a version of getEntry that returns the stack of last-two-level node iterators
-				m.deleteEntry(node);
+				m.deleteEntry(uplink);
 				return true;
 			}
 			return false;

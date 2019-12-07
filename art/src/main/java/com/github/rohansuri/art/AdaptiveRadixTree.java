@@ -184,6 +184,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getEntry(root, bytes);
 	}
 
+	/**
+	 *
+	 * @param key
+	 * @return null would mean either empty tree or key does not exist
+	 */
 	Uplink<K, V> getEntryWithUplink(Object key){
 		if (key == null)
 			throw new NullPointerException();

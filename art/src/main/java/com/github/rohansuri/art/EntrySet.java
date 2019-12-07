@@ -32,10 +32,13 @@ class EntrySet<K, V> extends AbstractSet<Map.Entry<K, V>> {
 			return false;
 		Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
 		Object value = entry.getValue();
-		LeafNode<K, V> p = m.getEntry(entry.getKey());
-		if (p != null && AdaptiveRadixTree.valEquals(p.getValue(), value)) {
-			// straightforward, we need a version of getFirstEntry that returns the stack of last-two-level node iterators
-			m.deleteEntry(p);
+		Uplink<K, V> uplink = m.getEntryWithUplink(entry.getKey());
+		if(uplink == null){
+			return false;
+		}
+		LeafNode<K, V> p = uplink.from;
+		if (AdaptiveRadixTree.valEquals(p.getValue(), value)) {
+			m.deleteEntry(uplink);
 			return true;
 		}
 		return false;
