@@ -1,5 +1,8 @@
 package com.github.rohansuri.art;
 
+// different from iterator because allows to inspect current position multiple times
+// without moving the cursor position.
+// also the same instance supports going forward, backward any number of times even after reaching the boundaries.
 class Cursor {
     final InnerNode node;
     private int cursor;
@@ -22,11 +25,16 @@ class Cursor {
         if(node instanceof Node4 || node instanceof Node16){
             c.cursor = node.noOfChildren-1;
         } else {
-            // bad: relies on the fact that we have space for leaf at the end of child array
-            // leaf position, just as placeholder for the previous call to land on the last valid child
             c.cursor = node.child.length - 1;
             c.previous();
         }
+        return c;
+    }
+
+    static Cursor firstNonLeaf(InnerNode node){
+        Cursor c = new Cursor(node);
+        c.cursor = LEAF;
+        c.next();
         return c;
     }
 
@@ -41,78 +49,124 @@ class Cursor {
         return c;
     }
 
-    private boolean reachedEnd(){
-        if(node instanceof Node4 || node instanceof Node16){
-            return cursor == node.noOfChildren;
+    Node current(){
+        if(node instanceof Node48){
+            Node48 node48 = (Node48)node;
+            byte index = node48.getKeyIndex()[cursor];
+            assert index >= 0 && index <= 47;
+            return node.child[index];
         }
-        return cursor == node.child.length - 1;  // end of child array
+        return node.child[cursor];
     }
 
+    // moves cursor position forward and returns the next child at the new position
     Node next(){
-        if (reachedEnd()) {
-            return null;
-        }
-        int ret = cursor++; // Node4, Node16
-        if (node instanceof Node48) {
-            Node48 node48 = (Node48) node;
-            byte[] keyIndex = node48.getKeyIndex();
-            while (cursor < Node48.NODE_SIZE && keyIndex[cursor] == Node48.ABSENT) {
-                cursor++;
-            }
-            return ret == LEAF ? node.getLeaf() : node.child[keyIndex[ret]];
-        }
-        if (node instanceof Node256) {
-            while (cursor < Node256.NODE_SIZE && node.child[cursor] == null) {
-                cursor++;
-            }
-        }
-        return ret == LEAF ? node.getLeaf() : node.child[ret];
-    }
-
-    private boolean reachedStart(){
-        int end = node.hasLeaf() ? LEAF : 0;
-        return cursor == end - 1;
-    }
-
-    Node previous(){
-        if(reachedStart()){
-            return null;
-        }
-
-        int ret = cursor--; // Node4, Node16
-
-        if(ret == LEAF){
+        // left extremer could either be at -1 or -2
+        // -1 means no leaf and hence next is the first child
+        // -2 means we have a leaf and hence return that
+        if(cursor + 1 == LEAF) {
+            // leaf surely exists otherwise cursor wouldn't have reached beyond leaf
+            cursor++;
             return node.getLeaf();
         }
-
-        if (node instanceof Node48) {
+        if(node instanceof Node4 || node instanceof Node16){
+            if(cursor+1 < node.noOfChildren){
+                return node.child[++cursor];
+            }
+        } else if (node instanceof Node48) {
             Node48 node48 = (Node48) node;
             byte[] keyIndex = node48.getKeyIndex();
-            while (cursor >= 0  && keyIndex[cursor] == Node48.ABSENT) {
-                cursor--;
+            while (cursor+1 < Node48.NODE_SIZE) {
+                cursor++;
+                byte index = keyIndex[cursor];
+                if(index != Node48.ABSENT){
+                    return node.child[index];
+                }
             }
-            return node.child[keyIndex[ret]];
-        }
-        if (node instanceof Node256) {
-            while (cursor >= 0 && node.child[cursor] == null) {
-                cursor--;
+        } else if (node instanceof Node256) {
+            while (cursor+1 < Node256.NODE_SIZE) {
+                cursor++;
+                Node child = node.child[cursor];
+                if(child != null){
+                    return child;
+                }
             }
         }
-        return node.child[ret];
+        return null;
     }
 
-    void remove(){
+    // moves cursor position backward and returns the next child at the new position
+    Node previous(){
+        if(cursor-1 == LEAF){
+            cursor--;
+            return node.getLeaf();
+        }
+        if(cursor == LEAF){ // either we're already at the end or we have a leaf and hence we can go further beyond
+            if(!node.hasLeaf()){
+                return null;
+            }
+            cursor--;
+            return null;
+        }
+
+        if(node instanceof Node4 || node instanceof Node16){
+            if(cursor-1 >= 0){
+                return node.child[--cursor];
+            }
+        } else if (node instanceof Node48) {
+            Node48 node48 = (Node48) node;
+            byte[] keyIndex = node48.getKeyIndex();
+            while (cursor-1 >= 0) {
+                cursor--;
+                byte index = keyIndex[cursor];
+                if(index != Node48.ABSENT){
+                    return node.child[index];
+                }
+            }
+        } else if (node instanceof Node256) {
+            while (cursor-1 >= 0) {
+                cursor--;
+                Node child = node.child[cursor];
+                if(child != null){
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
+    void removeAndNext(){
+        // TODO
         node.remove(cursor);
+    }
+
+    void removeAndPrevious(){
+        // TODO
     }
 
     void replace(Node replaceWith){
         if(node instanceof Node48){
             Node48 node48 = (Node48)node;
-            byte i = node48.getKeyIndex()[cursor];
-            assert i >= 0 && i <= 47;
-            node.child[i] = replaceWith;
+            byte index = node48.getKeyIndex()[cursor];
+            assert index >= 0 && index <= 47;
+            node.child[index] = replaceWith;
         } else {
             node.child[cursor] = replaceWith;
+        }
+    }
+
+    // does current cursor position correspond to given partialKey?
+    // CLEANUP: make floorCursor, ceilCursor return this as metadata along with cursor
+    // so that we don't need to check again?
+    boolean isOn(byte partialKey){
+        if(node instanceof Node48 || node instanceof Node256){
+            return cursor == Byte.toUnsignedInt(partialKey);
+        } else if(node instanceof Node4){
+            Node4 node4 = (Node4)node;
+            return BinaryComparableUtils.unsigned(partialKey) == node4.getKeys()[cursor];
+        } else {
+            Node16 node16 = (Node16)node;
+            return BinaryComparableUtils.unsigned(partialKey) == node16.getKeys()[cursor];
         }
     }
 }

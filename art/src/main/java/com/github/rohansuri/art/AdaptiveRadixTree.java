@@ -201,7 +201,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getEntryWithUplink(root, bytes);
 	}
 
-    Path getEntryWithPath(Object key) {
+    Path<K, V> getEntryWithPath(Object key) {
         if (key == null)
             throw new NullPointerException();
         if (root == null) { // empty tree
@@ -317,7 +317,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 						return null;
 					}
 					uplink.moveDown(cursor);
-					uplink.from = (LeafNode<K, V>)cursor.next();
+					uplink.from = (LeafNode<K, V>)cursor.current();
 					return uplink;
 				}
 			}
@@ -330,14 +330,15 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 			uplink.moveDown(cursor);
 			// set fields for next iteration
-			node = cursor.next();
+			node = cursor.current();
 		}
 	}
 
-    private Path getEntryWithPath(Node node, byte[] key) {
+	@SuppressWarnings("unchecked")
+    private Path<K, V> getEntryWithPath(Node node, byte[] key) {
         int depth = 0;
         boolean skippedPrefix = false;
-        Path path = new Path();
+        Path<K, V> path = new Path<>();
         while (true) {
             if (node instanceof LeafNode) {
                 LeafNode<K, V> leaf = (LeafNode<K, V>) node;
@@ -377,7 +378,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
                 		return null;
 					}
                 	path.path.add(cursor);
-                    path.to = (LeafNode)cursor.next();
+                    path.to = (LeafNode<K, V>)cursor.current();
                     return path;
                 }
             }
@@ -390,7 +391,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
             }
             path.path.add(cursor);
             // set fields for next iteration
-            node = cursor.next();
+            node = cursor.current();
         }
     }
 
@@ -780,11 +781,20 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	/*
 		Returns null if the ART is empty
 	 */
-	private Uplink<K, V> getFirstEntryWithUplink() {
+	Uplink<K, V> getFirstEntryWithUplink() {
 		if (isEmpty()) {
 			return null;
 		}
-		return getFirstEntryWithUplink(root);
+		Uplink<K, V> uplink = new Uplink<>();
+		Node node = root;
+		Cursor cursor = node.front();
+		while (cursor != null) {
+			uplink.moveDown(cursor);
+			node = cursor.current();
+			cursor = node.front();
+		}
+		uplink.from = (LeafNode<K, V>) node;
+		return uplink;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -798,18 +808,16 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return (LeafNode<K, V>) node;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <K, V> Uplink<K, V> getFirstEntryWithUplink(Node startFrom) {
-		Uplink<K, V> uplink = new Uplink<>();
+	static <K, V> Uplink<K, V> getFirstEntryWithUplink(Node startFrom, Path<K, V> path) {
 		Node node = startFrom;
 		Cursor cursor = node.front();
 		while (cursor != null) {
-			uplink.moveDown(cursor);
-			node = cursor.next();
+			path.path.add(cursor);
+			node = cursor.current();
 			cursor = node.front();
 		}
-		uplink.from = (LeafNode<K, V>) node;
-		return uplink;
+		path.to = (LeafNode<K, V>) node;
+		return path.uplink();
 	}
 
 	/*
@@ -831,7 +839,16 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if (isEmpty()) {
 			return null;
 		}
-		return getLastEntryWithUplink(root);
+		Uplink<K, V> uplink = new Uplink<>();
+		Node node = root;
+		Cursor cursor = node.rear();
+		while (cursor != null) {
+			uplink.moveDown(cursor);
+			node = cursor.current();
+			cursor = node.rear();
+		}
+		uplink.from = (LeafNode<K, V>) node;
+		return uplink;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -846,17 +863,16 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <K, V> Uplink<K, V> getLastEntryWithUplink(Node startFrom) {
-		Uplink<K, V> uplink = new Uplink<>();
+	static <K, V> Uplink<K, V> getLastEntryWithUplink(Node startFrom, Path<K, V> path) {
 		Node node = startFrom;
 		Cursor cursor = node.rear();
 		while (cursor != null) {
-			uplink.moveDown(cursor);
-			node = cursor.previous();
+			path.path.add(cursor);
+			node = cursor.current();
 			cursor = node.rear();
 		}
-		uplink.from = (LeafNode<K, V>) node;
-		return uplink;
+		path.to = (LeafNode<K, V>) node;
+		return path.uplink();
 	}
 
 	@Override
@@ -890,6 +906,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getLowerOrFloorEntry(true, k);
 	}
 
+	Uplink<K, V> getLowerEntryWithUplink(byte[] k) {
+		if(isEmpty()){
+			return null;
+		}
+		return getLowerOrFloorEntryWithUplink(true, k);
+	}
+
 	LeafNode<K, V> getFloorEntry(K k) {
 		return getLowerOrFloorEntry(false, k);
 	}
@@ -899,6 +922,61 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			return null;
 		}
 		return getLowerOrFloorEntry(false, k);
+	}
+
+	Uplink<K, V> getFloorEntryWithUplink(byte[] k) {
+		if(isEmpty()){
+			return null;
+		}
+		return getLowerOrFloorEntryWithUplink(false, k);
+	}
+
+	private Uplink<K, V> getLowerOrFloorEntryWithUplink(boolean lower, byte[] key) {
+		int depth = 0;
+		Node node = root;
+		Path<K, V> path = new Path<>();
+		while (true) {
+			if (node instanceof LeafNode) {
+				// binary comparable comparison
+				@SuppressWarnings("unchecked")
+				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
+				byte[] leafKey = leafNode.getKeyBytes();
+				if (compare(key, depth, key.length, leafKey, depth, leafKey.length) >= (lower ? 1 : 0)) {
+					path.to = leafNode;
+					return path.uplink();
+				}
+				return path.predecessor();
+			}
+			InnerNode innerNode = (InnerNode) node;
+			// compare compressed path
+			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
+			if (compare < 0) { // lesser
+				return getLastEntryWithUplink(node, path);
+			}
+			else if (compare > 0) { // greater, that means all children of this node will be greater than key
+				return path.predecessor();
+			}
+			// compressed path matches completely
+			depth += innerNode.prefixLen;
+			if (depth == key.length) {
+				if (!lower && innerNode.hasLeaf()) {
+					path.to = (LeafNode<K, V>) innerNode.getLeaf();
+					return path.uplink();
+				}
+				return path.predecessor();
+			}
+			Cursor c = innerNode.floorCursor(key[depth]);
+			if(c == null){
+				return leafOrPredecessor(innerNode, path);
+			}
+			Node child = c.current();
+			path.path.add(c);
+			if(!c.isOn(key[depth])){
+				return getLastEntryWithUplink(child, path);
+			}
+			depth++;
+			node = child;
+		}
 	}
 
 	// note: caller needs to check if map is empty
@@ -952,11 +1030,23 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getLowerOrFloorEntry(lower, key);
 	}
 
+	@SuppressWarnings("unchecked")
 	private LeafNode<K, V> leafOrPredecessor(InnerNode innerNode) {
 		if (innerNode.hasLeaf()) {
 			return (LeafNode<K, V>) innerNode.getLeaf();
 		}
 		return predecessor(innerNode);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Uplink<K, V> leafOrPredecessor(InnerNode innerNode, Path<K, V> path){
+		Cursor c = innerNode.cursorIfLeaf();
+		if(c != null){ // has a leaf
+			path.path.add(c);
+			path.to = (LeafNode<K, V>) c.current();
+			return path.uplink();
+		}
+		return path.predecessor();
 	}
 
 	@Override
@@ -1014,6 +1104,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getHigherOrCeilEntry(false, key);
 	}
 
+	Uplink<K, V> getHigherEntryWithUplink(byte[] key) {
+		if(isEmpty()){
+			return null;
+		}
+		return getHigherOrCeilEntryWithUplink(false, key);
+	}
+
 	LeafNode<K, V> getCeilingEntry(K k) {
 		return getHigherOrCeilEntry(true, k);
 	}
@@ -1025,6 +1122,65 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return getHigherOrCeilEntry(true, key);
 	}
 
+	Uplink<K, V> getCeilingEntryWithUplink(byte[] key) {
+		if(isEmpty()){
+			return null;
+		}
+		return getHigherOrCeilEntryWithUplink(true, key);
+	}
+
+	private Uplink<K, V> getHigherOrCeilEntryWithUplink(boolean ceil, byte[] key){
+		int depth = 0;
+		Node node = root;
+		Path<K, V> path = new Path<>();
+		while (true) {
+			if (node instanceof LeafNode) {
+				// binary comparable comparison
+				@SuppressWarnings("unchecked")
+				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
+				byte[] leafKey = leafNode.getKeyBytes();
+				if (compare(key, depth, key.length, leafKey, depth, leafKey.length) < (ceil ? 1 : 0)) {
+					path.to = leafNode;
+					return path.uplink();
+				}
+				return path.successor();
+			}
+			InnerNode innerNode = (InnerNode) node;
+			// compare compressed path
+			int compare = compareOptimisticCompressedPath(innerNode, key, depth);
+			if (compare > 0) { // greater
+				return getFirstEntryWithUplink(node, path);
+			}
+			else if (compare < 0) { // lesser, that means all children of this node will be lesser than key
+				return path.successor();
+			}
+
+			// compressed path matches completely
+			depth += innerNode.prefixLen;
+			if (depth == key.length) {
+				// if ceil is true, then we are allowed to return the prefix ending here (leaf of this node)
+				// if ceil is false, then we need something higher and not the prefix, hence we start traversal
+				// from first()
+				if(ceil){
+					return getFirstEntryWithUplink(innerNode, path);
+				}
+				Cursor c = innerNode.frontNoLeaf();
+				path.path.add(c);
+				return getFirstEntryWithUplink(c.current(), path);
+			}
+			Cursor c = innerNode.ceilCursor(key[depth]);
+			if(c == null){ // on this level, no child is greater or equal
+				return path.successor();
+			}
+			Node child = c.current();
+			path.path.add(c);
+			if(!c.isOn(key[depth])){ // ceil returned a greater child
+				return getFirstEntryWithUplink(child, path);
+			}
+			depth++;
+			node = child;
+		}
+	}
 
 	/*
 		On level X match compressed path of "this" node
@@ -1290,7 +1446,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			parent.removeLeaf();
 		}
 		else {
-			uplink.parent.remove();
+			uplink.parent.removeAndNext();
 		}
 
 		if (parent.shouldShrink()) {

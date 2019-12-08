@@ -87,6 +87,10 @@ abstract class InnerNode extends Node {
         return Cursor.last(this);
     }
 
+    public final Cursor frontNoLeaf(){
+        return Cursor.firstNonLeaf(this);
+    }
+
     @Override
     public Node firstOrLeaf() {
         if (hasLeaf()) {
@@ -121,11 +125,15 @@ abstract class InnerNode extends Node {
      */
     abstract Node ceil(byte partialKey);
 
+    abstract Cursor ceilCursor(byte partialKey);
+
     /**
      * @param partialKey
      * @return a child which is equal or lesser than given partial key, or null if there is no such child
      */
     abstract Node floor(byte partialKey);
+
+    abstract Cursor floorCursor(byte partialKey);
 
     /**
      * Note: caller needs to check if {@link InnerNode} {@link #isFull()} before calling this.

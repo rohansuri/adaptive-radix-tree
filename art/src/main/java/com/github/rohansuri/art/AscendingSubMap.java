@@ -98,8 +98,18 @@ final class AscendingSubMap<K, V> extends NavigableSubMap<K, V> {
 	}
 
 	@Override
+	Uplink<K, V> subLowestWithUplink(){
+		return absLowestWithUplink();
+	}
+
+	@Override
 	LeafNode<K, V> subHighest() {
 		return absHighest();
+	}
+
+	@Override
+	Uplink<K, V> subHighestWithUplink() {
+		return absHighestWithUplink();
 	}
 
 	@Override

@@ -115,12 +115,28 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		return (e == null || tooHigh(e.getKey())) ? null : e;
 	}
 
+	final Uplink<K, V> absLowestWithUplink() {
+		Uplink<K, V> e =
+				(fromStart ? m.getFirstEntryWithUplink() :
+						(loInclusive ? m.getCeilingEntryWithUplink(loBytes) :
+								m.getHigherEntryWithUplink(loBytes)));
+		return (e == null || tooHigh(e.from.getKey())) ? null : e;
+	}
+
 	final LeafNode<K, V> absHighest() {
 		LeafNode<K, V> e =
 				(toEnd ? m.getLastEntry() :
 						(hiInclusive ? m.getFloorEntry(hiBytes) :
 								m.getLowerEntry(hiBytes)));
 		return (e == null || tooLow(e.getKey())) ? null : e;
+	}
+
+	final Uplink<K, V> absHighestWithUplink() {
+		Uplink<K, V> e =
+				(toEnd ? m.getLastEntryWithUplink() :
+						(hiInclusive ? m.getFloorEntryWithUplink(hiBytes) :
+								m.getLowerEntryWithUplink(hiBytes)));
+		return (e == null || tooLow(e.from.getKey())) ? null : e;
 	}
 
 	final LeafNode<K, V> absCeiling(K key) {
@@ -170,7 +186,11 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 
 	abstract LeafNode<K, V> subLowest();
 
+	abstract Uplink<K, V> subLowestWithUplink();
+
 	abstract LeafNode<K, V> subHighest();
+
+	abstract Uplink<K, V> subHighestWithUplink();
 
 	abstract LeafNode<K, V> subCeiling(K key);
 
@@ -287,21 +307,23 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 
 	@Override
 	public final Map.Entry<K, V> pollFirstEntry() {
-		LeafNode<K, V> e = subLowest();
-		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(e);
-		if (e != null)
-			// straightforward, we need a version of subLowest that returns the stack of last-two-level node iterators
-			m.deleteEntry(e);
+		Uplink<K, V> uplink = subLowestWithUplink();
+		if(uplink == null){
+			return null;
+		}
+		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(uplink.from);
+		m.deleteEntry(uplink);
 		return result;
 	}
 
 	@Override
 	public final Map.Entry<K, V> pollLastEntry() {
-		LeafNode<K, V> e = subHighest();
-		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(e);
-		if (e != null)
-			// straightforward, we need a version of subHighest that returns the stack of last-two-level node iterators
-			m.deleteEntry(e);
+		Uplink<K, V> uplink = subHighestWithUplink();
+		if(uplink == null){
+			return null;
+		}
+		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(uplink.from);
+		m.deleteEntry(uplink);
 		return result;
 	}
 
