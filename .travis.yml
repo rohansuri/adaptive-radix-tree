@@ -4,6 +4,13 @@ dist: bionic
 jdk:
   - openjdk11
 
+before_install:
+  - wget http://services.gradle.org/distributions/gradle-5.6.3-bin.zip
+  - unzip -qq gradle-5.6.3-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-5.6.3
+  - export PATH=$GRADLE_HOME/bin:$PATH
+  - gradle -v
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -11,3 +18,8 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+after_success:
+  - cd art
+  - gradle jacocoRootReport
+  - bash <(curl -s https://codecov.io/bash) -f build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml

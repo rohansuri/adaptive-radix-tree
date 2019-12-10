@@ -102,6 +102,11 @@ task jacocoRootReport(type: JacocoReport) {
 	additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
 	sourceDirectories = files(sourceSets.main.allSource.srcDirs)
 	classDirectories = files(sourceSets.main.output)
+
+	reports {
+		xml.enabled = true
+		html.enabled = true
+	}
 }
 
 test {
@@ -116,3 +121,5 @@ test {
 	//dependsOn testJUnit4
 	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }
+
+check.dependsOn testJUnit4

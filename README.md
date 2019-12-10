@@ -1,4 +1,6 @@
 ## Adaptive Radix Tree implemented as a Java NavigableMap
+[![Build Status](https://travis-ci.org/rohansuri/adaptive-radix-tree.svg?branch=master)](https://travis-ci.org/rohansuri/adaptive-radix-tree)
+[![codecov](https://codecov.io/gh/rohansuri/adaptive-radix-tree/branch/master/graph/badge.svg)](https://codecov.io/gh/rohansuri/adaptive-radix-tree)
 
 This library provides an implementation of Adaptive Radix Tree (ART) as a [Java NavigableMap](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/NavigableMap.html) based on the ICDE 2013 [paper](https://db.in.tum.de/~leis/papers/ART.pdf) "The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases" by Viktor Leis.
 
@@ -22,6 +24,24 @@ Where Radix Tree will have allocated space for 1024 pointers (4 nodes having 256
 *	Cache friendly because:
 	*	Uses path compression and lazy leaf expansion to avoid single child paths thereby reducing pointer indirections which cause cache misses. These two techniques also reduce tree height.
 	*	Compact nodes that are array backed and hence exhibit spatial locality, utilising cache lines better.
+
+## Table of contents
+- [Binary comparable keys](#binary-comparable-keys)
+    + [Signed integers](#signed-integers)
+    + [ASCII encoded character strings](#ascii-encoded-character-strings)
+    + [IPv4 addresses](#ipv4-addresses)
+    + [Further reading](#further-reading)
+- [Usage](#usage)
+  * [Simple keys based on primitives and String](#simple-keys-based-on-primitives-and-string)
+  * [Compound keys](#compound-keys)
+    + [With only fixed length attributes](#with-only-fixed-length-attributes)
+    + [With variable length attributes](#with-variable-length-attributes)
+- [Examples](#examples)
+- [YCSB Benchmarks](#ycsb-benchmarks)
+  * [Load (100% insert)](#load-100-insert)
+  * [C (100% lookup)](#c-100-lookup)
+- [Tests](#tests)
+
 
 ## Binary comparable keys
 
