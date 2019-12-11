@@ -64,23 +64,23 @@ final class DescendingSubMap<K, V> extends NavigableSubMap<K, V> {
 
 	@Override
 	Iterator<K> keyIterator() {
-		return new DescendingSubMapKeyIterator(absHighest(), absLowFence());
+		return new DescendingSubMapKeyIterator(absHighestWithPath(), absLowFence());
 	}
 
 	@Override
 	Spliterator<K> keySpliterator() {
-		return new DescendingSubMapKeyIterator(absHighest(), absLowFence());
+		return new DescendingSubMapKeyIterator(absHighestWithPath(), absLowFence());
 	}
 
 	@Override
 	Iterator<K> descendingKeyIterator() {
-		return new SubMapKeyIterator(absLowest(), absHighFence());
+		return new SubMapKeyIterator(absLowestWithPath(), absHighFence());
 	}
 
 	final class DescendingEntrySetView extends EntrySetView {
 		@Override
 		public Iterator<Entry<K, V>> iterator() {
-			return new DescendingSubMapEntryIterator(absHighest(), absLowFence());
+			return new DescendingSubMapEntryIterator(absHighestWithPath(), absLowFence());
 		}
 	}
 

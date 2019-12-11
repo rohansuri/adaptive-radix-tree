@@ -11,7 +11,6 @@ import java.util.NavigableSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -123,6 +122,14 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		return (e == null || tooHigh(e.from.getKey())) ? null : e;
 	}
 
+	final Path<K, V> absLowestWithPath() {
+		Path<K, V> e =
+				(fromStart ? m.getFirstEntryWithPath() :
+						(loInclusive ? m.getCeilingEntryWithPath(loBytes) :
+								m.getHigherEntryWithPath(loBytes)));
+		return (e == null || tooHigh(e.to.getKey())) ? null : e;
+	}
+
 	final LeafNode<K, V> absHighest() {
 		LeafNode<K, V> e =
 				(toEnd ? m.getLastEntry() :
@@ -137,6 +144,14 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 						(hiInclusive ? m.getFloorEntryWithUplink(hiBytes) :
 								m.getLowerEntryWithUplink(hiBytes)));
 		return (e == null || tooLow(e.from.getKey())) ? null : e;
+	}
+
+	final Path<K, V> absHighestWithPath() {
+		Path<K, V> e =
+				(toEnd ? m.getLastEntryWithPath() :
+						(hiInclusive ? m.getFloorEntryWithPath(hiBytes) :
+								m.getLowerEntryWithPath(hiBytes)));
+		return (e == null || tooLow(e.to.getKey())) ? null : e;
 	}
 
 	final LeafNode<K, V> absCeiling(K key) {
@@ -312,7 +327,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			return null;
 		}
 		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(uplink.from);
-		m.deleteEntry(uplink);
+		m.deleteEntryUsingThrowAwayUplink(uplink);
 		return result;
 	}
 
@@ -323,7 +338,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			return null;
 		}
 		Map.Entry<K, V> result = AdaptiveRadixTree.exportEntry(uplink.from);
-		m.deleteEntry(uplink);
+		m.deleteEntryUsingThrowAwayUplink(uplink);
 		return result;
 	}
 
@@ -428,7 +443,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			LeafNode<K, V> node = uplink.from;
 			if (AdaptiveRadixTree.valEquals(node.getValue(),
 					entry.getValue())) {
-				m.deleteEntry(uplink);
+				m.deleteEntryUsingThrowAwayUplink(uplink);
 				return true;
 			}
 			return false;
@@ -446,63 +461,269 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	 *  and first becomes the other one to start from.
 	 */
 	abstract class SubMapIterator<T> implements Iterator<T> {
-		LeafNode<K, V> lastReturned;
-		LeafNode<K, V> next;
+		final LastReturned lastReturned;
+		Uplink<K, V> next;
 		final Object fenceKey;
 		int expectedModCount;
+		final Path<K, V> path;
 
-		SubMapIterator(LeafNode<K, V> first,
-				LeafNode<K, V> fence) {
+		SubMapIterator(Path<K, V> first,
+					   LeafNode<K, V> fence) {
 			expectedModCount = m.getModCount();
-			lastReturned = null;
-			next = first;
+			lastReturned = new LastReturned();
+			next = first.uplink();
+			path = first;
 			fenceKey = fence == null ? UNBOUNDED : fence.getKey();
 		}
 
 		@Override
 		public final boolean hasNext() {
-			return next != null && next.getKey() != fenceKey;
+			return next != null && next.from.getKey() != fenceKey;
 		}
 
 		final LeafNode<K, V> nextEntry() {
-			LeafNode<K, V> e = next;
-			if (e == null || e.getKey() == fenceKey)
+			Uplink<K, V> e = next;
+			if (e == null || e.from.getKey() == fenceKey)
 				throw new NoSuchElementException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
-			next = AdaptiveRadixTree.successor(e);
-			lastReturned = e;
-			return e;
+			lastReturned.set(e, path);
+			next = path.successor();
+			return lastReturned.uplink.from;
 		}
 
 		final LeafNode<K, V> prevEntry() {
-			LeafNode<K, V> e = next;
-			if (e == null || e.getKey() == fenceKey)
+			Uplink<K, V> e = next;
+			if (e == null || e.from.getKey() == fenceKey)
 				throw new NoSuchElementException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
-			next = AdaptiveRadixTree.predecessor(e);
-			lastReturned = e;
-			return e;
+			lastReturned.set(e, path);
+			next = path.predecessor();
+			return lastReturned.uplink.from;
 		}
 
-		@Override
-		public void remove() {
-			if (lastReturned == null)
+		private boolean shouldInvalidateNext(){
+			// no next (lastReturned == root)
+			if(lastReturned.pathIndex != -1 &&
+				// is parent of lastReturned ancestor of next
+				path.path.size() > lastReturned.pathIndex &&
+				lastReturned.uplink.parent == path.path.get(lastReturned.pathIndex) &&
+				// even if Node256 shrinks, it shrinks into Node48
+				// and cursor position stays valid
+				!(lastReturned.uplink.parent.node instanceof Node256) &&
+					// node48 but would shrink
+					(lastReturned.uplink.parent.node instanceof Node48 &&
+							lastReturned.uplink.parent.node.noOfChildren == Node16.NODE_SIZE+1)
+			){
+				// next comes from same parent as current
+				return true;
+			}
+			return false;
+		}
+
+		/*
+			fundamentally the reasons for invalidation of next is because removal of array backed nodes (Node4, Node16),
+			causes array index shifting and hence next happens to be in incorrect position.
+			The other could be because of InnerNode references changed (shrinking, path compression)
+
+			basically when any Cursor image is changed (which comprises of InnerNode and position)
+		 */
+		/*
+			if next and current's common ancestor point is what current's parent is
+			(i.e. path.path.get(lastReturned.pathIndex) == lastReturned.uplink.parent)
+			then:
+				removing current could cause shrinking:
+					a -> b -> c (current)
+							\-> d (next)
+							no of children of b = 17
+					after removing c, no of children 16.
+					upon removing our cursor moves to next.
+
+					also we've crossed threshold for Node16 and hence we should shrink.
+					after shrinking we should get a new cursor on next on the new node.
+					we should replace path.path.set(lastReturned.pathIndex) with this new Cursor.
+						Q. do we need to touch the path after that index?
+						A.
+						I don't think so
+						i.e. example if path to next was actually a -> b -> ... -> d
+						since only the InnerNode reference has changed in between,
+						but all downlinks for this new InnerNode are to the same leaves.
+						As long as we reestablish the right cursor position on this new InnerNode,
+						which the next was taking/will take to continue it's path, we're good.
+						The metadata in the path is only the cursor, which doesn't change for downlinks.
+						Neither do the downlink cursor's node references change.
+						Only the parent's reference has changed and our path needs to reflect it.
+
+
+				removing current could cause parent deletion and move up (path compression):
+					since next has same parent it means next is the only child left!
+					this means a -> b -> c (current)
+									 \--> d (next)
+					after removal, trie is a -> d (next)
+					so we need to remove pathIndex from path (b in above example)
+					cursor position of a -> d remains the same.
+
+
+				removing current causes neither shrinking nor move up:
+					if current.parent is Node4, Node16
+						we just need to decrement cursor at path.path.get(lastReturned.pathIndex)
+
+		 */
+		final void removeAscending() {
+			if (!lastReturned.valid())
 				throw new IllegalStateException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
-			// deleted entries are replaced by their successors
-			//	if (lastReturned.left != null && lastReturned.right != null)
-			//		next = lastReturned;
-			m.deleteEntry(lastReturned);
-			lastReturned = null;
+			if(!shouldInvalidateNext()){
+				// safe to call throw away delete
+				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
+			} else {
+				deleteEntryAndResetNext(true);
+			}
+			lastReturned.reset();
 			expectedModCount = m.getModCount();
+		}
+
+		// called when common ancestor of lastReturned and next
+		// and we need to invalidate next
+		private void deleteEntryAndResetNext(boolean forward) {
+			m.keyRemoved();
+
+			// parent surely exists
+			InnerNode parent = lastReturned.uplink.parent.node;
+
+			if (parent.shouldShrink()) {
+				lastReturned.uplink.parent.remove(forward);
+				/*
+					Node48 to Node16:
+						find partial key's new position in Node16 (see shrinkAndGetCursor implementation)
+
+					Node16 to Node4:
+						cursor position stays same
+
+					we need to replace pathIndex with cursor over new parent we've got after shrinking.
+				 */
+
+				Cursor c = lastReturned.uplink.parent.shrink();
+				// new parent, use uplink to update grand parent's downlink to this new parent
+				m.grandParentToNewParent(lastReturned.uplink, c.node);
+				path.path.set(lastReturned.pathIndex, c);
+				next = path.uplink();
+				return;
+			}
+
+			lastReturned.uplink.parent.remove();
+			if (parent.size() == 1 && !parent.hasLeaf()) {
+				/*
+					forward case:
+						(lastReturned, next)
+						lastReturned points to the removed child
+						next is this last child
+
+					back case:
+						(next, lastReturned)
+						lastReturned points to removed child
+						next is this last child
+				 */
+				m.grandParentToOnlyChild(lastReturned.uplink, (Node4) parent);
+				/*
+					path cannot be empty since parent surely exists
+
+					path currently looks like:
+						(...., common GP, common Parent, next InnerNode ...)
+						or
+						(...., common GP, common Parent, next leafNode i.e. path.to ...)
+
+					with path compression we removed common parent.
+					we need to reflect this change in path as well.
+					no cursor changes since InnerNode references haven't changed, neither have the position.
+					GP still on the same position, just points to next directly.
+
+					next would already be a leafnode or InnerNode.
+
+					if next is leaf, the new uplink is (...common GGP, common GP, leaf)
+					else (...common GGP, common GP, next InnerNode)
+				 */
+				path.path.remove(lastReturned.pathIndex);
+				next = path.uplink();
+			}
+			else if (parent.size() == 0) {
+				assert parent.hasLeaf();
+				// same reasoning as above
+				m.grandParentToNewParent(lastReturned.uplink, parent.getLeaf());
+				path.path.remove(lastReturned.pathIndex);
+				next = path.uplink();
+			} else {
+				/*
+				parent can only be of Node4, Node16 type.
+					if forward:
+						move back next's cursor by one
+
+					if back:
+						no need to move, since remove only shifts array elements left for positions "after" current
+				 */
+				if(forward){
+					next.parent.seekBack();
+				}
+			}
+		}
+
+		final void removeDescending() {
+			if (!lastReturned.valid())
+				throw new IllegalStateException();
+			if (m.getModCount() != expectedModCount)
+				throw new ConcurrentModificationException();
+			if(!shouldInvalidateNext()){
+				// safe to call throw away delete
+				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
+			} else {
+				deleteEntryAndResetNext(false);
+			}
+			lastReturned.reset();
+			expectedModCount = m.getModCount();
+		}
+
+		/*
+		 	used to save current leaf node reached
+		 	before moving onto next (successor/predecessor)
+			we copy parent, grandParent's current cursor positions as well
+			because the successor/predecessor calls could change them.
+			but we need it for remove calls.
+		 */
+		private class LastReturned {
+			final Uplink<K, V> uplink;
+
+			/*
+				the index of the parent of the leafnode in uplink.from
+				since path could be empty (in case of empty tree), pathIndex could be -1.
+			 */
+			int pathIndex;
+
+			LastReturned(){
+				uplink = new Uplink<>();
+			}
+
+			void set(Uplink<K, V> uplink, Path<K, V> path){
+				this.uplink.copy(uplink);
+				this.pathIndex = path.path.size()-1;
+			}
+
+			/*
+				after the last returned is removed
+			 */
+			void reset(){
+				this.uplink.from = null;
+			}
+
+			boolean valid(){
+				return this.uplink.from != null;
+			}
 		}
 	}
 
 	final class SubMapEntryIterator extends SubMapIterator<Map.Entry<K, V>> {
-		SubMapEntryIterator(LeafNode<K, V> first,
+		SubMapEntryIterator(Path<K, V> first,
 				LeafNode<K, V> fence) {
 			super(first, fence);
 		}
@@ -514,7 +735,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	}
 
 	final class DescendingSubMapEntryIterator extends SubMapIterator<Map.Entry<K, V>> {
-		DescendingSubMapEntryIterator(LeafNode<K, V> last,
+		DescendingSubMapEntryIterator(Path<K, V> last,
 				LeafNode<K, V> fence) {
 			super(last, fence);
 		}
@@ -528,7 +749,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	// Implement minimal Spliterator as KeySpliterator backup
 	final class SubMapKeyIterator extends SubMapIterator<K>
 			implements Spliterator<K> {
-		SubMapKeyIterator(LeafNode<K, V> first,
+		SubMapKeyIterator(Path<K, V> first,
 				LeafNode<K, V> fence) {
 			super(first, fence);
 		}
@@ -580,7 +801,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 
 	final class DescendingSubMapKeyIterator extends SubMapIterator<K>
 			implements Spliterator<K> {
-		DescendingSubMapKeyIterator(LeafNode<K, V> last,
+		DescendingSubMapKeyIterator(Path<K, V> last,
 				LeafNode<K, V> fence) {
 			super(last, fence);
 		}

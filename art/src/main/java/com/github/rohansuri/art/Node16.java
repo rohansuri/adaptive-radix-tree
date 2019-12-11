@@ -111,6 +111,7 @@ class Node16 extends InnerNode {
 
 	@Override
 	public void remove(int index) {
+		assert index >= 0 && index < noOfChildren;
 		for (int i = index; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
 			child[i] = child[i + 1];
@@ -134,6 +135,13 @@ class Node16 extends InnerNode {
 	public InnerNode shrink() {
 		assert shouldShrink() : "Haven't crossed shrinking threshold yet";
 		return new Node4(this);
+	}
+
+	@Override
+	public Cursor shrinkAndGetCursor(int cursor){
+		assert shouldShrink() : "Haven't crossed shrinking threshold yet";
+		Node4 node4 =  new Node4(this);
+		return new Cursor(node4, cursor);
 	}
 
 	@Override

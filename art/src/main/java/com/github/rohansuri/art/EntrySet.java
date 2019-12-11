@@ -33,12 +33,12 @@ class EntrySet<K, V> extends AbstractSet<Map.Entry<K, V>> {
 		Map.Entry<?, ?> entry = (Map.Entry<?, ?>) o;
 		Object value = entry.getValue();
 		Uplink<K, V> uplink = m.getEntryWithUplink(entry.getKey());
-		if(uplink == null){
+		if(uplink == null){ // empty map or key does not exist
 			return false;
 		}
 		LeafNode<K, V> p = uplink.from;
 		if (AdaptiveRadixTree.valEquals(p.getValue(), value)) {
-			m.deleteEntry(uplink);
+			m.deleteEntryUsingThrowAwayUplink(uplink);
 			return true;
 		}
 		return false;

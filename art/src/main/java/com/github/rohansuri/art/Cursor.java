@@ -1,12 +1,28 @@
 package com.github.rohansuri.art;
 
+// TODO: assume cursor is either used totally for going next or totally for going previous, hence simplifying checks?
+
 // different from iterator because allows to inspect current position multiple times
 // without moving the cursor position.
 // also the same instance supports going forward, backward any number of times even after reaching the boundaries.
+
+/*
+        possible positions of cursor:
+            -2 surely leaf exists and surely previous() was called over this cursor
+            -1 on leaf if it exists else starting boundary
+            0 to child.length-2 on some valid child
+            child.length - 1 end boundary
+*/
 class Cursor {
     final InnerNode node;
     private int cursor;
     private static final int LEAF = -1;
+
+    // copy ctor
+    Cursor(Cursor c){
+        node = c.node;
+        cursor = c.cursor;
+    }
 
     // initial cursor must be valid
     Cursor(InnerNode node, int cursor){
@@ -50,22 +66,29 @@ class Cursor {
     }
 
     Node current(){
+        // TODO: safely assume cursor will always be >=0 ? internal constraint?
+        if(cursor < LEAF){
+            return null;
+        }
+        if(cursor == LEAF){
+            // non-null if leaf exists else null
+            return node.child[node.child.length-1];
+        }
         if(node instanceof Node48){
             Node48 node48 = (Node48)node;
             byte index = node48.getKeyIndex()[cursor];
-            assert index >= 0 && index <= 47;
             return node.child[index];
         }
         return node.child[cursor];
     }
 
-    // moves cursor position forward and returns the next child at the new position
+    // moves cursor position forward and returns the next child at the new position.
+    // after reaching boundary, all next() calls return null.
     Node next(){
-        // left extremer could either be at -1 or -2
-        // -1 means no leaf and hence next is the first child
+        // left extreme could either be at -1 or -2
         // -2 means we have a leaf and hence return that
+        // TODO: remove this check if we assume Cursors are totally going forward or totally going backward
         if(cursor + 1 == LEAF) {
-            // leaf surely exists otherwise cursor wouldn't have reached beyond leaf
             cursor++;
             return node.getLeaf();
         }
@@ -83,7 +106,7 @@ class Cursor {
                     return node.child[index];
                 }
             }
-        } else if (node instanceof Node256) {
+        } else { // Node256
             while (cursor+1 < Node256.NODE_SIZE) {
                 cursor++;
                 Node child = node.child[cursor];
@@ -95,17 +118,18 @@ class Cursor {
         return null;
     }
 
-    // moves cursor position backward and returns the next child at the new position
+    // moves cursor position backward and returns the next child at the new position.
+    // after reaching boundary, all previous() calls return null.
     Node previous(){
         if(cursor-1 == LEAF){
             cursor--;
             return node.getLeaf();
         }
-        if(cursor == LEAF){ // either we're already at the end or we have a leaf and hence we can go further beyond
-            if(!node.hasLeaf()){
-                return null;
+        // either we're already at the end or we have a leaf and hence we can go further beyond
+        if(cursor == LEAF){
+            if(node.hasLeaf()){
+                cursor--;
             }
-            cursor--;
             return null;
         }
 
@@ -123,7 +147,7 @@ class Cursor {
                     return node.child[index];
                 }
             }
-        } else if (node instanceof Node256) {
+        } else { // Node256
             while (cursor-1 >= 0) {
                 cursor--;
                 Node child = node.child[cursor];
@@ -135,20 +159,62 @@ class Cursor {
         return null;
     }
 
-    void removeAndNext(){
-        // TODO
-        node.remove(cursor);
+    void remove(boolean forward){
+        if(forward){
+            removeAndNext();
+        } else {
+            removeAndPrevious();
+        }
     }
 
-    void removeAndPrevious(){
-        // TODO
+    private void removeAndNext(){
+        if(cursor == LEAF){
+            node.removeLeaf();
+            next();
+        } else {
+            node.remove(cursor);
+            // nothing to do for Node4, Node16
+            // since the array left shift on delete will make current cursor point to next child
+            if(node instanceof Node48 || node instanceof Node256){
+                next();
+            }
+        }
     }
 
+    // to be used by only throw away cursors
+    // after this, cursor next, prev are not valid.
+    void remove(){
+        if(cursor == LEAF){
+            node.removeLeaf();
+        } else {
+            node.remove(cursor);
+        }
+    }
+
+    // no-op if reached beginning
+    private void removeAndPrevious(){
+        if(cursor < LEAF){
+            return;
+        }
+        if(cursor == LEAF){
+            node.removeLeaf(); // no-op if no leaf
+            previous();
+        } else {
+            node.remove(cursor);
+            if(node instanceof Node48 || node instanceof Node256){
+                previous();
+            } else {
+                cursor--;
+            }
+        }
+    }
+
+    // QUES: can cursor be on leaf?
     void replace(Node replaceWith){
+        assert cursor >= 0 && cursor < ((node instanceof Node4 || node instanceof Node16)? node.noOfChildren : node.child.length-1);
         if(node instanceof Node48){
             Node48 node48 = (Node48)node;
             byte index = node48.getKeyIndex()[cursor];
-            assert index >= 0 && index <= 47;
             node.child[index] = replaceWith;
         } else {
             node.child[cursor] = replaceWith;
@@ -158,15 +224,26 @@ class Cursor {
     // does current cursor position correspond to given partialKey?
     // CLEANUP: make floorCursor, ceilCursor return this as metadata along with cursor
     // so that we don't need to check again?
+    // DEVNOTE: internal constraint on calling this is that cursor will never be on
+    // leaf or outside boundaries
     boolean isOn(byte partialKey){
-        if(node instanceof Node48 || node instanceof Node256){
-            return cursor == Byte.toUnsignedInt(partialKey);
-        } else if(node instanceof Node4){
+        assert cursor >= 0 && cursor < ((node instanceof Node4 || node instanceof Node16)? node.noOfChildren : node.child.length-1);
+        if(node instanceof Node4){
             Node4 node4 = (Node4)node;
             return BinaryComparableUtils.unsigned(partialKey) == node4.getKeys()[cursor];
-        } else {
+        } else if(node instanceof Node16){
             Node16 node16 = (Node16)node;
             return BinaryComparableUtils.unsigned(partialKey) == node16.getKeys()[cursor];
         }
+        return cursor == Byte.toUnsignedInt(partialKey);
+    }
+
+    void seekBack(){
+        assert (node instanceof Node4 || node instanceof Node16) && node.noOfChildren >= 1;
+        cursor--;
+    }
+
+    Cursor shrink(){
+        return node.shrinkAndGetCursor(cursor);
     }
 }

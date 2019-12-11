@@ -17,6 +17,7 @@ class Path<K, V> {
     }
 
     Uplink<K, V> uplink(){
+        // TODO: do we need to return a new instance every time?
         Uplink<K, V> uplink = new Uplink<>();
         uplink.from = to;
         uplink.parent = parent();

@@ -70,6 +70,7 @@ class Node256 extends InnerNode {
 
 	@Override
 	public void remove(int index) {
+		assert index >= 0 && index < noOfChildren;
 		assert child[index] != null;
 		child[index] = null;
 		noOfChildren--;
@@ -89,6 +90,13 @@ class Node256 extends InnerNode {
 	public InnerNode shrink() {
 		assert shouldShrink();
 		return new Node48(this);
+	}
+
+	@Override
+	public Cursor shrinkAndGetCursor(int cursor){
+		assert shouldShrink() : "Haven't crossed shrinking threshold yet";
+		Node48 node48 =  new Node48(this);
+		return new Cursor(node48, cursor);
 	}
 
 	@Override

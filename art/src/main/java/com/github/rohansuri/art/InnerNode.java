@@ -60,7 +60,8 @@ abstract class InnerNode extends Node {
         createUplink(this, leaf);
     }
 
-    public void removeLeaf() {
+    // no-op if no leaf
+    public final void removeLeaf() {
         removeUplink(child[child.length - 1]);
         child[child.length - 1] = null;
     }
@@ -170,6 +171,9 @@ abstract class InnerNode extends Node {
      * @return a smaller node with the same mappings
      */
     abstract InnerNode shrink();
+
+    // TODO: take in cursor and make cursor's inner node non final to refer to newly created inner node
+    abstract Cursor shrinkAndGetCursor(int cursor);
 
     /**
      * @return true if Node has reached it's capacity

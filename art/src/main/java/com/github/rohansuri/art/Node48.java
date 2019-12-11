@@ -116,6 +116,7 @@ class Node48 extends InnerNode {
 
 	@Override
 	public void remove(int index) {
+		assert index >= 0 && index < noOfChildren;
 		assert !shouldShrink();
 		int pos = keyIndex[index];
 		assert pos != ABSENT;
@@ -139,6 +140,13 @@ class Node48 extends InnerNode {
 	public InnerNode shrink() {
 		assert shouldShrink();
 		return new Node16(this);
+	}
+
+	@Override
+	public Cursor shrinkAndGetCursor(int cursor){
+		assert shouldShrink() : "Haven't crossed shrinking threshold yet";
+		Node16 node16 = new Node16(this);
+		return node16.cursor(BinaryComparableUtils.unsigned((byte)cursor));
 	}
 
 	@Override

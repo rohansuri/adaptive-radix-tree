@@ -106,6 +106,7 @@ class Node4 extends InnerNode {
 
 	@Override
 	public void remove(int index) {
+		assert index >= 0 && index < noOfChildren;
 		for (int i = index; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
 			child[i] = child[i + 1];
@@ -128,6 +129,11 @@ class Node4 extends InnerNode {
 
 	@Override
 	public InnerNode shrink() {
+		throw new UnsupportedOperationException("Node4 is smallest node type");
+	}
+
+	@Override
+	public Cursor shrinkAndGetCursor(int cursor){
 		throw new UnsupportedOperationException("Node4 is smallest node type");
 	}
 

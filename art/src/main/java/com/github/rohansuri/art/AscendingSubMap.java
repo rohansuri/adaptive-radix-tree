@@ -66,23 +66,23 @@ final class AscendingSubMap<K, V> extends NavigableSubMap<K, V> {
 
 	@Override
 	Iterator<K> keyIterator() {
-		return new SubMapKeyIterator(absLowest(), absHighFence());
+		return new SubMapKeyIterator(absLowestWithPath(), absHighFence());
 	}
 
 	@Override
 	Spliterator<K> keySpliterator() {
-		return new SubMapKeyIterator(absLowest(), absHighFence());
+		return new SubMapKeyIterator(absLowestWithPath(), absHighFence());
 	}
 
 	@Override
 	Iterator<K> descendingKeyIterator() {
-		return new DescendingSubMapKeyIterator(absHighest(), absLowFence());
+		return new DescendingSubMapKeyIterator(absHighestWithPath(), absLowFence());
 	}
 
 	final class AscendingEntrySetView extends EntrySetView {
 		@Override
 		public Iterator<Entry<K, V>> iterator() {
-			return new SubMapEntryIterator(absLowest(), absHighFence());
+			return new SubMapEntryIterator(absLowestWithPath(), absHighFence());
 		}
 	}
 
