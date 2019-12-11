@@ -33,8 +33,6 @@ class Node48 extends InnerNode {
 			int index = Byte.toUnsignedInt(key);
 			keyIndex[index] = (byte) i;
 			this.child[i] = child[i];
-			// update up link
-			replaceUplink(this, this.child[i]);
 		}
 	}
 
@@ -49,7 +47,6 @@ class Node48 extends InnerNode {
 			if (children[i] != null) {
 				keyIndex[i] = j;
 				child[j] = children[i];
-				replaceUplink(this, child[j]);
 				j++;
 			}
 		}
@@ -91,7 +88,6 @@ class Node48 extends InnerNode {
 		this.child[insertPosition] = child;
 		keyIndex[index] = insertPosition;
 		noOfChildren++;
-		createUplink(this, child, partialKey);
 	}
 
 	@Override
@@ -99,7 +95,6 @@ class Node48 extends InnerNode {
 		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
 		assert index >= 0 && index <= 47;
 		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
@@ -108,7 +103,6 @@ class Node48 extends InnerNode {
 		int index = Byte.toUnsignedInt(partialKey);
 		int pos = keyIndex[index];
 		assert pos != ABSENT;
-		removeUplink(child[pos]);
 		child[pos] = null; // fragment
 		keyIndex[index] = ABSENT;
 		noOfChildren--;

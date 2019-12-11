@@ -10,14 +10,16 @@ import java.util.NoSuchElementException;
  */
 abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 	private final AdaptiveRadixTree<K, V> m;
-	private LeafNode<K,V> next;
-	private LeafNode<K, V> lastReturned;
 	private int expectedModCount;
+	final LastReturned<K, V> lastReturned;
+	Uplink<K, V> next;
+	final Path<K, V> path;
 
-	PrivateEntryIterator(AdaptiveRadixTree<K, V> m, LeafNode<K,V> first) {
+	PrivateEntryIterator(AdaptiveRadixTree<K, V> m, Path<K,V> first) {
 		expectedModCount = m.getModCount();
-		lastReturned = null;
-		next = first;
+		lastReturned = new LastReturned<>();
+		this.path = first;
+		next = first == null ? null : first.uplink();
 		this.m = m;
 	}
 
@@ -25,48 +27,46 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 		return next != null;
 	}
 
-	final LeafNode<K,V> nextEntry() {
-		LeafNode<K,V> e = next;
+	final LeafNode<K, V> nextEntry() {
+		Uplink<K, V> e = next;
 		if (e == null)
 			throw new NoSuchElementException();
 		if (m.getModCount() != expectedModCount)
 			throw new ConcurrentModificationException();
-		next = AdaptiveRadixTree.successor(e);
-		lastReturned = e;
-		return e;
+		lastReturned.set(e, path);
+		next = path.successor();
+		return lastReturned.uplink.from;
 	}
 
-	final LeafNode<K,V> prevEntry() {
-		LeafNode<K,V> e = next;
+	final LeafNode<K, V> prevEntry() {
+		Uplink<K, V> e = next;
 		if (e == null)
 			throw new NoSuchElementException();
 		if (m.getModCount() != expectedModCount)
 			throw new ConcurrentModificationException();
-		next = AdaptiveRadixTree.predecessor(e);
-		lastReturned = e;
-		return e;
+		lastReturned.set(e, path);
+		next = path.predecessor();
+		return lastReturned.uplink.from;
 	}
 
 	public void remove() {
-		if (lastReturned == null)
+		if (!lastReturned.valid())
 			throw new IllegalStateException();
 		if (m.getModCount() != expectedModCount)
 			throw new ConcurrentModificationException();
-		/*
-			next already points to the next leaf node (that might be a sibling to this lastReturned).
-			if next is the only sibling left, then the parent gets path compressed.
-			BUT the reference that next holds to the sibling leaf node remains the same, just it's parent changes.
-			Therefore at all times, next is a valid reference to be simply returned on the
-			next call to next().
-			Is there any scenario in which the next leaf pointer gets changed and iterator next
-			points to a stale leaf?
-			No.
-			Infact the LeafNode ctor is only ever called in a put and that too for the newer leaf
-			to be created/entered.
-			So references to an existing LeafNode won't get stale.
-		 */
-		m.deleteEntry(lastReturned);
+		if(!IteratorUtils.shouldInvalidateNext(lastReturned, path)){
+			// safe to call throw away delete
+			m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
+		} else {
+			Uplink<K, V> uplink = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,true);
+			if(uplink == null){
+				next.parent.seekBack();
+			} else {
+				next = uplink;
+			}
+		}
+		lastReturned.reset();
 		expectedModCount = m.getModCount();
-		lastReturned = null;
 	}
+
 }

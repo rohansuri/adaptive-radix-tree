@@ -36,10 +36,10 @@ class Values<K, V> extends AbstractCollection<V> {
 
 	@Override
 	public boolean remove(Object o) {
-		// replace with tree iterator
-		for (LeafNode<K,V> e = m.getFirstEntry(); e != null; e = AdaptiveRadixTree.successor(e)) {
-			if (AdaptiveRadixTree.valEquals(e.getValue(), o)) {
-				m.deleteEntry(e);
+		Iterator<Map.Entry<K, V>> it = m.entrySet().iterator();
+		while(it.hasNext()){
+			if (AdaptiveRadixTree.valEquals(it.next().getValue(), o)){
+				it.remove();
 				return true;
 			}
 		}

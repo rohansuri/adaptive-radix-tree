@@ -3,7 +3,7 @@ package com.github.rohansuri.art;
 import java.util.Map;
 
 final class EntryIterator<K, V> extends PrivateEntryIterator<K, V, Map.Entry<K, V>> {
-	EntryIterator(AdaptiveRadixTree<K, V> m, LeafNode<K,V> first) {
+	EntryIterator(AdaptiveRadixTree<K, V> m, Path<K,V> first) {
 		super(m, first);
 	}
 	@Override

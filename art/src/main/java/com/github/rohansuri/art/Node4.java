@@ -19,11 +19,6 @@ class Node4 extends InnerNode {
 		Node[] child = node16.getChild();
 		System.arraycopy(keys, 0, this.keys, 0, node16.noOfChildren);
 		System.arraycopy(child, 0, this.child, 0, node16.noOfChildren);
-
-		// update up links
-		for (int i = 0; i < noOfChildren; i++) {
-			replaceUplink(this, this.child[i]);
-		}
 	}
 
 	@Override
@@ -64,7 +59,6 @@ class Node4 extends InnerNode {
 		keys[i] = unsignedPartialKey;
 		this.child[i] = child;
 		noOfChildren++;
-		createUplink(this, child, partialKey);
 	}
 
 	@Override
@@ -80,7 +74,6 @@ class Node4 extends InnerNode {
 		// replace will be called from in a state where you know partialKey entry surely exists
 		assert index < noOfChildren : "Partial key does not exist";
 		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
@@ -95,7 +88,6 @@ class Node4 extends InnerNode {
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
 		assert index < noOfChildren : "Partial key does not exist";
-		removeUplink(child[index]);
 		for (int i = index; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
 			child[i] = child[i + 1];

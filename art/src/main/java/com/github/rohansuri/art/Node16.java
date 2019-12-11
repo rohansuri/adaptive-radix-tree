@@ -13,11 +13,6 @@ class Node16 extends InnerNode {
 		Node[] child = node.getChild();
 		System.arraycopy(keys, 0, this.keys, 0, node.noOfChildren);
 		System.arraycopy(child, 0, this.child, 0, node.noOfChildren);
-
-		// update up links
-		for (int i = 0; i < noOfChildren; i++) {
-			replaceUplink(this, this.child[i]);
-		}
 	}
 
 	Node16(Node48 node48) {
@@ -31,8 +26,7 @@ class Node16 extends InnerNode {
 		for (int i = 0, j = 0; i < Node48.KEY_INDEX_SIZE; i++) {
 			if (keyIndex[i] != Node48.ABSENT) {
 				child[j] = children[keyIndex[i]];
-				keys[j] = BinaryComparableUtils.unsigned(child[j].uplinkKey());
-				replaceUplink(this, child[j]);
+				keys[j] = BinaryComparableUtils.unsigned((byte)i);
 				j++;
 			}
 		}
@@ -80,7 +74,6 @@ class Node16 extends InnerNode {
 		keys[insertionPoint] = unsignedPartialKey;
 		this.child[insertionPoint] = child;
 		noOfChildren++;
-		createUplink(this, child, partialKey);
 	}
 
 	@Override
@@ -89,7 +82,6 @@ class Node16 extends InnerNode {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
 		assert index >= 0;
 		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
@@ -100,7 +92,6 @@ class Node16 extends InnerNode {
 		// if this fails, the question is, how could you reach the leaf node?
 		// this node must've been your follow on pointer holding the partialKey
 		assert index >= 0;
-		removeUplink(child[index]);
 		for (int i = index; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
 			child[i] = child[i + 1];

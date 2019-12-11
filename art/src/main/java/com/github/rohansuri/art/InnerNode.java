@@ -41,7 +41,6 @@ abstract class InnerNode extends Node {
 
     // copy ctor. called when growing/shrinking
     InnerNode(InnerNode node, int size) {
-        super(node);
         child = new Node[size + 1];
         // copy header
         this.noOfChildren = node.noOfChildren;
@@ -50,19 +49,14 @@ abstract class InnerNode extends Node {
 
         // copy leaf & replace uplink
         child[size] = node.getLeaf();
-        if (child[size] != null) {
-            replaceUplink(this, child[size]);
-        }
     }
 
     public void setLeaf(LeafNode<?, ?> leaf) {
         child[child.length - 1] = leaf;
-        createUplink(this, leaf);
     }
 
     // no-op if no leaf
     public final void removeLeaf() {
-        removeUplink(child[child.length - 1]);
         child[child.length - 1] = null;
     }
 

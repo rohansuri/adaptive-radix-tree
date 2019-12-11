@@ -461,7 +461,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	 *  and first becomes the other one to start from.
 	 */
 	abstract class SubMapIterator<T> implements Iterator<T> {
-		final LastReturned lastReturned;
+		final LastReturned<K, V> lastReturned;
 		Uplink<K, V> next;
 		final Object fenceKey;
 		int expectedModCount;
@@ -470,7 +470,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		SubMapIterator(Path<K, V> first,
 					   LeafNode<K, V> fence) {
 			expectedModCount = m.getModCount();
-			lastReturned = new LastReturned();
+			lastReturned = new LastReturned<>();
 			next = first.uplink();
 			path = first;
 			fenceKey = fence == null ? UNBOUNDED : fence.getKey();
@@ -501,25 +501,6 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 			lastReturned.set(e, path);
 			next = path.predecessor();
 			return lastReturned.uplink.from;
-		}
-
-		private boolean shouldInvalidateNext(){
-			// no next (lastReturned == root)
-			if(lastReturned.pathIndex != -1 &&
-				// is parent of lastReturned ancestor of next
-				path.path.size() > lastReturned.pathIndex &&
-				lastReturned.uplink.parent == path.path.get(lastReturned.pathIndex) &&
-				// even if Node256 shrinks, it shrinks into Node48
-				// and cursor position stays valid
-				!(lastReturned.uplink.parent.node instanceof Node256) &&
-					// node48 but would shrink
-					(lastReturned.uplink.parent.node instanceof Node48 &&
-							lastReturned.uplink.parent.node.noOfChildren == Node16.NODE_SIZE+1)
-			){
-				// next comes from same parent as current
-				return true;
-			}
-			return false;
 		}
 
 		/*
@@ -575,98 +556,19 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				throw new IllegalStateException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
-			if(!shouldInvalidateNext()){
+			if(!IteratorUtils.shouldInvalidateNext(lastReturned, path)){
 				// safe to call throw away delete
 				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 			} else {
-				deleteEntryAndResetNext(true);
+				Uplink<K, V> uplink = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,true);
+				if(uplink == null){
+					next.parent.seekBack();
+				} else {
+					next = uplink;
+				}
 			}
 			lastReturned.reset();
 			expectedModCount = m.getModCount();
-		}
-
-		// called when common ancestor of lastReturned and next
-		// and we need to invalidate next
-		private void deleteEntryAndResetNext(boolean forward) {
-			m.keyRemoved();
-
-			// parent surely exists
-			InnerNode parent = lastReturned.uplink.parent.node;
-
-			if (parent.shouldShrink()) {
-				lastReturned.uplink.parent.remove(forward);
-				/*
-					Node48 to Node16:
-						find partial key's new position in Node16 (see shrinkAndGetCursor implementation)
-
-					Node16 to Node4:
-						cursor position stays same
-
-					we need to replace pathIndex with cursor over new parent we've got after shrinking.
-				 */
-
-				Cursor c = lastReturned.uplink.parent.shrink();
-				// new parent, use uplink to update grand parent's downlink to this new parent
-				m.grandParentToNewParent(lastReturned.uplink, c.node);
-				path.path.set(lastReturned.pathIndex, c);
-				next = path.uplink();
-				return;
-			}
-
-			lastReturned.uplink.parent.remove();
-			if (parent.size() == 1 && !parent.hasLeaf()) {
-				/*
-					forward case:
-						(lastReturned, next)
-						lastReturned points to the removed child
-						next is this last child
-
-					back case:
-						(next, lastReturned)
-						lastReturned points to removed child
-						next is this last child
-				 */
-				m.grandParentToOnlyChild(lastReturned.uplink, (Node4) parent);
-				/*
-					path cannot be empty since parent surely exists
-
-					path currently looks like:
-						(...., common GP, common Parent, next InnerNode ...)
-						or
-						(...., common GP, common Parent, next leafNode i.e. path.to ...)
-
-					with path compression we removed common parent.
-					we need to reflect this change in path as well.
-					no cursor changes since InnerNode references haven't changed, neither have the position.
-					GP still on the same position, just points to next directly.
-
-					next would already be a leafnode or InnerNode.
-
-					if next is leaf, the new uplink is (...common GGP, common GP, leaf)
-					else (...common GGP, common GP, next InnerNode)
-				 */
-				path.path.remove(lastReturned.pathIndex);
-				next = path.uplink();
-			}
-			else if (parent.size() == 0) {
-				assert parent.hasLeaf();
-				// same reasoning as above
-				m.grandParentToNewParent(lastReturned.uplink, parent.getLeaf());
-				path.path.remove(lastReturned.pathIndex);
-				next = path.uplink();
-			} else {
-				/*
-				parent can only be of Node4, Node16 type.
-					if forward:
-						move back next's cursor by one
-
-					if back:
-						no need to move, since remove only shifts array elements left for positions "after" current
-				 */
-				if(forward){
-					next.parent.seekBack();
-				}
-			}
 		}
 
 		final void removeDescending() {
@@ -674,51 +576,17 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				throw new IllegalStateException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
-			if(!shouldInvalidateNext()){
+			if(!IteratorUtils.shouldInvalidateNext(lastReturned, path)){
 				// safe to call throw away delete
 				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 			} else {
-				deleteEntryAndResetNext(false);
+				Uplink<K, V> uplink = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,false);
+				if(uplink != null){
+					next = uplink;
+				}
 			}
 			lastReturned.reset();
 			expectedModCount = m.getModCount();
-		}
-
-		/*
-		 	used to save current leaf node reached
-		 	before moving onto next (successor/predecessor)
-			we copy parent, grandParent's current cursor positions as well
-			because the successor/predecessor calls could change them.
-			but we need it for remove calls.
-		 */
-		private class LastReturned {
-			final Uplink<K, V> uplink;
-
-			/*
-				the index of the parent of the leafnode in uplink.from
-				since path could be empty (in case of empty tree), pathIndex could be -1.
-			 */
-			int pathIndex;
-
-			LastReturned(){
-				uplink = new Uplink<>();
-			}
-
-			void set(Uplink<K, V> uplink, Path<K, V> path){
-				this.uplink.copy(uplink);
-				this.pathIndex = path.path.size()-1;
-			}
-
-			/*
-				after the last returned is removed
-			 */
-			void reset(){
-				this.uplink.from = null;
-			}
-
-			boolean valid(){
-				return this.uplink.from != null;
-			}
 		}
 	}
 
