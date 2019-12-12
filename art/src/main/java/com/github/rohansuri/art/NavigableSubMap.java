@@ -600,6 +600,10 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		public Map.Entry<K, V> next() {
 			return nextEntry();
 		}
+
+		public void remove() {
+			removeAscending();
+		}
 	}
 
 	final class DescendingSubMapEntryIterator extends SubMapIterator<Map.Entry<K, V>> {
@@ -611,6 +615,10 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		@Override
 		public Map.Entry<K, V> next() {
 			return prevEntry();
+		}
+
+		public void remove() {
+			removeDescending();
 		}
 	}
 
