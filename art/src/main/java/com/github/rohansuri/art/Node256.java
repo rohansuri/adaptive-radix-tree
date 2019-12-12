@@ -65,7 +65,7 @@ class Node256 extends InnerNode {
 
 	@Override
 	public void remove(int index) {
-		assert index >= 0 && index < noOfChildren;
+		assert index >= 0 && index < Node256.NODE_SIZE;
 		assert child[index] != null;
 		child[index] = null;
 		noOfChildren--;

@@ -107,12 +107,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	// but it ultimately uses the successor calls to iterate.
 	@Override
 	public boolean containsValue(Object value) {
-		Path<K, V> e = getFirstEntryWithPath();
-		if(e == null){
+		Path<K, V> path = getFirstEntryWithPath();
+		if(path == null){
 			return false;
 		}
-		for (; e.to != null; e.successor())
-			if (valEquals(value, e.to.getValue()))
+		for (; path.to != null; path.successor())
+			if (valEquals(value, path.to.getValue()))
 				return true;
 		return false;
 	}

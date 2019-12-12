@@ -47,7 +47,7 @@ abstract class InnerNode extends Node {
         this.prefixLen = node.prefixLen;
         this.prefixKeys = node.prefixKeys;
 
-        // copy leaf & replace uplink
+        // copy leaf
         child[size] = node.getLeaf();
     }
 

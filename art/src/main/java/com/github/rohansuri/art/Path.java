@@ -35,6 +35,7 @@ class Path<K, V> {
                 return AdaptiveRadixTree.getFirstEntryWithUplink(next, this);
             }
         }
+        to = null;
         return null;
     }
 
@@ -48,6 +49,7 @@ class Path<K, V> {
                  return AdaptiveRadixTree.getLastEntryWithUplink(prev, this);
              }
          }
+         to = null;
          return null;
     }
 }

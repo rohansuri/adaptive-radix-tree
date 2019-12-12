@@ -13,9 +13,10 @@ public class Node4UnitTest extends InnerNodeUnitTest {
 
 	@Test
 	public void testGetOnlyChild() {
+		Cursor c = Cursor.firstNonLeaf(node);
 		// remove until only one child
 		while (node.size() != 1) {
-			node.removeChild(node.first().uplinkKey());
+			c.remove(true);
 		}
 
 		byte[] keys = existingKeys();
@@ -31,9 +32,10 @@ public class Node4UnitTest extends InnerNodeUnitTest {
 
 	@Test
 	public void testShouldShrinkAlwaysFalse() {
+		Cursor c = Cursor.firstNonLeaf(node);
 		// remove all
 		while (node.size() != 0) {
-			node.removeChild(node.first().uplinkKey());
+			c.remove(true);
 		}
 		Assertions.assertFalse(node.shouldShrink());
 	}

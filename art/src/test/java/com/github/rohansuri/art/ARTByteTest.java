@@ -60,12 +60,6 @@ public class ARTByteTest {
 		assertEquals((Byte) Byte.MAX_VALUE, lastEntry.getKey());
 		assertEquals((Byte) Byte.MAX_VALUE, art.lastKey());
 
-		// assert parent of root is null
-		Field root = art.getClass().getDeclaredField("root");
-		root.setAccessible(true);
-		assertNull(((Node) root.get(art)).parent());
-
-
 		// test sorted order iteration
 		i = Byte.MIN_VALUE;
 		for (Map.Entry<Byte, String> entry : art.entrySet()) {

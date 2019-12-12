@@ -40,10 +40,10 @@ class Cursor {
         Cursor c = new Cursor(node);
         if(node instanceof Node4 || node instanceof Node16){
             c.cursor = node.noOfChildren-1;
-        } else {
-            c.cursor = node.child.length - 1;
-            c.previous();
+            return c;
         }
+        c.cursor = node instanceof Node48 ? Node48.KEY_INDEX_SIZE : node.child.length - 1;
+        c.previous();
         return c;
     }
 
@@ -99,7 +99,7 @@ class Cursor {
         } else if (node instanceof Node48) {
             Node48 node48 = (Node48) node;
             byte[] keyIndex = node48.getKeyIndex();
-            while (cursor+1 < Node48.NODE_SIZE) {
+            while (cursor+1 < Node48.KEY_INDEX_SIZE) {
                 cursor++;
                 byte index = keyIndex[cursor];
                 if(index != Node48.ABSENT){
@@ -227,7 +227,9 @@ class Cursor {
     // DEVNOTE: internal constraint on calling this is that cursor will never be on
     // leaf or outside boundaries
     boolean isOn(byte partialKey){
-        assert cursor >= 0 && cursor < ((node instanceof Node4 || node instanceof Node16)? node.noOfChildren : node.child.length-1);
+        assert cursor >= 0;
+        assert cursor < ((node instanceof Node4 || node instanceof Node16)? node.noOfChildren :
+                         (node instanceof Node48 ? Node48.KEY_INDEX_SIZE : node.child.length-1)) : cursor;
         if(node instanceof Node4){
             Node4 node4 = (Node4)node;
             return BinaryComparableUtils.unsigned(partialKey) == node4.getKeys()[cursor];
@@ -245,5 +247,15 @@ class Cursor {
 
     Cursor shrink(){
         return node.shrinkAndGetCursor(cursor);
+    }
+
+    byte partialKey(){
+        if(node instanceof Node4){
+            return BinaryComparableUtils.signed(((Node4)node).getKeys()[cursor]);
+        } else if(node instanceof Node16){
+            return BinaryComparableUtils.signed(((Node16)node).getKeys()[cursor]);
+        } else {
+            return (byte) cursor;
+        }
     }
 }

@@ -110,7 +110,7 @@ class Node48 extends InnerNode {
 
 	@Override
 	public void remove(int index) {
-		assert index >= 0 && index < noOfChildren;
+		assert index >= 0 && index < Node48.KEY_INDEX_SIZE;
 		assert !shouldShrink();
 		int pos = keyIndex[index];
 		assert pos != ABSENT;
