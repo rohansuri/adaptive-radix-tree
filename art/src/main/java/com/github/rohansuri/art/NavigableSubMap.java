@@ -127,7 +127,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				(fromStart ? m.getFirstEntryWithPath() :
 						(loInclusive ? m.getCeilingEntryWithPath(loBytes) :
 								m.getHigherEntryWithPath(loBytes)));
-		return (e == null || tooHigh(e.to.getKey())) ? null : e;
+		return (e == null || e.to == null || tooHigh(e.to.getKey())) ? null : e;
 	}
 
 	final LeafNode<K, V> absHighest() {
@@ -151,7 +151,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				(toEnd ? m.getLastEntryWithPath() :
 						(hiInclusive ? m.getFloorEntryWithPath(hiBytes) :
 								m.getLowerEntryWithPath(hiBytes)));
-		return (e == null || tooLow(e.to.getKey())) ? null : e;
+		return (e == null || e.to == null || tooLow(e.to.getKey())) ? null : e;
 	}
 
 	final LeafNode<K, V> absCeiling(K key) {
@@ -471,7 +471,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 					   LeafNode<K, V> fence) {
 			expectedModCount = m.getModCount();
 			lastReturned = new LastReturned<>();
-			next = first.uplink();
+			next = first == null ? null : first.uplink();
 			path = first;
 			fenceKey = fence == null ? UNBOUNDED : fence.getKey();
 		}
@@ -560,12 +560,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				// safe to call throw away delete
 				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 			} else {
-				Uplink<K, V> uplink = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,true);
-				if(uplink == null){
-					next.parent.seekBack();
-				} else {
-					next = uplink;
-				}
+				next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,true);
 			}
 			lastReturned.reset();
 			expectedModCount = m.getModCount();
@@ -580,10 +575,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				// safe to call throw away delete
 				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 			} else {
-				Uplink<K, V> uplink = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,false);
-				if(uplink != null){
-					next = uplink;
-				}
+				next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,false);
 			}
 			lastReturned.reset();
 			expectedModCount = m.getModCount();
@@ -636,6 +628,11 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		}
 
 		@Override
+		public void remove() {
+			removeAscending();
+		}
+
+		@Override
 		public Spliterator<K> trySplit() {
 			return null;
 		}
@@ -685,6 +682,11 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		@Override
 		public K next() {
 			return prevEntry().getKey();
+		}
+
+		@Override
+		public void remove() {
+			removeDescending();
 		}
 
 		@Override

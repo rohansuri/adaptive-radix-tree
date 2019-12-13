@@ -140,7 +140,7 @@ class Node48 extends InnerNode {
 	public Cursor shrinkAndGetCursor(int cursor){
 		assert shouldShrink() : "Haven't crossed shrinking threshold yet";
 		Node16 node16 = new Node16(this);
-		return node16.cursor(BinaryComparableUtils.unsigned((byte)cursor));
+		return node16.cursor((byte)cursor);
 	}
 
 	@Override

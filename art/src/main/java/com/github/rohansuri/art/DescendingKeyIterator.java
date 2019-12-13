@@ -8,4 +8,11 @@ final class DescendingKeyIterator<K, V> extends PrivateEntryIterator<K, V, K> {
 	public K next() {
 		return prevEntry().getKey();
 	}
+
+
+	@Override
+	public void remove(){
+		removeDescending();
+	}
+
 }

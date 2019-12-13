@@ -130,7 +130,7 @@ class Node16 extends InnerNode {
 
 	@Override
 	public Cursor shrinkAndGetCursor(int cursor){
-		assert shouldShrink() : "Haven't crossed shrinking threshold yet";
+		assert shouldShrink() : "Haven't crossed shrinking threshold yet, cursor = " + cursor + " size = " + size();
 		Node4 node4 =  new Node4(this);
 		return new Cursor(node4, cursor);
 	}

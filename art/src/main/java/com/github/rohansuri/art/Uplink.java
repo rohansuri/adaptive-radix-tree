@@ -21,11 +21,8 @@ class Uplink<K, V> {
         grandParent = uplink.grandParent == null ? null : new Cursor(uplink.grandParent); // snapshot cursor position
     }
 
-    void remove(boolean forward){
-        from = null;
-        if(parent == null){
-            return;
-        }
-        parent.remove(forward);
+    void remove(){
+        parent.remove();
+        parent = null;
     }
 }

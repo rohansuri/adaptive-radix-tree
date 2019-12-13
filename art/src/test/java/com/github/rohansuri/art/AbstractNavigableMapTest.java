@@ -263,7 +263,7 @@ public abstract class AbstractNavigableMapTest<K, V> extends AbstractSortedMapTe
 		V[] values = this.getSampleValues();
 		for (int i = 0; i < this.getMap().size(); i++) {
 			assertEquals(this.getMap().remove(keys[i]), this.getConfirmed().remove(keys[i]));
-			assertEquals(this
+			assertEquals(i + "", this
 							.getMap().floorKey(keys[i]),
 					this.getConfirmed().floorKey(keys[i]));
 			if (!shortTest) {

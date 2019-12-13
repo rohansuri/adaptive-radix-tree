@@ -49,6 +49,7 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 		return lastReturned.uplink.from;
 	}
 
+	@Override
 	public void remove() {
 		if (!lastReturned.valid())
 			throw new IllegalStateException();
@@ -58,12 +59,22 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 			// safe to call throw away delete
 			m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 		} else {
-			Uplink<K, V> uplink = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,true);
-			if(uplink == null){
-				next.parent.seekBack();
-			} else {
-				next = uplink;
-			}
+			next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,true);
+		}
+		lastReturned.reset();
+		expectedModCount = m.getModCount();
+	}
+
+	final void removeDescending() {
+		if (!lastReturned.valid())
+			throw new IllegalStateException();
+		if (m.getModCount() != expectedModCount)
+			throw new ConcurrentModificationException();
+		if(!IteratorUtils.shouldInvalidateNext(lastReturned, path)){
+			// safe to call throw away delete
+			m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
+		} else {
+			next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,false);
 		}
 		lastReturned.reset();
 		expectedModCount = m.getModCount();
