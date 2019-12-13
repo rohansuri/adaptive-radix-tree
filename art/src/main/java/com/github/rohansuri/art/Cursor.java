@@ -1,6 +1,6 @@
 package com.github.rohansuri.art;
 
-// TODO: assume cursor is either used totally for going next or totally for going previous, hence simplifying checks?
+// assumes cursor is either used totally for going next or totally for going previous
 
 // different from iterator because allows to inspect current position multiple times
 // without moving the cursor position.
@@ -91,13 +91,6 @@ class Cursor {
     // moves cursor position forward and returns the next child at the new position.
     // after reaching boundary, all next() calls return null.
     Node next(){
-        // left extreme could either be at -1 or -2
-        // -2 means we have a leaf and hence return that
-        // TODO: remove this check if we assume Cursors are totally going forward or totally going backward
-        if(cursor + 1 == LEAF) {
-            cursor++;
-            return node.getLeaf();
-        }
         if(node instanceof Node4 || node instanceof Node16){
             if(cursor+1 < node.noOfChildren){
                 return node.child[++cursor];
