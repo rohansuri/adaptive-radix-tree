@@ -14,15 +14,17 @@ class Uplink<K, V> {
     Uplink(){}
 
     // snapshot uplink (to snapshot cursor positions of parent, grand parent)
-    void copy(Uplink<K, V> uplink){
+    final void copy(Uplink<K, V> uplink){
         from = uplink.from;
-        // TODO: pool cursor instances IF this produces garbage?
-        parent = uplink.parent == null ? null : new Cursor(uplink.parent); // snapshot cursor position
-        grandParent = uplink.grandParent == null ? null : new Cursor(uplink.grandParent); // snapshot cursor position
+        Cursor.copy(uplink.parent, parent);
+        Cursor.copy(uplink.grandParent, grandParent);
     }
 
-    void remove(){
-        parent.remove();
-        parent = null;
+    boolean noParent(){
+        return parent == null || parent.node == null;
+    }
+
+    boolean noGrandParent(){
+        return grandParent == null || grandParent.node == null;
     }
 }

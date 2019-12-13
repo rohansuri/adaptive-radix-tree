@@ -18,6 +18,9 @@ class LastReturned<K, V> {
 
     LastReturned() {
         uplink = new Uplink<>();
+        // reuse these cursor instances across all set calls
+        uplink.parent = new Cursor();
+        uplink.grandParent = new Cursor();
     }
 
     void set(Uplink<K, V> uplink, Path<K, V> path) {

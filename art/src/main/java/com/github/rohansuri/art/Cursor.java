@@ -14,14 +14,20 @@ package com.github.rohansuri.art;
             child.length - 1 end boundary
 */
 class Cursor {
-    final InnerNode node;
+    InnerNode node;
     private int cursor;
     private static final int LEAF = -1;
 
-    // copy ctor
-    Cursor(Cursor c){
-        node = c.node;
-        cursor = c.cursor;
+    Cursor(){}
+
+    // into must not be null
+    static void copy(Cursor from, Cursor into){
+        if(from == null){
+            into.node = null;
+        } else {
+            into.node = from.node;
+            into.cursor = from.cursor;
+        }
     }
 
     // initial cursor must be valid
@@ -182,12 +188,13 @@ class Cursor {
 
     // to be used by only throw away cursors
     // does not move cursor position.
-    void remove(){
+    void removeAndDeleteCursor(){
         if(cursor == LEAF){
             node.removeLeaf();
         } else {
             node.remove(cursor);
         }
+        node = null;
     }
 
     // no-op if reached beginning

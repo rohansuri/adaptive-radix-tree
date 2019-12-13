@@ -491,7 +491,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	void grandParentToNewParent(Uplink<K, V> uplink, Node newParent){
-		if(uplink.grandParent == null){
+		if(uplink.noGrandParent()){
 			root = newParent;
 		} else {
 			uplink.grandParent.replace(newParent);
@@ -1506,12 +1506,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	void deleteEntryUsingThrowAwayUplink(Uplink<K, V> uplink) {
 		size--;
 		modCount++;
-		if(uplink.parent == null){
+		if(uplink.noParent()){
 			root = null;
 			return;
 		}
 		InnerNode parent = uplink.parent.node;
-		uplink.remove();
+		uplink.parent.removeAndDeleteCursor();
 		if (parent.shouldShrink()) {
 			InnerNode newParent = parent.shrink();
 			// new parent, use uplink to update grand parent's downlink to this new parent
