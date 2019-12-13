@@ -7,18 +7,17 @@ class Path<K, V> {
     // TODO: determine a good heuristic for initial array size? (max depth ever reached in inserts?)
     final List<Cursor> path = new ArrayList<>();
     LeafNode<K, V> to;
+    private final Uplink<K, V> uplink = new Uplink<>();
 
-    Cursor parent(){
+    private Cursor parent(){
         return !path.isEmpty() ? path.get(path.size()-1) : null;
     }
 
-    Cursor grandParent(){
+    private Cursor grandParent(){
         return path.size() >= 2 ? path.get(path.size()-2) : null;
     }
 
     Uplink<K, V> uplink(){
-        // TODO: do we need to return a new instance every time?
-        Uplink<K, V> uplink = new Uplink<>();
         uplink.from = to;
         uplink.parent = parent();
         uplink.grandParent = grandParent();
