@@ -121,10 +121,6 @@ class Cursor {
     // moves cursor position backward and returns the next child at the new position.
     // after reaching boundary, all previous() calls return null.
     Node previous(){
-        if(cursor-1 == LEAF){
-            cursor--;
-            return node.getLeaf();
-        }
         // either we're already at the end or we have a leaf and hence we can go further beyond
         if(cursor == LEAF){
             if(node.hasLeaf()){
@@ -156,7 +152,9 @@ class Cursor {
                 }
             }
         }
-        return null;
+
+        cursor--;
+        return node.getLeaf();
     }
 
     void remove(boolean forward){
@@ -169,6 +167,7 @@ class Cursor {
 
     private void removeAndNext(){
         if(cursor == LEAF){
+            assert node.hasLeaf();
             node.removeLeaf();
             next();
         } else {
@@ -182,7 +181,7 @@ class Cursor {
     }
 
     // to be used by only throw away cursors
-    // after this, cursor next, prev are not valid.
+    // does not move cursor position.
     void remove(){
         if(cursor == LEAF){
             node.removeLeaf();
@@ -211,7 +210,10 @@ class Cursor {
 
     // QUES: can cursor be on leaf?
     void replace(Node replaceWith){
-        assert cursor >= 0 && cursor < ((node instanceof Node4 || node instanceof Node16)? node.noOfChildren : node.child.length-1);
+        assert cursor >= 0;
+        assert cursor < ((node instanceof Node4 || node instanceof Node16)? node.noOfChildren :
+                (node instanceof Node48 ? Node48.KEY_INDEX_SIZE : node.child.length-1)) : cursor;
+
         if(node instanceof Node48){
             Node48 node48 = (Node48)node;
             byte index = node48.getKeyIndex()[cursor];
@@ -219,6 +221,10 @@ class Cursor {
         } else {
             node.child[cursor] = replaceWith;
         }
+    }
+
+    boolean isOnLeaf(){
+        return cursor == LEAF;
     }
 
     // does current cursor position correspond to given partialKey?
