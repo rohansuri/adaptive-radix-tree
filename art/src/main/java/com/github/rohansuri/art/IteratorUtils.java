@@ -19,7 +19,7 @@ class IteratorUtils {
         }
 
         // is parent of lastReturned ancestor of next, then we need to invalidate next
-        return path.path.size() > lastReturned.pathIndex && lastReturned.uplink.parent.node == path.path.get(lastReturned.pathIndex).node;
+        return path.size() > lastReturned.pathIndex && lastReturned.uplink.parent.node == path.get(lastReturned.pathIndex).node;
     }
 
     // TODO: very poor semantics, return better?
@@ -52,7 +52,7 @@ class IteratorUtils {
             Cursor c = lastReturned.uplink.parent.shrink();
             // new parent, use uplink to update grand parent's downlink to this new parent
             m.grandParentToNewParent(lastReturned.uplink, c.node);
-            path.path.set(lastReturned.pathIndex, c);
+            path.set(lastReturned.pathIndex, c);
             return path.uplink();
         }
 
@@ -87,14 +87,14 @@ class IteratorUtils {
 					if next is leaf, the new uplink is (...common GGP, common GP, leaf)
 					else (...common GGP, common GP, next InnerNode)
 				 */
-            path.path.remove(lastReturned.pathIndex);
+            path.remove(lastReturned.pathIndex);
             return path.uplink();
         }
         else if (parent.size() == 0) {
             assert parent.hasLeaf();
             // same reasoning as above
             m.grandParentToNewParent(lastReturned.uplink, parent.getLeaf());
-            path.path.remove(lastReturned.pathIndex);
+            path.remove(lastReturned.pathIndex);
             return path.uplink();
         }
         /*
@@ -109,7 +109,7 @@ class IteratorUtils {
 				    no changes to next (since these node types involve no array shifts)
         */
         if(forward && (parent instanceof Node4 || parent instanceof Node16) && !onLeaf){
-            path.path.get(lastReturned.pathIndex).seekBack();
+            path.get(lastReturned.pathIndex).seekBack();
         }
         return next;
     }

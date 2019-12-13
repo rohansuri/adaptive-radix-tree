@@ -3,9 +3,9 @@ package com.github.rohansuri.art;
 import java.util.ArrayList;
 import java.util.List;
 
-class Path<K, V> {
+final class Path<K, V> {
     // TODO: determine a good heuristic for initial array size? (max depth ever reached in inserts?)
-    final List<Cursor> path = new ArrayList<>();
+    private final ArrayList<Cursor> path = new ArrayList<>();
     LeafNode<K, V> to;
     private final Uplink<K, V> uplink = new Uplink<>();
 
@@ -50,5 +50,25 @@ class Path<K, V> {
          }
          to = null;
          return null;
+    }
+
+    void add(Cursor c){
+        path.add(c);
+    }
+
+    int size(){
+        return path.size();
+    }
+
+    Cursor get(int index){
+        return path.get(index);
+    }
+
+    void set(int index, Cursor c){
+        path.set(index, c);
+    }
+
+    void remove(int index){
+        path.remove(index);
     }
 }

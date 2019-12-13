@@ -380,7 +380,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
                 	if(cursor == null){
                 		return null;
 					}
-                	path.path.add(cursor);
+                	path.add(cursor);
                     path.to = (LeafNode<K, V>)cursor.current();
                     return path;
                 }
@@ -392,7 +392,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
             if (cursor == null) {
                 return null;
             }
-            path.path.add(cursor);
+            path.add(cursor);
             // set fields for next iteration
             node = cursor.current();
         }
@@ -795,7 +795,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node node = root;
 		Cursor cursor = node.front();
 		while (cursor != null) {
-			path.path.add(cursor);
+			path.add(cursor);
 			node = cursor.current();
 			cursor = node.front();
 		}
@@ -823,7 +823,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node node = startFrom;
 		Cursor cursor = node.front();
 		while (cursor != null) { // we got an InnerNode, traverse into it
-			path.path.add(cursor);
+			path.add(cursor);
 			node = cursor.current();
 			cursor = node.front();
 		}
@@ -870,7 +870,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node node = root;
 		Cursor cursor = node.rear();
 		while (cursor != null) {
-			path.path.add(cursor);
+			path.add(cursor);
 			node = cursor.current();
 			cursor = node.rear();
 		}
@@ -894,7 +894,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node node = startFrom;
 		Cursor cursor = node.rear();
 		while (cursor != null) {
-			path.path.add(cursor);
+			path.add(cursor);
 			node = cursor.current();
 			cursor = node.rear();
 		}
@@ -1037,7 +1037,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return path;
 			}
 			Node child = c.current();
-			path.path.add(c);
+			path.add(c);
 			if(!c.isOn(key[depth])){
 				getLastEntryWithUplink(child, path);
 				return path;
@@ -1086,7 +1086,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return leafOrPredecessor(innerNode, path);
 			}
 			Node child = c.current();
-			path.path.add(c);
+			path.add(c);
 			if(!c.isOn(key[depth])){
 				return getLastEntryWithUplink(child, path);
 			}
@@ -1099,7 +1099,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private Uplink<K, V> leafOrPredecessor(InnerNode innerNode, Path<K, V> path){
 		Cursor c = innerNode.cursorIfLeaf();
 		if(c != null){ // has a leaf
-			path.path.add(c);
+			path.add(c);
 			path.to = (LeafNode<K, V>) c.current();
 			return path.uplink();
 		}
@@ -1276,7 +1276,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 					return path;
 				}
 				Cursor c = innerNode.frontNoLeaf();
-				path.path.add(c);
+				path.add(c);
 				getFirstEntryWithUplink(c.current(), path);
 				return path;
 			}
@@ -1286,7 +1286,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return path;
 			}
 			Node child = c.current();
-			path.path.add(c);
+			path.add(c);
 			if(!c.isOn(key[depth])){ // ceil returned a greater child
 				getFirstEntryWithUplink(child, path);
 				return path;
@@ -1333,7 +1333,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 					return getFirstEntryWithUplink(innerNode, path);
 				}
 				Cursor c = innerNode.frontNoLeaf();
-				path.path.add(c);
+				path.add(c);
 				return getFirstEntryWithUplink(c.current(), path);
 			}
 			Cursor c = innerNode.ceilCursor(key[depth]);
@@ -1341,7 +1341,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return path.successor();
 			}
 			Node child = c.current();
-			path.path.add(c);
+			path.add(c);
 			if(!c.isOn(key[depth])){ // ceil returned a greater child
 				return getFirstEntryWithUplink(child, path);
 			}
