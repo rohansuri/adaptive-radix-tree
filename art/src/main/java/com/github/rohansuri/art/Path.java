@@ -1,35 +1,27 @@
 package com.github.rohansuri.art;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 final class Path<K, V> {
     // TODO: determine a good heuristic for initial array size? (max depth ever reached in inserts?)
-    private final ArrayList<Cursor> path = new ArrayList<>();
+    private Cursor[] path = new Cursor[10];
+    private int size;
     LeafNode<K, V> to;
     private final Uplink<K, V> uplink = new Uplink<>();
 
-    private Cursor parent(){
-        return !path.isEmpty() ? path.get(path.size()-1) : null;
-    }
-
-    private Cursor grandParent(){
-        return path.size() >= 2 ? path.get(path.size()-2) : null;
-    }
-
     Uplink<K, V> uplink(){
         uplink.from = to;
-        uplink.parent = parent();
-        uplink.grandParent = grandParent();
+        uplink.parent = size == 0 ? null : path[size-1];
+        uplink.grandParent = size >= 2 ? path[size-2] : null;
         return uplink;
     }
 
     Uplink<K, V> successor(){
-        while(!path.isEmpty()){
-            Cursor parent = path.get(path.size()-1); // parent
+        while(size > 0){
+            Cursor parent = path[size-1]; // parent
             Node next = parent.next();
             if(next == null){ // this cursor ended, go up
-                path.remove(path.size()-1);
+                removeLast();
             } else {
                 return AdaptiveRadixTree.getFirstEntryWithUplink(next, this);
             }
@@ -39,11 +31,11 @@ final class Path<K, V> {
     }
 
      Uplink<K, V> predecessor() {
-         while(!path.isEmpty()){
-             Cursor parent = path.get(path.size()-1); // parent
+         while(size > 0){
+             Cursor parent = path[size-1]; // parent
              Node prev = parent.previous();
              if(prev == null){ // this cursor ended, go up
-                 path.remove(path.size()-1);
+                 removeLast();
              } else {
                  return AdaptiveRadixTree.getLastEntryWithUplink(prev, this);
              }
@@ -52,23 +44,35 @@ final class Path<K, V> {
          return null;
     }
 
-    void add(Cursor c){
-        path.add(c);
+    void addLast(Cursor c){
+        if (size == path.length)
+            path = Arrays.copyOf(path, size << 1);
+        path[size] = c;
+        size = size + 1;
     }
 
     int size(){
-        return path.size();
+        return size;
     }
 
     Cursor get(int index){
-        return path.get(index);
+        return path[index];
     }
 
     void set(int index, Cursor c){
-        path.set(index, c);
+        path[index] = c;
     }
 
-    void remove(int index){
-        path.remove(index);
+    private void removeLast(){
+        size--;
+        path[size] = null;
+    }
+
+    void remove(int i){
+        // remove (from ArrayList)
+        final int newSize;
+        if ((newSize = size - 1) > i)
+            System.arraycopy(path, i + 1, path, i, newSize - i);
+        path[size = newSize] = null;
     }
 }
