@@ -14,7 +14,7 @@ plugins {
 }
 
 jmh {
-	include = ['com.github.rohansuri.art.ycsb.Long.C']
+	include = ['com.github.rohansuri.art.ycsb.Long.Load']
 	// include = ['com.github.rohansuri.art.ycsb.integer.Load']
 	// include = ['com.github.rohansuri.art.Long.Insert']
 	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
@@ -22,16 +22,20 @@ jmh {
 	warmup = '1s'
 	warmupIterations = 10
 	// profilers = ['perfasm:hotThreshold=.1']
+	// profilers = ['dtraceasm:hotThreshold=.03']
+	// jvmArgs = '-Xmx14g -Xms8g -XX:FreqInlineSize=0'
 	timeOnIteration = '1s'
 	iterations = 10
 	benchmarkParameters = [:]
 	// benchmarkParameters['distributionType'] = ['SPARSE']
-	// benchmarkParameters['workloadFile'] = ['c_uniform_1000_randint_txn.dat']
-	benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
+	benchmarkParameters['workloadFile'] = ['c_uniform_1000000_randint_txn.dat']
+	// benchmarkParameters['workloadFile'] = ["e_uniform_1000_randint_txn.dat", "e_uniform_5000_randint_txn.dat", "e_uniform_10000_randint_txn.dat", "e_uniform_50000_randint_txn.dat", "e_uniform_100000_randint_txn.dat"]
+	benchmarkParameters['mapType'] = ['ART']
+	// benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
+	// benchmarkParameters['mapType'] = ['TREE_MAP']
 	// benchmarkParameters['file'] = ['WORDS']
 	// benchmarkParameters['size'] = ['1000', '10000', '100000', '1000000', '10000000']
 	resultFormat = 'JSON'
-	jvmArgs = '-Xmx14g -Xms8g'
 }
 
 dependencies {
@@ -95,6 +99,8 @@ task testJUnit4(type: Test) {
 	filter {
 		includeTestsMatching "com.github.rohansuri.art.acc.*"
 	}
+	maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+	println "maxParallelForks for task testJUnit4=" + maxParallelForks
 }
 
 task jacocoRootReport(type: JacocoReport) {
@@ -111,7 +117,7 @@ task jacocoRootReport(type: JacocoReport) {
 
 test {
 	maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-	println "maxParallelForks=" + maxParallelForks
+	println "maxParallelForks for task test=" + maxParallelForks
 	testLogging {
 		events "passed", "skipped", "failed", "standardOut", "standardError"
 	}
@@ -121,5 +127,6 @@ test {
 	//dependsOn testJUnit4
 	exclude 'playground/**' // folder just includes some examples or playing around with APIs
 }
+
 
 check.dependsOn testJUnit4
