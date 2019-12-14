@@ -7,7 +7,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.primitives.UnsignedBytes;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -91,12 +90,12 @@ public abstract class InnerNodeUnitTest {
 		 */
 	void verifyUnsignedLexicographicOrder(InnerNode node) {
 		boolean negExist = false;
-		byte prev = node.first().uplinkKey();
+		byte prev = node.first().cursor();
 		if (prev < 0) {
 			negExist = true;
 		}
 		for (int i = 1; i < node.size(); i++) {
-			byte next = node.greater(prev).uplinkKey();
+			byte next = node.greater(prev).cursor();
 			assertTrue(UnsignedBytes.compare(prev, next) < 0);
 			prev = next;
 			if (prev < 0) {
@@ -105,9 +104,9 @@ public abstract class InnerNodeUnitTest {
 		}
 		assertTrue(negExist, "expected at least one negative byte to test lexicographic ordering");
 
-		prev = node.last().uplinkKey();
+		prev = node.last().cursor();
 		for (int i = node.size() - 2; i >= 0; i--) {
-			byte next = node.lesser(prev).uplinkKey();
+			byte next = node.lesser(prev).cursor();
 			assertTrue(UnsignedBytes.compare(prev, next) > 0);
 			prev = next;
 		}
@@ -140,7 +139,7 @@ public abstract class InnerNodeUnitTest {
 			Pair p = pairs.get(i);
 			// uplinks setup
 			assertEquals(node, p.child.parent());
-			assertEquals(p.partialKey, p.child.uplinkKey());
+			assertEquals(p.partialKey, p.child.cursor());
 			// all added partial keys exist
 			assertEquals(p.child, node.findChild(p.partialKey));
 		}
@@ -175,7 +174,7 @@ public abstract class InnerNodeUnitTest {
 	@Test
 	public void testGreater() {
 		Node last = node.last();
-		assertNull(node.greater(last.uplinkKey()));
+		assertNull(node.greater(last.cursor()));
 		Arrays.sort(existingData);
 		for (int i = 0; i < node.size() - 1; i++) {
 			Node greater = node.greater(existingData[i].partialKey);
@@ -190,7 +189,7 @@ public abstract class InnerNodeUnitTest {
 	@Test
 	public void testLesser() {
 		Node first = node.first();
-		assertNull(node.lesser(first.uplinkKey()));
+		assertNull(node.lesser(first.cursor()));
 		Arrays.sort(existingData);
 		for (int i = 1; i < node.size(); i++) {
 			Node lesser = node.lesser(existingData[i].partialKey);
@@ -230,15 +229,15 @@ public abstract class InnerNodeUnitTest {
 
 		// remove at head
 		Node head = node.first();
-		node.removeChild(head.uplinkKey());
-		assertNull(node.findChild(head.uplinkKey()));
+		node.removeAt(head.cursor());
+		assertNull(node.findChild(head.cursor()));
 		assertEquals(initialSize - 1, node.size());
 		assertNull(head.parent());
 
 		// remove at tail
 		Node tail = node.last();
-		node.removeChild(tail.uplinkKey());
-		assertNull(node.findChild(tail.uplinkKey()));
+		node.removeAt(tail.cursor());
+		assertNull(node.findChild(tail.cursor()));
 		assertEquals(initialSize - 2, node.size());
 		assertNull(tail.parent());
 
@@ -301,7 +300,7 @@ public abstract class InnerNodeUnitTest {
 	public void testShrink() {
 		List<Pair> pairs = new ArrayList<>(Arrays.asList(existingData));
 		while (!node.shouldShrink()) {
-			node.removeChild(pairs.remove(0).partialKey);
+			node.removeAt(pairs.remove(0).partialKey);
 		}
 		assertTrue(node.shouldShrink());
 		InnerNode shrunk = node.shrink();
@@ -314,7 +313,7 @@ public abstract class InnerNodeUnitTest {
 			Pair p = pairs.get(i);
 			// uplinks setup
 			assertEquals(shrunk, p.child.parent());
-			assertEquals(p.partialKey, p.child.uplinkKey());
+			assertEquals(p.partialKey, p.child.cursor());
 			// all added partial keys exist
 			assertEquals(p.child, shrunk.findChild(p.partialKey));
 		}
@@ -327,7 +326,7 @@ public abstract class InnerNodeUnitTest {
 		assertEquals(aa.prefixLen, bb.prefixLen);
 		assertArrayEquals(getValidPrefixKey(aa), getValidPrefixKey(bb));
 		assertEquals(aa.parent(), bb.parent());
-		assertEquals(aa.uplinkKey(), bb.uplinkKey());
+		assertEquals(aa.cursor(), bb.cursor());
 	}
 
 	/*
@@ -348,12 +347,12 @@ public abstract class InnerNodeUnitTest {
 	public void testReplace() {
 		Node first = node.first();
 		Node newChild = Mockito.spy(Node.class);
-		node.replace(first.uplinkKey(), newChild);
-		assertEquals(newChild, node.findChild(first.uplinkKey()));
+		node.replace(first.cursor(), newChild);
+		assertEquals(newChild, node.findChild(first.cursor()));
 		assertEquals(existingData.length, node.size());
-		assertEquals(newChild.uplinkKey(), first.uplinkKey());
+		assertEquals(newChild.cursor(), first.cursor());
 		assertEquals(node, newChild.parent());
-		assertEquals(first.uplinkKey(), first.uplinkKey());
+		assertEquals(first.cursor(), first.cursor());
 		assertEquals(node, first.parent());
 	}
 

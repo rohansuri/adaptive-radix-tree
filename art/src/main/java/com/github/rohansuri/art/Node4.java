@@ -20,7 +20,7 @@ class Node4 extends InnerNode {
 		System.arraycopy(keys, 0, this.keys, 0, node16.noOfChildren);
 		System.arraycopy(child, 0, this.child, 0, node16.noOfChildren);
 
-		// update up links
+		// cursor position doesn't change
 		for (int i = 0; i < noOfChildren; i++) {
 			replaceUplink(this, this.child[i]);
 		}
@@ -48,11 +48,12 @@ class Node4 extends InnerNode {
 		for (; i > 0 && unsignedPartialKey < keys[i - 1]; i--) {
 			keys[i] = keys[i - 1];
 			this.child[i] = this.child[i - 1];
+			setCursor(this.child[i], (byte)i);
 		}
 		keys[i] = unsignedPartialKey;
 		this.child[i] = child;
 		noOfChildren++;
-		createUplink(this, child, partialKey);
+		createUplink(this, child, (byte)i);
 	}
 
 	@Override
@@ -68,25 +69,24 @@ class Node4 extends InnerNode {
 		// replace will be called from in a state where you know partialKey entry surely exists
 		assert index < noOfChildren : "Partial key does not exist";
 		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
+		createUplink(this, newChild, (byte)index);
 	}
 
 	@Override
-	public void removeChild(byte partialKey) {
-		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		int index = 0;
-		for (; index < noOfChildren; index++) {
-			if (keys[index] == partialKey) {
-				break;
-			}
-		}
-		// if this fails, the question is, how could you reach the leaf node?
-		// this node must've been your follow on pointer holding the partialKey
-		assert index < noOfChildren : "Partial key does not exist";
-		removeUplink(child[index]);
-		for (int i = index; i < noOfChildren - 1; i++) {
+	public void replaceOn(byte cursor, Node newChild) {
+		assert cursor >= 0 && cursor < noOfChildren;
+		child[cursor] = newChild;
+		createUplink(this, newChild, cursor);
+	}
+
+	@Override
+	public void removeAt(byte cursor) {
+		assert cursor >= 0 && cursor < noOfChildren;
+		removeUplink(child[cursor]);
+		for (int i = cursor; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
 			child[i] = child[i + 1];
+			setCursor(child[i], (byte)i);
 		}
 		child[noOfChildren - 1] = null;
 		noOfChildren--;
@@ -142,12 +142,31 @@ class Node4 extends InnerNode {
 	}
 
 	@Override
+	public Node next(byte cursor){
+		cursor++;
+		if(cursor < noOfChildren){
+			return child[cursor];
+		}
+		return null;
+	}
+
+	@Override
 	public Node lesser(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		for (int i = noOfChildren - 1; i >= 0; i--) {
 			if (keys[i] < partialKey) {
 				return child[i];
 			}
+		}
+		return null;
+	}
+
+
+	@Override
+	public Node previous(byte cursor){
+		cursor--;
+		if(cursor >= 0){
+			return child[cursor];
 		}
 		return null;
 	}

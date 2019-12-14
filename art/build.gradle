@@ -14,7 +14,7 @@ plugins {
 }
 
 jmh {
-	include = ['com.github.rohansuri.art.ycsb.Long.Load']
+	include = ['com.github.rohansuri.art.ycsb.Long.E']
 	// include = ['com.github.rohansuri.art.ycsb.integer.Load']
 	// include = ['com.github.rohansuri.art.Long.Insert']
 	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
@@ -28,7 +28,7 @@ jmh {
 	iterations = 10
 	benchmarkParameters = [:]
 	// benchmarkParameters['distributionType'] = ['SPARSE']
-	benchmarkParameters['workloadFile'] = ['c_uniform_1000000_randint_txn.dat']
+	benchmarkParameters['workloadFile'] = ['e_uniform_10000_randint_txn.dat']
 	// benchmarkParameters['workloadFile'] = ["e_uniform_1000_randint_txn.dat", "e_uniform_5000_randint_txn.dat", "e_uniform_10000_randint_txn.dat", "e_uniform_50000_randint_txn.dat", "e_uniform_100000_randint_txn.dat"]
 	benchmarkParameters['mapType'] = ['ART']
 	// benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']

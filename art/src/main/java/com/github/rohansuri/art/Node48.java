@@ -33,8 +33,8 @@ class Node48 extends InnerNode {
 			int index = Byte.toUnsignedInt(key);
 			keyIndex[index] = (byte) i;
 			this.child[i] = child[i];
-			// update up link
-			replaceUplink(this, this.child[i]);
+			// update cursors
+			createUplink(this, this.child[i], (byte)index);
 		}
 	}
 
@@ -49,6 +49,7 @@ class Node48 extends InnerNode {
 			if (children[i] != null) {
 				keyIndex[i] = j;
 				child[j] = children[i];
+				// cursor position remains same
 				replaceUplink(this, child[j]);
 				j++;
 			}
@@ -79,7 +80,7 @@ class Node48 extends InnerNode {
 		this.child[insertPosition] = child;
 		keyIndex[index] = insertPosition;
 		noOfChildren++;
-		createUplink(this, child, partialKey);
+		createUplink(this, child, (byte)index);
 	}
 
 	@Override
@@ -91,9 +92,14 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
-	public void removeChild(byte partialKey) {
+	public void replaceOn(byte cursor, Node newChild) {
+		replace(cursor, newChild);
+	}
+
+	@Override
+	public void removeAt(byte cursor) {
 		assert !shouldShrink();
-		int index = Byte.toUnsignedInt(partialKey);
+		int index = Byte.toUnsignedInt(cursor);
 		int pos = keyIndex[index];
 		assert pos != ABSENT;
 		removeUplink(child[pos]);
@@ -161,6 +167,11 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
+	public Node next(byte cursor){
+		return greater(cursor);
+	}
+
+	@Override
 	public Node lesser(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
 			if (keyIndex[i] != ABSENT) {
@@ -168,6 +179,11 @@ class Node48 extends InnerNode {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Node previous(byte cursor){
+		return lesser(cursor);
 	}
 
 	@Override

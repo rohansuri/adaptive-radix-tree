@@ -214,7 +214,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private void pathCompressOnlyChild(Node4 toCompress) {
 		Node onlyChild = toCompress.getChild()[0];
 		updateCompressedPathOfOnlyChild(toCompress, onlyChild);
-		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
+		replace(toCompress.cursor(), toCompress.parent(), onlyChild);
 	}
 
 	/*
@@ -337,13 +337,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	// replace down link
-	private void replace(byte partialKey, InnerNode prevDepth, Node replaceWith) {
+	private void replace(byte cursor, InnerNode prevDepth, Node replaceWith) {
 		if (prevDepth == null) {
 			root = replaceWith;
 			Node.replaceUplink(null, root);
 		}
 		else {
-			prevDepth.replace(partialKey, replaceWith);
+			prevDepth.replaceOn(cursor, replaceWith);
 		}
 	}
 
@@ -1037,7 +1037,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				// we surely have a first node
 				return getFirstEntry(uplink.first());
 			}
-			Node greater = uplink.greater(node.uplinkKey());
+			Node greater = uplink.next(node.cursor());
 			if (greater != null) {
 				return getFirstEntry(greater);
 			}
@@ -1053,7 +1053,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				node = uplink;
 				continue;
 			}
-			Node lesser = uplink.lesser(node.uplinkKey());
+			Node lesser = uplink.previous(node.cursor());
 			if (lesser != null) {
 				return getLastEntry(lesser);
 			}
@@ -1081,21 +1081,21 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			parent.removeLeaf();
 		}
 		else {
-			parent.removeChild(leaf.uplinkKey());
+			parent.removeAt(leaf.cursor());
 		}
 
 		if (parent.shouldShrink()) {
 			InnerNode newParent = parent.shrink();
 			// newParent should have copied the uplink to same grandParent of oldParent
 			InnerNode grandParent = newParent.parent();
-			replace(newParent.uplinkKey(), grandParent, newParent);
+			replace(newParent.cursor(), grandParent, newParent);
 		}
 		else if (parent.size() == 1 && !parent.hasLeaf()) {
 			pathCompressOnlyChild((Node4) parent);
 		}
 		else if (parent.size() == 0) {
 			assert parent.hasLeaf();
-			replace(parent.uplinkKey(), parent.parent(), parent.getLeaf());
+			replace(parent.cursor(), parent.parent(), parent.getLeaf());
 		}
 	}
 

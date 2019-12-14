@@ -19,7 +19,7 @@ class Node256 extends InnerNode {
 			// index is byte, but gets type promoted
 			// https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#jls-10.4-120
 			this.child[i] = child[index];
-			// update up link
+			// update up link (cursor stays the same)
 			replaceUplink(this, this.child[i]);
 		}
 	}
@@ -39,7 +39,7 @@ class Node256 extends InnerNode {
         assert !isFull();
         int index = Byte.toUnsignedInt(partialKey);
         assert this.child[index] == null;
-        createUplink(this, child, partialKey);
+        createUplink(this, child, (byte)index);
         this.child[index] = child;
         noOfChildren++;
     }
@@ -53,8 +53,15 @@ class Node256 extends InnerNode {
 	}
 
 	@Override
-	public void removeChild(byte partialKey) {
-		int index = Byte.toUnsignedInt(partialKey);
+	public void replaceOn(byte cursor, Node newChild) {
+		replace(cursor, newChild);
+	}
+
+
+
+	@Override
+	public void removeAt(byte cursor) {
+		int index = Byte.toUnsignedInt(cursor);
 		assert child[index] != null;
 		removeUplink(child[index]);
 		child[index] = null;
@@ -114,6 +121,11 @@ class Node256 extends InnerNode {
 	}
 
 	@Override
+	public Node next(byte cursor){
+		return greater(cursor);
+	}
+
+	@Override
 	public Node lesser(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
 			if (child[i] != null) {
@@ -121,6 +133,11 @@ class Node256 extends InnerNode {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Node previous(byte cursor){
+		return lesser(cursor);
 	}
 
 	@Override

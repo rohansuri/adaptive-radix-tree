@@ -126,9 +126,15 @@ abstract class InnerNode extends Node {
 	abstract void replace(byte partialKey, Node newChild);
 
 	/**
-	 * @param partialKey for which the child pointer mapping is to be removed
+	 * @param cursor
+	 * @param newChild the new mapping to be added for given partialKey
 	 */
-	abstract void removeChild(byte partialKey);
+	abstract void replaceOn(byte cursor, Node newChild);
+
+	/**
+	 * @param cursor position at which we are to remove
+	 */
+	abstract void removeAt(byte cursor);
 
 	/**
 	 * creates and returns the next larger node type with the same mappings as this node
@@ -155,9 +161,13 @@ abstract class InnerNode extends Node {
 	 */
 	abstract Node greater(byte partialKey);
 
+	abstract Node next(byte cursor);
+
 	/**
 	 * @return returns the greatest child node for the partialKey strictly lesser than the partialKey passed.
 	 * Returns null if no such child.
 	 */
 	abstract Node lesser(byte partialKey);
+
+	abstract Node previous(byte cursor);
 }

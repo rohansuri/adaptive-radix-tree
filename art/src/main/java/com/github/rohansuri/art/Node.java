@@ -2,7 +2,7 @@ package com.github.rohansuri.art;
 
 abstract class Node {
 	/**
-	 * @return child pointer for the smallest partialKey stored in this Node.
+	 * @return child pointer for the smallest cursor stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
 	abstract Node first();
@@ -10,7 +10,7 @@ abstract class Node {
 	abstract Node firstOrLeaf();
 
 	/**
-	 * @return child pointer for the largest partialKey stored in this Node.
+	 * @return child pointer for the largest cursor stored in this Node.
 	 * 			Returns null if this node has no children.
 	 */
 	abstract Node last();
@@ -18,13 +18,13 @@ abstract class Node {
 	// for upwards traversal
 	// dev note: wherever you setup downlinks, you setup uplinks as well
 	private InnerNode parent;
-	private byte partialKey;
+	private byte cursor;
 
 	Node(){}
 
 	// copy ctor. called when growing/shrinking
 	Node(Node node) {
-		this.partialKey = node.partialKey;
+		this.cursor = node.cursor;
 		this.parent = node.parent;
 	}
 
@@ -34,9 +34,13 @@ abstract class Node {
 		c.parent = parent;
 	}
 
-	static void createUplink(InnerNode parent, Node child, byte partialKey) {
+	static void createUplink(InnerNode parent, Node child, byte cursor) {
 		child.parent = parent;
-		child.partialKey = partialKey;
+		child.cursor = cursor;
+	}
+
+	static void setCursor(Node node, byte cursor){
+		node.cursor = cursor;
 	}
 
 	// called when growing/shrinking and all children now have a new parent
@@ -58,7 +62,16 @@ abstract class Node {
 	/**
 	 * @return the uplinking partial key to parent
 	 */
-	public byte uplinkKey() {
-		return partialKey;
+	public byte cursor() {
+		return cursor;
+	}
+
+	byte uplinkKey(){
+		if(parent instanceof Node4){
+			return BinaryComparableUtils.signed(((Node4)parent).getKeys()[cursor]);
+		} if(parent instanceof Node16) {
+			return BinaryComparableUtils.signed(((Node16)parent).getKeys()[cursor]);
+		}
+		return cursor;
 	}
 }

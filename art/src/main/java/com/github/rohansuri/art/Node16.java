@@ -14,7 +14,7 @@ class Node16 extends InnerNode {
 		System.arraycopy(keys, 0, this.keys, 0, node.noOfChildren);
 		System.arraycopy(child, 0, this.child, 0, node.noOfChildren);
 
-		// update up links
+		// cursor position doesn't change
 		for (int i = 0; i < noOfChildren; i++) {
 			replaceUplink(this, this.child[i]);
 		}
@@ -31,8 +31,9 @@ class Node16 extends InnerNode {
 		for (int i = 0, j = 0; i < Node48.KEY_INDEX_SIZE; i++) {
 			if (keyIndex[i] != Node48.ABSENT) {
 				child[j] = children[keyIndex[i]];
-				keys[j] = BinaryComparableUtils.unsigned(child[j].uplinkKey());
-				replaceUplink(this, child[j]);
+				keys[j] = BinaryComparableUtils.unsigned((byte)i);
+				// cursor position of children changes
+				createUplink(this, child[j], (byte)j);
 				j++;
 			}
 		}
@@ -64,11 +65,12 @@ class Node16 extends InnerNode {
 		for (int i = noOfChildren; i > insertionPoint; i--) {
 			keys[i] = keys[i - 1];
 			this.child[i] = this.child[i - 1];
+			setCursor(this.child[i], (byte)i);
 		}
 		keys[insertionPoint] = unsignedPartialKey;
 		this.child[insertionPoint] = child;
 		noOfChildren++;
-		createUplink(this, child, partialKey);
+		createUplink(this, child, (byte)insertionPoint);
 	}
 
 	@Override
@@ -77,21 +79,24 @@ class Node16 extends InnerNode {
 		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
 		assert index >= 0;
 		child[index] = newChild;
-		createUplink(this, newChild, partialKey);
+		createUplink(this, newChild, (byte)index);
 	}
 
 	@Override
-	public void removeChild(byte partialKey) {
-		assert !shouldShrink();
-		byte unsignedPartialKey = BinaryComparableUtils.unsigned(partialKey);
-		int index = Arrays.binarySearch(keys, 0, noOfChildren, unsignedPartialKey);
-		// if this fails, the question is, how could you reach the leaf node?
-		// this node must've been your follow on pointer holding the partialKey
-		assert index >= 0;
-		removeUplink(child[index]);
-		for (int i = index; i < noOfChildren - 1; i++) {
+	public void replaceOn(byte cursor, Node newChild) {
+		assert cursor >=0 && cursor < noOfChildren;
+		child[cursor] = newChild;
+		createUplink(this, newChild, cursor);
+	}
+
+	@Override
+	public void removeAt(byte cursor) {
+		assert cursor >= 0 && cursor < noOfChildren;
+		removeUplink(child[cursor]);
+		for (int i = cursor; i < noOfChildren - 1; i++) {
 			keys[i] = keys[i + 1];
 			child[i] = child[i + 1];
+			setCursor(child[i], (byte)i);
 		}
 		child[noOfChildren - 1] = null;
 		noOfChildren--;
@@ -149,12 +154,30 @@ class Node16 extends InnerNode {
 	}
 
 	@Override
+	public Node next(byte cursor){
+		cursor++;
+		if(cursor < noOfChildren){
+			return child[cursor];
+		}
+		return null;
+	}
+
+	@Override
 	public Node lesser(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		for (int i = noOfChildren - 1; i >= 0; i--) {
 			if (keys[i] < partialKey) {
 				return child[i];
 			}
+		}
+		return null;
+	}
+
+	@Override
+	public Node previous(byte cursor){
+		cursor--;
+		if(cursor >= 0){
+			return child[cursor];
 		}
 		return null;
 	}
