@@ -13,7 +13,7 @@ package com.github.rohansuri.art;
             0 to child.length-2 on some valid child
             child.length - 1 end boundary
 */
-class Cursor {
+final class Cursor {
     InnerNode node;
     private int cursor;
     private static final int LEAF = -1;
@@ -58,6 +58,10 @@ class Cursor {
         c.cursor = LEAF;
         c.next();
         return c;
+    }
+
+    static Cursor first(Node node){
+        return node instanceof LeafNode ? null : first((InnerNode)node);
     }
 
     // initialize cursor from leaf if exists

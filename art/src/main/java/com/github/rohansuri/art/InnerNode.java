@@ -73,11 +73,6 @@ abstract class InnerNode extends Node {
     }
 
     @Override
-    public final Cursor front(){
-        return Cursor.first(this);
-    }
-
-    @Override
     public final Cursor rear(){
         return Cursor.last(this);
     }

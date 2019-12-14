@@ -10,11 +10,6 @@ abstract class Node {
     abstract Node firstOrLeaf();
 
     /**
-     * @return returns cursor to the first child (leaf or first child) of this node.
-     */
-    abstract Cursor front();
-
-    /**
      * @return returns cursor to the last child of this node.
      */
     abstract Cursor rear();

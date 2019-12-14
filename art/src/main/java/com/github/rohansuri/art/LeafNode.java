@@ -47,11 +47,6 @@ class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 	}
 
 	@Override
-	public Cursor front(){
-		return null;
-	}
-
-	@Override
 	public Cursor rear(){
 		return null;
 	}

@@ -777,11 +777,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 		Uplink<K, V> uplink = new Uplink<>();
 		Node node = root;
-		Cursor cursor = node.front();
+		Cursor cursor = Cursor.first(node);
 		while (cursor != null) {
 			uplink.moveDown(cursor);
 			node = cursor.current();
-			cursor = node.front();
+			cursor = Cursor.first(node);
 		}
 		uplink.from = (LeafNode<K, V>) node;
 		return uplink;
@@ -793,11 +793,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 		Path<K, V> path = new Path<>();
 		Node node = root;
-		Cursor cursor = node.front();
+		Cursor cursor = Cursor.first(node);
 		while (cursor != null) {
 			path.addLast(cursor);
 			node = cursor.current();
-			cursor = node.front();
+			cursor = Cursor.first(node);
 		}
 		path.to = (LeafNode<K, V>) node;
 		return path;
@@ -821,11 +821,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	@SuppressWarnings("unchecked")
 	static <K, V> Uplink<K, V> getFirstEntryWithUplink(Node startFrom, Path<K, V> path) {
 		Node node = startFrom;
-		Cursor cursor = node.front();
-		while (cursor != null) { // we got an InnerNode, traverse into it
-			path.addLast(cursor);
-			node = cursor.current();
-			cursor = node.front();
+		if(!(node instanceof LeafNode)){
+			do {
+				Cursor cursor = Cursor.first((InnerNode)node);
+				path.addLast(cursor);
+				node = cursor.current();
+			} while(!(node instanceof LeafNode));
 		}
 		path.to = (LeafNode<K, V>) node;
 		return path.uplink();

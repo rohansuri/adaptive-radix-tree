@@ -1,6 +1,6 @@
 package com.github.rohansuri.art;
 
-class Uplink<K, V> {
+final class Uplink<K, V> {
     LeafNode<K, V> from;
     Cursor parent;
     Cursor grandParent;
@@ -14,10 +14,10 @@ class Uplink<K, V> {
     Uplink(){}
 
     // snapshot uplink (to snapshot cursor positions of parent, grand parent)
-    final void copy(Uplink<K, V> uplink){
-        from = uplink.from;
-        Cursor.copy(uplink.parent, parent);
-        Cursor.copy(uplink.grandParent, grandParent);
+    static <K, V> void copy(Uplink<K, V> from, Uplink<K, V> into){
+        into.from = from.from;
+        Cursor.copy(from.parent, into.parent);
+        Cursor.copy(from.grandParent, into.grandParent);
     }
 
     boolean noParent(){
