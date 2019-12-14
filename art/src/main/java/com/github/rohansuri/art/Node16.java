@@ -6,6 +6,10 @@ class Node16 extends InnerNode {
 	static final int NODE_SIZE = 16;
 	private final byte[] keys = new byte[NODE_SIZE];
 
+	{
+		TYPE = 1;
+	}
+
 	Node16(Node4 node) {
 		super(node, NODE_SIZE);
 		assert node.isFull();

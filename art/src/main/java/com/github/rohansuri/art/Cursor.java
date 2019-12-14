@@ -90,11 +90,11 @@ final class Cursor {
     // moves cursor position forward and returns the next child at the new position.
     // after reaching boundary, all next() calls return null.
     Node next(){
-        if(node.child.length-1 <= Node16.NODE_SIZE){
+        if(node.TYPE == 1){
             if(cursor+1 < node.noOfChildren){
                 return node.child[++cursor];
             }
-        } else if (node.child.length-1 <= Node48.NODE_SIZE) {
+        } else if (node.TYPE == 2) {
             Node48 node48 = (Node48) node;
             byte[] keyIndex = node48.getKeyIndex();
             while (cursor+1 < Node48.KEY_INDEX_SIZE) {

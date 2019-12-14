@@ -13,6 +13,10 @@ class LeafNode<K, V> extends Node implements Map.Entry<K, V> {
 	private final byte[] keyBytes;
 	private final K key;
 
+	{
+		TYPE = 0;
+	}
+
 	LeafNode(byte[] keyBytes, K key, V value) {
 		this.value = value;
 		// defensive copy

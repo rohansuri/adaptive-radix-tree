@@ -835,12 +835,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	@SuppressWarnings("unchecked")
 	static <K, V> void getFirstEntry(Node startFrom, Path<K, V> path) {
 		Node node = startFrom;
-		if(!(node instanceof LeafNode)){
+		if(node.TYPE != 0){
 			do {
 				Cursor cursor = Cursor.first((InnerNode)node);
 				path.addLast(cursor);
 				node = cursor.current();
-			} while(!(node instanceof LeafNode));
+			} while(node.TYPE != 0);
 		}
 		path.to = (LeafNode<K, V>) node;
 	}
@@ -1211,7 +1211,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node node = root;
 		Path<K, V> path = new Path<>();
 		while (true) {
-			if (node instanceof LeafNode) {
+			if (node.TYPE == 0) {
 				// binary comparable comparison
 				@SuppressWarnings("unchecked")
 				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;

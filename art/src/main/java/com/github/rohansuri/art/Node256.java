@@ -3,6 +3,10 @@ package com.github.rohansuri.art;
 class Node256 extends InnerNode {
 	static final int NODE_SIZE = 256;
 
+	{
+		TYPE = 3;
+	}
+
 	Node256(Node48 node) {
 		super(node, NODE_SIZE);
 		assert node.isFull();

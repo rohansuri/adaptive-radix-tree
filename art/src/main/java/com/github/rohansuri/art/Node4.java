@@ -8,6 +8,10 @@ class Node4 extends InnerNode {
 	// if key matches then take up the same index from the child pointer array
 	private final byte[] keys = new byte[NODE_SIZE];
 
+	{
+		TYPE = 1;
+	}
+
 	Node4() {
 		super(NODE_SIZE);
 	}

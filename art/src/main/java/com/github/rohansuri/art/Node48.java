@@ -19,6 +19,10 @@ class Node48 extends InnerNode {
 	// and you see a -1, you know there's no mapping for this key
 	static final byte ABSENT = -1;
 
+	{
+		TYPE = 2;
+	}
+
 	Node48(Node16 node) {
 		super(node, NODE_SIZE);
 		assert node.isFull();
