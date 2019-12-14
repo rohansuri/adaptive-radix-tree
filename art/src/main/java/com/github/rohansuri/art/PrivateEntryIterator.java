@@ -12,40 +12,36 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 	private final AdaptiveRadixTree<K, V> m;
 	private int expectedModCount;
 	final LastReturned<K, V> lastReturned;
-	Uplink<K, V> next;
 	final Path<K, V> path;
 
 	PrivateEntryIterator(AdaptiveRadixTree<K, V> m, Path<K,V> first) {
 		expectedModCount = m.getModCount();
 		lastReturned = new LastReturned<>();
 		this.path = first;
-		next = first == null ? null : first.uplink();
 		this.m = m;
 	}
 
 	public final boolean hasNext() {
-		return next != null;
+		return path != null && path.to != null;
 	}
 
 	final LeafNode<K, V> nextEntry() {
-		Uplink<K, V> e = next;
-		if (e == null)
+		if (!hasNext())
 			throw new NoSuchElementException();
 		if (m.getModCount() != expectedModCount)
 			throw new ConcurrentModificationException();
-		lastReturned.set(e, path);
-		next = path.successorAndUplink();
+		lastReturned.set(path);
+		path.successor();
 		return lastReturned.uplink.from;
 	}
 
 	final LeafNode<K, V> prevEntry() {
-		Uplink<K, V> e = next;
-		if (e == null)
+		if (!hasNext())
 			throw new NoSuchElementException();
 		if (m.getModCount() != expectedModCount)
 			throw new ConcurrentModificationException();
-		lastReturned.set(e, path);
-		next = path.predecessor();
+		lastReturned.set(path);
+		path.predecessor();
 		return lastReturned.uplink.from;
 	}
 
@@ -59,7 +55,7 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 			// safe to call throw away delete
 			m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 		} else {
-			next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,true);
+			IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,true);
 		}
 		lastReturned.reset();
 		expectedModCount = m.getModCount();
@@ -74,7 +70,7 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 			// safe to call throw away delete
 			m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 		} else {
-			next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,false);
+			IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,false);
 		}
 		lastReturned.reset();
 		expectedModCount = m.getModCount();

@@ -23,8 +23,8 @@ class LastReturned<K, V> {
         uplink.grandParent = new Cursor();
     }
 
-    void set(Uplink<K, V> uplink, Path<K, V> path) {
-        Uplink.copy(uplink, this.uplink);
+    void set(Path<K, V> path) {
+        Uplink.copy(path, this.uplink);
         this.pathIndex = path.size() - 1;
     }
 

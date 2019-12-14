@@ -9,10 +9,18 @@ final class Path<K, V> {
     LeafNode<K, V> to;
     private final Uplink<K, V> uplink = new Uplink<>();
 
+    Cursor parent(){
+       return size == 0 ? null : path[size-1];
+    }
+
+    Cursor grandParent(){
+        return size >= 2 ? path[size-2] : null;
+    }
+
     Uplink<K, V> uplink(){
         uplink.from = to;
-        uplink.parent = size == 0 ? null : path[size-1];
-        uplink.grandParent = size >= 2 ? path[size-2] : null;
+        uplink.parent = parent();
+        uplink.grandParent = grandParent();
         return uplink;
     }
 
@@ -38,6 +46,7 @@ final class Path<K, V> {
                 removeLast();
             } else {
                 AdaptiveRadixTree.getFirstEntry(next, this);
+                return;
             }
         }
         to = null;

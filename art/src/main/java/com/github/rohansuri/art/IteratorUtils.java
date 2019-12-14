@@ -25,9 +25,8 @@ class IteratorUtils {
     // TODO: very poor semantics, return better?
     // called when common ancestor of lastReturned and next
     // and we need to invalidate next
-    static <K, V> Uplink<K, V> deleteEntryAndResetNext(AdaptiveRadixTree<K, V> m,
+    static <K, V> void deleteEntryAndResetNext(AdaptiveRadixTree<K, V> m,
                                                        LastReturned<K, V> lastReturned,
-                                                       Uplink<K, V> next,
                                                        Path<K, V> path,
                                                        boolean forward) {
         m.keyRemoved();
@@ -53,7 +52,7 @@ class IteratorUtils {
             // new parent, use uplink to update grand parent's downlink to this new parent
             m.grandParentToNewParent(lastReturned.uplink, c.node);
             path.set(lastReturned.pathIndex, c);
-            return path.uplink();
+            return;
         }
 
         if (parent.size() == 1 && !parent.hasLeaf()) {
@@ -88,14 +87,14 @@ class IteratorUtils {
 					else (...common GGP, common GP, next InnerNode)
 				 */
             path.remove(lastReturned.pathIndex);
-            return path.uplink();
+            return;
         }
         else if (parent.size() == 0) {
             assert parent.hasLeaf();
             // same reasoning as above
             m.grandParentToNewParent(lastReturned.uplink, parent.getLeaf());
             path.remove(lastReturned.pathIndex);
-            return path.uplink();
+            return;
         }
         /*
                 if parent of Node4, Node16 type:
@@ -111,6 +110,5 @@ class IteratorUtils {
         if(forward && (parent instanceof Node4 || parent instanceof Node16) && !onLeaf){
             path.get(lastReturned.pathIndex).seekBack();
         }
-        return next;
     }
 }

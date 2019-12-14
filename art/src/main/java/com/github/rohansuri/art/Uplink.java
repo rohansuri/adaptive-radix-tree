@@ -14,10 +14,11 @@ final class Uplink<K, V> {
     Uplink(){}
 
     // snapshot uplink (to snapshot cursor positions of parent, grand parent)
-    static <K, V> void copy(Uplink<K, V> from, Uplink<K, V> into){
-        into.from = from.from;
-        Cursor.copy(from.parent, into.parent);
-        Cursor.copy(from.grandParent, into.grandParent);
+
+    static <K, V> void copy(Path<K, V> from, Uplink<K, V> into){
+        into.from = from.to;
+        Cursor.copy(from.parent(), into.parent);
+        Cursor.copy(from.grandParent(), into.grandParent);
     }
 
     boolean noParent(){

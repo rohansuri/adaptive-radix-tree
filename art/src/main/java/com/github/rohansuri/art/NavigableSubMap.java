@@ -462,7 +462,6 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 	 */
 	abstract class SubMapIterator<T> implements Iterator<T> {
 		final LastReturned<K, V> lastReturned;
-		Uplink<K, V> next;
 		final Object fenceKey;
 		int expectedModCount;
 		final Path<K, V> path;
@@ -471,35 +470,32 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 					   LeafNode<K, V> fence) {
 			expectedModCount = m.getModCount();
 			lastReturned = new LastReturned<>();
-			next = first == null ? null : first.uplink();
 			path = first;
 			fenceKey = fence == null ? UNBOUNDED : fence.getKey();
 		}
 
 		@Override
 		public final boolean hasNext() {
-			return next != null && next.from.getKey() != fenceKey;
+			return path != null && path.to != null && path.to.getKey() != fenceKey;
 		}
 
 		final LeafNode<K, V> nextEntry() {
-			Uplink<K, V> e = next;
-			if (e == null || e.from.getKey() == fenceKey)
+			if (!hasNext())
 				throw new NoSuchElementException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
-			lastReturned.set(e, path);
-			next = path.successorAndUplink();
+			lastReturned.set(path);
+			path.successor();
 			return lastReturned.uplink.from;
 		}
 
 		final LeafNode<K, V> prevEntry() {
-			Uplink<K, V> e = next;
-			if (e == null || e.from.getKey() == fenceKey)
+			if (!hasNext())
 				throw new NoSuchElementException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
-			lastReturned.set(e, path);
-			next = path.predecessor();
+			lastReturned.set(path);
+			path.predecessor();
 			return lastReturned.uplink.from;
 		}
 
@@ -560,7 +556,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				// safe to call throw away delete
 				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 			} else {
-				next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,true);
+				IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,true);
 			}
 			lastReturned.reset();
 			expectedModCount = m.getModCount();
@@ -575,7 +571,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				// safe to call throw away delete
 				m.deleteEntryUsingThrowAwayUplink(lastReturned.uplink);
 			} else {
-				next = IteratorUtils.deleteEntryAndResetNext(m, lastReturned, next, path,false);
+				IteratorUtils.deleteEntryAndResetNext(m, lastReturned, path,false);
 			}
 			lastReturned.reset();
 			expectedModCount = m.getModCount();
