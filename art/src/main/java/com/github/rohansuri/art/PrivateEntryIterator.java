@@ -17,12 +17,12 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 	PrivateEntryIterator(AdaptiveRadixTree<K, V> m, Path<K,V> first) {
 		expectedModCount = m.getModCount();
 		lastReturned = new LastReturned<>();
-		this.path = first;
+		this.path = first == null ? new Path<>() : first;
 		this.m = m;
 	}
 
 	public final boolean hasNext() {
-		return path != null && path.to != null;
+		return path.to != null;
 	}
 
 	final LeafNode<K, V> nextEntry() {

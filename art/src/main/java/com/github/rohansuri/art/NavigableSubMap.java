@@ -470,13 +470,13 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 					   LeafNode<K, V> fence) {
 			expectedModCount = m.getModCount();
 			lastReturned = new LastReturned<>();
-			path = first;
+			path = first == null ? new Path<>() : first;
 			fenceKey = fence == null ? UNBOUNDED : fence.getKey();
 		}
 
 		@Override
 		public final boolean hasNext() {
-			return path != null && path.to != null && path.to.getKey() != fenceKey;
+			return path.to != null && path.to.getKey() != fenceKey;
 		}
 
 		final LeafNode<K, V> nextEntry() {
