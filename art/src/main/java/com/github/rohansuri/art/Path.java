@@ -16,7 +16,7 @@ final class Path<K, V> {
         return uplink;
     }
 
-    Uplink<K, V> successor(){
+    Uplink<K, V> successorAndUplink(){
         while(size > 0){
             Cursor parent = path[size-1]; // parent
             Node next = parent.next();
@@ -29,6 +29,20 @@ final class Path<K, V> {
         to = null;
         return null;
     }
+
+    void successor(){
+        while(size > 0){
+            Cursor parent = path[size-1]; // parent
+            Node next = parent.next();
+            if(next == null){ // this cursor ended, go up
+                removeLast();
+            } else {
+                AdaptiveRadixTree.getFirstEntry(next, this);
+            }
+        }
+        to = null;
+    }
+
 
      Uplink<K, V> predecessor() {
          while(size > 0){

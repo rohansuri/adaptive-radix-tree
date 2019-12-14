@@ -34,7 +34,7 @@ abstract class PrivateEntryIterator<K, V, T> implements Iterator<T> {
 		if (m.getModCount() != expectedModCount)
 			throw new ConcurrentModificationException();
 		lastReturned.set(e, path);
-		next = path.successor();
+		next = path.successorAndUplink();
 		return lastReturned.uplink.from;
 	}
 

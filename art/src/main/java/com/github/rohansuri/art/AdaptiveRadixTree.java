@@ -111,7 +111,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if(path == null){
 			return false;
 		}
-		for (; path.to != null; path.successor())
+		for (; path.to != null; path.successorAndUplink())
 			if (valEquals(value, path.to.getValue()))
 				return true;
 		return false;
@@ -832,6 +832,19 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return path.uplink();
 	}
 
+	@SuppressWarnings("unchecked")
+	static <K, V> void getFirstEntry(Node startFrom, Path<K, V> path) {
+		Node node = startFrom;
+		if(!(node instanceof LeafNode)){
+			do {
+				Cursor cursor = Cursor.first((InnerNode)node);
+				path.addLast(cursor);
+				node = cursor.current();
+			} while(!(node instanceof LeafNode));
+		}
+		path.to = (LeafNode<K, V>) node;
+	}
+
 	/*
 		Returns null if the ART is empty
 	 */
@@ -1258,7 +1271,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			// compare compressed path
 			int compare = compareOptimisticCompressedPath(innerNode, key, depth);
 			if (compare > 0) { // greater
-				getFirstEntryWithUplink(node, path);
+				getFirstEntry(node, path);
 				return path;
 			}
 			else if (compare < 0) { // lesser, that means all children of this node will be lesser than key
@@ -1273,12 +1286,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				// if ceil is false, then we need something higher and not the prefix, hence we start traversal
 				// from first()
 				if(ceil){
-					getFirstEntryWithUplink(innerNode, path);
+					getFirstEntry(innerNode, path);
 					return path;
 				}
 				Cursor c = innerNode.frontNoLeaf();
 				path.addLast(c);
-				getFirstEntryWithUplink(c.current(), path);
+				getFirstEntry(c.current(), path);
 				return path;
 			}
 			Cursor c = innerNode.ceilCursor(key[depth]);
@@ -1289,7 +1302,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			Node child = c.current();
 			path.addLast(c);
 			if(!c.isOn(key[depth])){ // ceil returned a greater child
-				getFirstEntryWithUplink(child, path);
+				getFirstEntry(child, path);
 				return path;
 			}
 			depth++;
@@ -1312,7 +1325,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 					path.to = leafNode;
 					return path.uplink();
 				}
-				return path.successor();
+				return path.successorAndUplink();
 			}
 			InnerNode innerNode = (InnerNode) node;
 			// compare compressed path
@@ -1321,7 +1334,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 				return getFirstEntryWithUplink(node, path);
 			}
 			else if (compare < 0) { // lesser, that means all children of this node will be lesser than key
-				return path.successor();
+				return path.successorAndUplink();
 			}
 
 			// compressed path matches completely
@@ -1339,7 +1352,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			}
 			Cursor c = innerNode.ceilCursor(key[depth]);
 			if(c == null){ // on this level, no child is greater or equal
-				return path.successor();
+				return path.successorAndUplink();
 			}
 			Node child = c.current();
 			path.addLast(c);
