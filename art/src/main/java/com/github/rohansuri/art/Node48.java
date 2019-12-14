@@ -165,16 +165,6 @@ class Node48 extends InnerNode {
 	}
 
 	@Override
-	public Node ceil(byte partialKey) {
-		for (int i = Byte.toUnsignedInt(partialKey); i < KEY_INDEX_SIZE; i++) {
-			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public Cursor ceilCursor(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey); i < KEY_INDEX_SIZE; i++) {
 			if (keyIndex[i] != ABSENT) {
@@ -184,35 +174,6 @@ class Node48 extends InnerNode {
 		return null;
 	}
 
-	@Override
-	public Node greater(byte partialKey) {
-		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < KEY_INDEX_SIZE; i++) {
-			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Node lesser(byte partialKey) {
-		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
-			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Node floor(byte partialKey) {
-		for (int i = Byte.toUnsignedInt(partialKey); i >= 0; i--) {
-			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public Cursor floorCursor(byte partialKey) {

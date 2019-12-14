@@ -148,55 +148,11 @@ class Node16 extends InnerNode {
 	}
 
 	@Override
-	public Node ceil(byte partialKey) {
-		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		for (int i = 0; i < noOfChildren; i++) {
-			if (keys[i] >= partialKey) {
-				return child[i];
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public Cursor ceilCursor(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		for (int i = 0; i < noOfChildren; i++) {
 			if (keys[i] >= partialKey) {
 				return new Cursor(this, i);
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Node greater(byte partialKey) {
-		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		for (int i = 0; i < noOfChildren; i++) {
-			if (keys[i] > partialKey) {
-				return child[i];
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Node lesser(byte partialKey) {
-		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		for (int i = noOfChildren - 1; i >= 0; i--) {
-			if (keys[i] < partialKey) {
-				return child[i];
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Node floor(byte partialKey) {
-		partialKey = BinaryComparableUtils.unsigned(partialKey);
-		for (int i = noOfChildren - 1; i >= 0; i--) {
-			if (keys[i] <= partialKey) {
-				return child[i];
 			}
 		}
 		return null;

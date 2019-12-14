@@ -171,36 +171,6 @@ public abstract class InnerNodeUnitTest {
 	}
 
 	/*
-		nothing greater than greatest
-		first is greater than smallest lexicographic unsigned i.e. 0 (0000 0000)
-	 */
-	@Test
-	public void testGreater() {
-		Cursor c = Cursor.last(node);
-		assertNull(node.greater(c.partialKey()));
-		Arrays.sort(existingData);
-		for (int i = 0; i < node.size() - 1; i++) {
-			Node greater = node.greater(existingData[i].partialKey);
-			assertEquals(existingData[i + 1].child, greater);
-		}
-	}
-
-	/*
-		nothing lesser than least
-		last is lesser than largest lexicographic unsigned i.e. -1 (1111 1111)
-	 */
-	@Test
-	public void testLesser() {
-		Cursor c = Cursor.first(node);
-		assertNull(node.lesser(c.partialKey()));
-		Arrays.sort(existingData);
-		for (int i = 1; i < node.size(); i++) {
-			Node lesser = node.lesser(existingData[i].partialKey);
-			assertEquals(existingData[i - 1].child, lesser);
-		}
-	}
-
-	/*
 		remove child
 		unsigned lexicopgrahic order maintained
 		removes uplink

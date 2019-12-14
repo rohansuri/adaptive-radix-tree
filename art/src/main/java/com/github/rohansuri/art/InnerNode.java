@@ -109,19 +109,8 @@ abstract class InnerNode extends Node {
 
     abstract Cursor cursor(byte partialKey);
 
-    /**
-     * @param partialKey
-     * @return a child which is equal or greater than given partial key, or null if there is no such child
-     */
-    abstract Node ceil(byte partialKey);
-
     abstract Cursor ceilCursor(byte partialKey);
 
-    /**
-     * @param partialKey
-     * @return a child which is equal or lesser than given partial key, or null if there is no such child
-     */
-    abstract Node floor(byte partialKey);
 
     abstract Cursor floorCursor(byte partialKey);
 
@@ -169,17 +158,6 @@ abstract class InnerNode extends Node {
      */
     abstract boolean isFull();
 
-    /**
-     * @return returns the smallest child node for the partialKey strictly greater than the partialKey passed.
-     * Returns null if no such child.
-     */
-    abstract Node greater(byte partialKey);
-
-    /**
-     * @return returns the greatest child node for the partialKey strictly lesser than the partialKey passed.
-     * Returns null if no such child.
-     */
-    abstract Node lesser(byte partialKey);
 
     abstract void remove(int index);
 }
