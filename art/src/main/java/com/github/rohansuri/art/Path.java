@@ -9,11 +9,11 @@ final class Path<K, V> {
     LeafNode<K, V> to;
     private final Uplink<K, V> uplink = new Uplink<>();
 
-    Cursor parent(){
+    private Cursor parent(){
        return size == 0 ? null : path[size-1];
     }
 
-    Cursor grandParent(){
+    private Cursor grandParent(){
         return size >= 2 ? path[size-2] : null;
     }
 
@@ -24,18 +24,20 @@ final class Path<K, V> {
         return uplink;
     }
 
-    Uplink<K, V> successorAndUplink(){
-        while(size > 0){
-            Cursor parent = path[size-1]; // parent
-            Node next = parent.next();
-            if(next == null){ // this cursor ended, go up
-                removeLast();
-            } else {
-                return AdaptiveRadixTree.getFirstEntryWithUplink(next, this);
-            }
+    // passed uplink must have parent, grandparent non null (which is ensured in LastReturned)
+    void copyInto(Uplink<K, V> uplink){
+        uplink.from = to;
+        if(size > 0){
+            path[size-1].copyInto(uplink.parent);
+        } else {
+            uplink.parent.node = null;
         }
-        to = null;
-        return null;
+
+        if(size > 1){
+            path[size-2].copyInto(uplink.grandParent);
+        } else {
+            uplink.grandParent.node = null;
+        }
     }
 
     void successor(){

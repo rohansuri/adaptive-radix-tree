@@ -20,21 +20,16 @@ final class Cursor {
 
     Cursor(){}
 
-    // into must not be null
-    static void copy(Cursor from, Cursor into){
-        if(from == null){
-            into.node = null;
-        } else {
-            into.node = from.node;
-            into.cursor = from.cursor;
-        }
-    }
-
     // initial cursor must be valid
     Cursor(InnerNode node, int cursor){
         assert node instanceof Node48 ? ((Node48)node).getKeyIndex()[cursor] != Node48.ABSENT : node.child[cursor] != null;
         this.node = node;
         this.cursor = cursor;
+    }
+
+    void copyInto(Cursor c){
+        c.node = node;
+        c.cursor = cursor;
     }
 
     // for use with static factory methods

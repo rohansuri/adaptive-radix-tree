@@ -111,7 +111,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		if(path == null){
 			return false;
 		}
-		for (; path.to != null; path.successorAndUplink())
+		for (; path.to != null; path.successor())
 			if (valEquals(value, path.to.getValue()))
 				return true;
 		return false;
@@ -1062,51 +1062,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	}
 
 	private Uplink<K, V> getLowerOrFloorEntryWithUplink(boolean lower, byte[] key) {
-		int depth = 0;
-		Node node = root;
-		Path<K, V> path = new Path<>();
-		while (true) {
-			if (node instanceof LeafNode) {
-				// binary comparable comparison
-				@SuppressWarnings("unchecked")
-				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
-				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, depth, key.length, leafKey, depth, leafKey.length) >= (lower ? 1 : 0)) {
-					path.to = leafNode;
-					return path.uplink();
-				}
-				return path.predecessor();
-			}
-			InnerNode innerNode = (InnerNode) node;
-			// compare compressed path
-			int compare = compareOptimisticCompressedPath((InnerNode) node, key, depth);
-			if (compare < 0) { // lesser
-				return getLastEntryWithUplink(node, path);
-			}
-			else if (compare > 0) { // greater, that means all children of this node will be greater than key
-				return path.predecessor();
-			}
-			// compressed path matches completely
-			depth += innerNode.prefixLen;
-			if (depth == key.length) {
-				if (!lower && innerNode.hasLeaf()) {
-					path.to = (LeafNode<K, V>) innerNode.getLeaf();
-					return path.uplink();
-				}
-				return path.predecessor();
-			}
-			Cursor c = innerNode.floorCursor(key[depth]);
-			if(c == null){
-				return leafOrPredecessor(innerNode, path);
-			}
-			Node child = c.current();
-			path.addLast(c);
-			if(!c.isOn(key[depth])){
-				return getLastEntryWithUplink(child, path);
-			}
-			depth++;
-			node = child;
-		}
+		return getLowerOrFloorEntryWithPath(lower, key).uplink();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1310,58 +1266,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		}
 	}
 
-	// TODO: replace with getHigherOrCeilEntryWithPath.uplink()
 	private Uplink<K, V> getHigherOrCeilEntryWithUplink(boolean ceil, byte[] key){
-		int depth = 0;
-		Node node = root;
-		Path<K, V> path = new Path<>();
-		while (true) {
-			if (node instanceof LeafNode) {
-				// binary comparable comparison
-				@SuppressWarnings("unchecked")
-				LeafNode<K, V> leafNode = (LeafNode<K, V>) node;
-				byte[] leafKey = leafNode.getKeyBytes();
-				if (compare(key, depth, key.length, leafKey, depth, leafKey.length) < (ceil ? 1 : 0)) {
-					path.to = leafNode;
-					return path.uplink();
-				}
-				return path.successorAndUplink();
-			}
-			InnerNode innerNode = (InnerNode) node;
-			// compare compressed path
-			int compare = compareOptimisticCompressedPath(innerNode, key, depth);
-			if (compare > 0) { // greater
-				return getFirstEntryWithUplink(node, path);
-			}
-			else if (compare < 0) { // lesser, that means all children of this node will be lesser than key
-				return path.successorAndUplink();
-			}
-
-			// compressed path matches completely
-			depth += innerNode.prefixLen;
-			if (depth == key.length) {
-				// if ceil is true, then we are allowed to return the prefix ending here (leaf of this node)
-				// if ceil is false, then we need something higher and not the prefix, hence we start traversal
-				// from first()
-				if(ceil){
-					return getFirstEntryWithUplink(innerNode, path);
-				}
-				Cursor c = innerNode.frontNoLeaf();
-				path.addLast(c);
-				return getFirstEntryWithUplink(c.current(), path);
-			}
-			Cursor c = innerNode.ceilCursor(key[depth]);
-			if(c == null){ // on this level, no child is greater or equal
-				return path.successorAndUplink();
-			}
-			Node child = c.current();
-			path.addLast(c);
-			if(!c.isOn(key[depth])){ // ceil returned a greater child
-				return getFirstEntryWithUplink(child, path);
-			}
-			depth++;
-			node = child;
-		}
+		return getHigherOrCeilEntryWithPath(ceil, key).uplink();
 	}
 
 	private LeafNode<K, V> getHigherOrCeilEntry(boolean ceil, K k) {

@@ -24,7 +24,7 @@ class LastReturned<K, V> {
     }
 
     void set(Path<K, V> path) {
-        Uplink.copy(path, this.uplink);
+        path.copyInto(uplink);
         this.pathIndex = path.size() - 1;
     }
 
