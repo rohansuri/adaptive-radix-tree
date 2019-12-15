@@ -40,6 +40,7 @@ Where Radix Tree will have allocated space for 1024 pointers (4 nodes having 256
 - [YCSB Benchmarks](#ycsb-benchmarks)
   * [Load (100% insert)](#load-100-insert)
   * [C (100% lookup)](#c-100-lookup)
+  * [E (95% range scan, 5% lookup)](#e-95-range-scan-5-insert)
 - [Tests](#tests)
 
 
@@ -125,11 +126,15 @@ Refer [YCSB](https://github.com/brianfrankcooper/YCSB/wiki/Core-Workloads) for w
 
 ### Load (100% insert)
 
-![alt text](Insert-64-bit-random-integers.svg)
+![alt text](Load-64-bit-random-integers.svg)
 
 ### C (100% lookup)
 
-![alt text](Lookup-64-bit-random-integers.svg)
+![alt text](C-64-bit-random-integers.svg)
+
+### E (95% range scan, 5% insert)
+
+![alt text](E-64-bit-random-integers.svg)
 
 
 #### Running benchmarks
