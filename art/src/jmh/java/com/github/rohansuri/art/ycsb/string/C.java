@@ -1,0 +1,73 @@
+package com.github.rohansuri.art.ycsb.string;
+
+
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Assertions;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+/*
+    workload C (100% lookup)
+ */
+public class C {
+
+    @State(Scope.Benchmark)
+    public static class CData extends Data {
+
+        @Param({/*"c_uniform_1000_url_txn.dat",
+                "c_uniform_5000_url_txn.dat",
+                "c_uniform_10000_url_txn.dat",
+                "c_uniform_50000_url_txn.dat",
+                "c_uniform_100000_url_txn.dat",
+                "c_uniform_500000_url_txn.dat",
+                "c_uniform_1000000_url_txn.dat",
+                "c_uniform_5000000_url_txn.dat",
+                "c_uniform_10000000_url_txn.dat",*/
+                "c_uniform_1000_repo_txn.dat",
+                "c_uniform_5000_repo_txn.dat",
+                "c_uniform_10000_repo_txn.dat",
+                "c_uniform_50000_repo_txn.dat",
+                "c_uniform_100000_repo_txn.dat",
+                "c_uniform_500000_repo_txn.dat",
+                "c_uniform_1000000_repo_txn.dat",
+                "c_uniform_5000000_repo_txn.dat",
+                "c_uniform_10000000_repo_txn.dat"
+                })
+        String workloadFile;
+
+        // workload C
+        String[] toLookup;
+
+        @Setup
+        public void setup() throws IOException {
+            super.loadInMap(workloadFile);
+
+            // prepare lookup operations for workload C
+            List<String> s = IOUtils
+                    .readLines(new FileInputStream(workloadDirectory + workloadFile), StandardCharsets.US_ASCII);
+            Assertions.assertTrue(s.stream().allMatch(line -> line.startsWith("READ")));
+            List<String> i = s.stream().map(line -> line.substring(line.indexOf(" ") + 1))
+                    .collect(Collectors.toList());
+            toLookup = i.toArray(String[]::new);
+        }
+
+    }
+
+    @Benchmark
+    @BenchmarkMode({Mode.AverageTime})
+    @OutputTimeUnit(TimeUnit.NANOSECONDS)
+    public int lookup(Blackhole bh, CData d) {
+        for (int i = 0; i < d.toLookup.length; i++) {
+            bh.consume(d.m.get(d.toLookup[i]));
+        }
+        return d.m.size();
+    }
+
+}

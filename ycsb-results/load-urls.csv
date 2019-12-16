@@ -1,0 +1,21 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: mapType","Param: workloadFile"
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,225741.181132,6592.166378,"ns/op",ART,c_uniform_1000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,1481505.402135,376446.233409,"ns/op",ART,c_uniform_5000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,3223625.873036,912173.905257,"ns/op",ART,c_uniform_10000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,15301967.030082,3999397.946956,"ns/op",ART,c_uniform_50000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,34342396.790401,9754534.379934,"ns/op",ART,c_uniform_100000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,163564268.052381,32876701.679337,"ns/op",ART,c_uniform_500000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,415946243.558333,89682625.635787,"ns/op",ART,c_uniform_1000000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,2084291338.500000,267357433.543819,"ns/op",ART,c_uniform_5000000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,4156832542.800000,284971209.333389,"ns/op",ART,c_uniform_10000000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,52497570812.900000,2089817783.194353,"ns/op",ART,c_uniform_50000000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,141845.707429,10738.490125,"ns/op",TREE_MAP,c_uniform_1000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,969859.858704,68024.917395,"ns/op",TREE_MAP,c_uniform_5000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,1837689.955232,17375.603439,"ns/op",TREE_MAP,c_uniform_10000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,9931757.304159,267735.717721,"ns/op",TREE_MAP,c_uniform_50000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,25542866.879744,418407.904580,"ns/op",TREE_MAP,c_uniform_100000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,126098674.972222,1038362.710078,"ns/op",TREE_MAP,c_uniform_500000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,277570084.550000,1933591.862754,"ns/op",TREE_MAP,c_uniform_1000000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,1747897995.000000,79939203.149511,"ns/op",TREE_MAP,c_uniform_5000000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,3712642625.200000,138535360.024387,"ns/op",TREE_MAP,c_uniform_10000000_url_load.dat
+"com.github.rohansuri.art.ycsb.string.Load.insert","avgt",1,10,20637418569.400000,411522369.229069,"ns/op",TREE_MAP,c_uniform_50000000_url_load.dat

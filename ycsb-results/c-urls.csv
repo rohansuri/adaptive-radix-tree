@@ -1,0 +1,19 @@
+Benchmark,Mode,Threads,Samples,Score,Score Error (99.9%),Unit,Param: mapType,Param: workloadFile
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,139584.90822,1849.015856,ns/op,ART,c_uniform_1000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,1257114.443477,105969.506542,ns/op,ART,c_uniform_5000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,2722990.707809,115420.906721,ns/op,ART,c_uniform_10000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,22048259.837826,1781131.709779,ns/op,ART,c_uniform_50000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,60741054.754044,1942716.775606,ns/op,ART,c_uniform_100000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,447637150.433333,4118901.772185,ns/op,ART,c_uniform_500000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,1035613452.600000,12680515.146324,ns/op,ART,c_uniform_1000000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,5954861222.000000,416677878.627739,ns/op,ART,c_uniform_5000000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,12681417085.800000,646507440.930693,ns/op,ART,c_uniform_10000000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,124325.702725,3215.766682,ns/op,TREE_MAP,c_uniform_1000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,1086862.293063,14121.008129,ns/op,TREE_MAP,c_uniform_5000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,2593089.829944,31454.449643,ns/op,TREE_MAP,c_uniform_10000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,18307309.722312,465710.146172,ns/op,TREE_MAP,c_uniform_50000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,53749269.483684,1320067.13598,ns/op,TREE_MAP,c_uniform_100000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,510067313.8,5493848.763166,ns/op,TREE_MAP,c_uniform_500000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,1214860565.900000,10159477.761658,ns/op,TREE_MAP,c_uniform_1000000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,7933643058.200000,75477198.09117,ns/op,TREE_MAP,c_uniform_5000000_url_txn.dat
+com.github.rohansuri.art.ycsb.string.C.lookup,avgt,1,10,18862362698.600000,104033972.459322,ns/op,TREE_MAP,c_uniform_10000000_url_txn.dat

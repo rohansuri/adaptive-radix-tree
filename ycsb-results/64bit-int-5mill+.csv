@@ -1,0 +1,19 @@
+"Benchmark","Mode","Threads","Samples","Score","Score Error (99.9%)","Unit","Param: mapType","Param: workloadFile"
+"com.github.rohansuri.art.ycsb.Long.C.lookup","avgt",1,10,1942080068.900000,129830944.904917,"ns/op",ART,c_uniform_5000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.C.lookup","avgt",1,10,4589053410.000000,425942349.501436,"ns/op",ART,c_uniform_10000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.C.lookup","avgt",1,10,41064608546.200000,6756061864.426819,"ns/op",ART,c_uniform_50000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.C.lookup","avgt",1,10,5903713836.700000,34405274.830951,"ns/op",TREE_MAP,c_uniform_5000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.C.lookup","avgt",1,10,13780359394.700000,57324845.742033,"ns/op",TREE_MAP,c_uniform_10000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.C.lookup","avgt",1,10,105358644697.300000,370086315.058365,"ns/op",TREE_MAP,c_uniform_50000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert","avgt",1,10,15951093305.200000,429532989.273524,"ns/op",ART,e_uniform_5000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert","avgt",1,10,39755523232.500000,213709695.173057,"ns/op",ART,e_uniform_10000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert","avgt",1,10,367660727706.600000,6262398380.413831,"ns/op",ART,e_uniform_50000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert","avgt",1,10,10175044743.300000,284571039.071622,"ns/op",TREE_MAP,e_uniform_5000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert","avgt",1,10,26000188172.000000,128774296.929837,"ns/op",TREE_MAP,e_uniform_10000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert","avgt",1,10,274518861822.000000,7304635820.404051,"ns/op",TREE_MAP,e_uniform_50000000_randint_txn.dat
+"com.github.rohansuri.art.ycsb.Long.Load.insert","avgt",1,10,1669881369.700000,207098192.120005,"ns/op",ART,c_uniform_5000000_randint_load.dat
+"com.github.rohansuri.art.ycsb.Long.Load.insert","avgt",1,10,3990572059.500000,291162574.066325,"ns/op",ART,c_uniform_10000000_randint_load.dat
+"com.github.rohansuri.art.ycsb.Long.Load.insert","avgt",1,10,47591191387.600000,9986872520.829687,"ns/op",ART,c_uniform_50000000_randint_load.dat
+"com.github.rohansuri.art.ycsb.Long.Load.insert","avgt",1,10,6812829679.500000,666596145.648292,"ns/op",TREE_MAP,c_uniform_5000000_randint_load.dat
+"com.github.rohansuri.art.ycsb.Long.Load.insert","avgt",1,10,14998253394.600000,1349460791.707101,"ns/op",TREE_MAP,c_uniform_10000000_randint_load.dat
+"com.github.rohansuri.art.ycsb.Long.Load.insert","avgt",1,10,95804715529.100000,1125055706.421763,"ns/op",TREE_MAP,c_uniform_50000000_randint_load.dat
