@@ -1,6 +1,8 @@
 ## Adaptive Radix Tree implemented as a Java NavigableMap
 [![Build Status](https://travis-ci.org/rohansuri/adaptive-radix-tree.svg?branch=master)](https://travis-ci.org/rohansuri/adaptive-radix-tree)
 [![codecov](https://codecov.io/gh/rohansuri/adaptive-radix-tree/branch/master/graph/badge.svg)](https://codecov.io/gh/rohansuri/adaptive-radix-tree)
+[ ![Bintray](https://api.bintray.com/packages/rohansuri/adaptive-radix-tree/adaptive-radix-tree/images/download.svg) ](https://bintray.com/rohansuri/adaptive-radix-tree/adaptive-radix-tree/_latestVersion)
+[![javadoc](https://javadoc.io/badge2/com.github.rohansuri/adaptive-radix-tree/javadoc.svg)](https://javadoc.io/doc/com.github.rohansuri/adaptive-radix-tree)
 
 This library provides an implementation of Adaptive Radix Tree (ART) as a [Java NavigableMap](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/NavigableMap.html) based on the ICDE 2013 [paper](https://db.in.tum.de/~leis/papers/ART.pdf) "The Adaptive Radix Tree: ARTful Indexing for Main-Memory Databases" by Viktor Leis.
 
@@ -18,14 +20,9 @@ Where Radix Tree will have allocated space for 1024 pointers (4 nodes having 256
 |------|------|
 |![alt text](rt.svg) |![alt text](art.svg) |
 
-## Overview
-*	`O(k)` put/get/remove time complexity where k is key length.
-*	Implements [NavigableMap](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/NavigableMap.html) and hence is a drop-in replacement for [TreeMap](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/TreeMap.html).
-*	Cache friendly because:
-	*	Uses path compression and lazy leaf expansion to avoid single child paths thereby reducing pointer indirections which cause cache misses. These two techniques also reduce tree height.
-	*	Compact nodes that are array backed and hence exhibit spatial locality, utilising cache lines better.
-
 ## Table of contents
+- [Overview](#overview)
+- [Use case](#use-case)
 - [Binary comparable keys](#binary-comparable-keys)
     + [Signed integers](#signed-integers)
     + [ASCII encoded character strings](#ascii-encoded-character-strings)
@@ -41,7 +38,22 @@ Where Radix Tree will have allocated space for 1024 pointers (4 nodes having 256
   * [Load (100% insert)](#load-100-insert)
   * [C (100% lookup)](#c-100-lookup)
   * [E (95% range scan, 5% lookup)](#e-95-range-scan-5-insert)
+  * [Memory consumption](#memory-consumption)
 - [Tests](#tests)
+- [Download](#download)
+
+## Overview
+*	`O(k)` put/get/remove time complexity where k is key length.
+*	Implements [NavigableMap](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/NavigableMap.html) and hence is a drop-in replacement for [TreeMap](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/TreeMap.html).
+*	Cache friendly because:
+	*	Uses path compression and lazy leaf expansion to avoid single child paths thereby reducing pointer indirections which cause cache misses. These two techniques also reduce tree height.
+	*	Compact nodes that are array backed and hence exhibit spatial locality, utilising cache lines better.
+
+## Use case
+
+Adaptive Radix Trees make Radix trees favourable again for cases where they simply aren't used because of excessive space consumption. 
+
+In general Radix Trees are preferred over Binary Search Trees when the dataset is such that the height of Radix tree `O(k)` turns out to be lesser than the number of comparisons done in Binary Search Trees `O(k logn)`.
 
 
 ## Binary comparable keys
@@ -109,12 +121,22 @@ Transformation of a variable length attribute that is succeeded by another attri
 If byte 0 is part of the key space then the key transformation requires remapping every byte 0 as byte 0 followed by byte 1 and ending with two byte 0s. This is described in section IV.B (e).
 
 ## Examples
-Check the [examples directory](examples).
+
+Since this library implements [NavigableMap](https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/NavigableMap.html) interface, the usage is just as any other Java map.
+
+```java
+NavigableMap<String, String> art = new AdaptiveRadixTree<>(BinaryComparables.forString());
+art.put("key1", "value");
+art.put("key2", "value");
+art.get("key1"); // value
+art.containsKey("somekey"); // false
+art.floorKey("key2"); // key1
+art.remove("key1");
+```
+
+For more, check the [examples directory](examples).
 
 ## YCSB Benchmarks
-
-Refer [YCSB](https://github.com/brianfrankcooper/YCSB/wiki/Core-Workloads) for workload characteristics.
-
 |Configuration|Value|
 |----|----|
 | Processor | Intel i7-8750H CPU @ 2.20GHz |
@@ -123,24 +145,42 @@ Refer [YCSB](https://github.com/brianfrankcooper/YCSB/wiki/Core-Workloads) for w
 | Memory | 16 GB |
 | L1, L2, L3 cache sizes | 32K, 262K, 9MB |
 
+Benchmarks are done against TreeMap (standard library implementation of Red black tree) with three datasets in order of increasing key length:
+* 64-bit random integers (8 bytes)
+* Strings with average length of 24 bytes
+* Strings with average length of 55 bytes
+
+Refer [YCSB](https://github.com/brianfrankcooper/YCSB/wiki/Core-Workloads) for workload characteristics.
 
 ### Load (100% insert)
 
 ![alt text](Load-64-bit-random-integers.svg)
+![alt text](Load-strings(avg-length-24-bytes).svg)
+![alt text](Load-strings(avg-length-55-bytes).svg)
+
+**Conclusion:**
+
+As key length increases, height of Adaptive Radix Tree increases whereas that of TreeMap stays low (log n) and hence is faster to insert into.
 
 ### C (100% lookup)
 
 ![alt text](C-64-bit-random-integers.svg)
+![alt text](C-strings-(avg-length-24-bytes).svg)
+![alt text](C-strings-(avg-length-55-bytes).svg)
+
+**Conclusion:**
+
+As key length increases, height of Adaptive Radix Tree increases whereas that of TreeMap stays low (log n) and hence is faster to search from.
 
 ### E (95% range scan, 5% insert)
 
 ![alt text](E-64-bit-random-integers.svg)
 
+### Memory consumption
 
-#### Running benchmarks
-```
-gradle --no-daemon clean jmh
-```
+Comparison against a Radix tree where every node has space for 256 children.
+
+![alt text](memory-consumption.svg)
 
 ## Tests
 
@@ -151,4 +191,16 @@ Additionally this project extends that suite by including NavigableMap specific 
 #### Running tests
 ```
 gradle test testJUnit4
+```
+
+## Download
+
+Use JCenter as the repository or download directly from [Bintray](https://bintray.com/rohansuri/adaptive-radix-tree/adaptive-radix-tree).
+
+```
+repositories {
+    jcenter()
+}
+
+compile 'com.github.rohansuri:adaptive-radix-tree:1.0.0-beta'
 ```
