@@ -11,6 +11,45 @@ plugins {
 	id 'java-library'
 	id "me.champeau.gradle.jmh" version "0.5.0-rc-1"
 	id 'jacoco'
+	id "maven-publish"
+	id "com.jfrog.bintray" version "1.8.4"
+}
+
+bintray {
+	user = 'rohansuri'
+	key = 'api-key'
+	pkg {
+		repo = 'adaptive-radix-tree'
+		name = 'adaptive-radix-tree'
+		version {
+			name = '1.0.0-beta'
+		}
+	}
+	publications = ['MyPublication']
+	configurations = ['archives']
+}
+
+tasks.register("sourcesJar", Jar) {
+	from sourceSets.main.allJava
+	classifier "sources"
+}
+
+tasks.register("javadocJar", Jar) {
+	from javadoc
+	classifier "javadoc"
+}
+
+publishing {
+	publications {
+		MyPublication(MavenPublication) {
+			from components.java
+			groupId 'com.github.rohansuri'
+			artifactId 'adaptive-radix-tree'
+			version '1.0.0-beta'
+			artifact sourcesJar
+			artifact javadocJar
+		}
+	}
 }
 
 jmh {
