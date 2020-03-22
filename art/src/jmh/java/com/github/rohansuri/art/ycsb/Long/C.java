@@ -1,6 +1,8 @@
 package com.github.rohansuri.art.ycsb.Long;
 
 
+
+import org.openjdk.jmh.annotations.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.openjdk.jmh.annotations.*;
@@ -24,16 +26,18 @@ public class C {
     @State(Scope.Benchmark)
     public static class CData extends Data {
 
-        @Param({"c_uniform_1000_randint_txn.dat",
-                "c_uniform_5000_randint_txn.dat",
-                "c_uniform_10000_randint_txn.dat",
-                "c_uniform_50000_randint_txn.dat",
-                "c_uniform_100000_randint_txn.dat",
-                "c_uniform_500000_randint_txn.dat",
-                "c_uniform_1000000_randint_txn.dat",
-                "c_uniform_5000000_randint_txn.dat",
-                "c_uniform_10000000_randint_txn.dat",
-                "c_uniform_50000000_randint_txn.dat"})
+        @Param({
+        //        "c_uniform_1000_randint_txn.dat",
+        //        "c_uniform_5000_randint_txn.dat",
+        //        "c_uniform_10000_randint_txn.dat",
+        //        "c_uniform_50000_randint_txn.dat",
+                  "c_uniform_100000_randint_txn.dat",
+        //        "c_uniform_500000_randint_txn.dat",
+        //        "c_uniform_1000000_randint_txn.dat",
+        //        "c_uniform_5000000_randint_txn.dat",
+        //        "c_uniform_10000000_randint_txn.dat",
+        //       "c_uniform_50000000_randint_txn.dat"
+        })
         String workloadFile;
 
         // workload C
@@ -51,6 +55,8 @@ public class C {
                     .map(Long::parseLong)
                     .collect(Collectors.toList());
             toLookup = i.toArray(Long[]::new);
+
+
         }
 
     }

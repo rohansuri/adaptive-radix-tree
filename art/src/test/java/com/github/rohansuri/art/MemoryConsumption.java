@@ -16,13 +16,13 @@ import org.openjdk.jol.info.GraphLayout;
 
 public class MemoryConsumption {
 
-    final static String workloadDirectory = "/Users/rohansuri/index-microbench/workloads/";
+    final static String workloadDirectory = "/home/rohansuri/index-microbench/workloads/";
 
     private static final String[] workloads = new String[]{
-            "c_uniform_10000000_randint_load.dat"
+            "e_uniform_100000_randint_load.dat"
     };
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         for(String w : workloads) {
             calc(w);
         }
@@ -50,12 +50,15 @@ public class MemoryConsumption {
                 AdaptiveRadixTree<Long, Object> art = new AdaptiveRadixTree<>(BinaryComparables.forLong());
                 while((line = r.readLine())!=null){
                     Long toInsert = Long.parseLong(line.substring(line.indexOf(" ") + 1));
-                  t.put(toInsert, o);
+                    // t.put(toInsert, o);
                     art.put(toInsert, o);
                 }
-                System.out.println("TreeMap size:" + GraphLayout.parseInstance(t).totalSize());
-                System.out.println("For workload w " + w + ", Radix size:" + GraphLayout
-                        .parseInstance(art).totalSize());
+                // System.out.println("TreeMap size:" + GraphLayout.parseInstance(t).totalSize());
+                // System.out.println("For workload w " + w + ", Radix size:" + GraphLayout
+                   //     .parseInstance(art).totalSize());
+                AdaptiveRadixTree.Stats s = art.stats();
+                System.out.println("stats: " + s);
+                System.out.println("average fill size: " + s.averageFillSize());
             }
         }
         catch (IOException e){

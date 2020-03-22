@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @State(Scope.Benchmark)
 public abstract class Data {
-    final static String workloadDirectory = "/Users/rohansuri/index-microbench/workloads/";
+    final static String workloadDirectory = "/home/rohansuri/index-microbench/workloads/";
 
     @Param
     MapType mapType;
@@ -42,7 +42,7 @@ public abstract class Data {
         }
     }
 
-    public Long[] loadInArray(String workloadFile) throws IOException {
+    public static Long[] loadInArray(String workloadFile) throws IOException {
         String loadFile = workloadFile.endsWith("load.dat") ? workloadFile : workloadFile.replace("txn.dat", "load.dat");
 
         List<String> s = IOUtils

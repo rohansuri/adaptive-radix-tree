@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -215,6 +216,106 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		Node onlyChild = toCompress.getChild()[0];
 		updateCompressedPathOfOnlyChild(toCompress, onlyChild);
 		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
+	}
+
+	/*
+		fill size for now.
+	 */
+	static class Stats {
+		// Count using instanceof.
+		int node4Count, node16Count, node48Count, node256Count;
+		Map<Integer, Integer> node4Heights = new HashMap<>();
+		Map<Integer, Integer> node16Heights = new HashMap<>();
+		Map<Integer, Integer> node48Heights = new HashMap<>();
+		Map<Integer, Integer> node256Heights = new HashMap<>();
+		// When visting a node of a type, add the number of children.
+		int fillNode4, fillNode16, fillNode48, fillNode256;
+		int leaf;
+		int sumHeight;
+		int maxHeight;
+
+		double averageFillSize(){
+			int total = node4Count *4 + node16Count *16 + node48Count *48 + node256Count *256;
+			int fill = fillNode4 + fillNode16 + fillNode48 + fillNode256;
+			return ((double)fill)/total;
+		}
+
+		@Override
+		public String toString() {
+			double avgHeight = ((double)(sumHeight))/leaf;
+			return "Stats{" +
+					"\n node4Count=" + node4Count +
+					"\n node4Slots=" + node4Count *4 +
+					"\n fillNode4=" + fillNode4 +
+					"\n fillNode4%=" + (fillNode4/(node4Count*4.0)) +
+					"\n node4Heights=" + node4Heights +
+					"\n" +
+					"\n node16Count=" + node16Count +
+					"\n node16Slots=" + node16Count *16 +
+					"\n fillNode16=" + fillNode16 +
+					"\n fillNode4%=" + (fillNode16/(node16Count*16.0)) +
+					"\n node16Heights=" + node16Heights +
+					"\n" +
+					"\n node48Count=" + node48Count +
+					"\n node48Slots=" + node48Count *48 +
+					"\n fillNode48=" + fillNode48 +
+					"\n fillNode4%=" + (fillNode48/(node48Count*48.0)) +
+					"\n node48Heights=" + node48Heights +
+					"\n" +
+					"\n node256Count=" + node256Count +
+					"\n node256Slots=" + node256Count *256 +
+					"\n fillNode256=" + fillNode256 +
+					"\n fillNode256%=" + (fillNode256/(node256Count*256.0)) +
+					"\n node256Heights=" + node256Heights +
+					"\n" +
+					"\n leaves=" + leaf +
+					"\n maxHeight=" + maxHeight +
+					"\n avgHeight=" + avgHeight +
+					"\n}";
+		}
+	}
+
+	private void statsRecursive(Stats stats, Node node, int height){
+		height++;
+		// Base case
+		if(node instanceof LeafNode){
+			stats.leaf++;
+			stats.maxHeight = Math.max(stats.maxHeight, height);
+			stats.sumHeight += height;
+			return;
+		}
+		InnerNode innerNode = (InnerNode)node;
+		// Count this node's fill size and
+		// it's instance.
+		if(innerNode instanceof Node4){
+			stats.node4Count++;
+			stats.node4Heights.put(height, stats.node4Heights.getOrDefault(height, 0)+1);
+			stats.fillNode4+=innerNode.noOfChildren;
+		} else if(innerNode instanceof Node16){
+			stats.node16Count++;
+			stats.node16Heights.put(height, stats.node16Heights.getOrDefault(height, 0)+1);
+			stats.fillNode16+=innerNode.noOfChildren;
+		} else if(innerNode instanceof Node48){
+			stats.node48Count++;
+			stats.node48Heights.put(height, stats.node48Heights.getOrDefault(height, 0)+1);
+			stats.fillNode48+=innerNode.noOfChildren;
+		} else if(innerNode instanceof Node256){
+			stats.node256Count++;
+			stats.node256Heights.put(height, stats.node256Heights.getOrDefault(height, 0)+1);
+			stats.fillNode256+=innerNode.noOfChildren;
+		}
+		// DFS for each of it's children
+		for(int i = 0; i < innerNode.child.length; i++){
+			if(innerNode.child[i] != null){
+				statsRecursive(stats, innerNode.child[i], height);
+			}
+		}
+	}
+
+	Stats stats(){
+		Stats s = new Stats();
+		statsRecursive(s, root, 0);
+		return s;
 	}
 
 	/*
@@ -1030,6 +1131,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		return size;
 	}
 
+	// This incurs lots of loads.
+	// Should appear in perf record stack trace.
 	static <K, V> LeafNode<K, V> successor(Node node) {
 		InnerNode uplink;
 		while ((uplink = node.parent()) != null) {

@@ -14,16 +14,18 @@ public class E {
     @State(Scope.Benchmark)
     public static class EData extends Data {
 
-        @Param({"e_uniform_1000_randint_txn.dat",
-                "e_uniform_5000_randint_txn.dat",
-                "e_uniform_10000_randint_txn.dat",
-                "e_uniform_50000_randint_txn.dat",
+        @Param({
+         //       "e_uniform_1000_randint_txn.dat",
+         //       "e_uniform_5000_randint_txn.dat",
+         //       "e_uniform_10000_randint_txn.dat",
+         //       "e_uniform_50000_randint_txn.dat",
                 "e_uniform_100000_randint_txn.dat",
-                "e_uniform_500000_randint_txn.dat",
-                "e_uniform_1000000_randint_txn.dat",
-                "e_uniform_5000000_randint_txn.dat",
-                "e_uniform_10000000_randint_txn.dat",
-                "e_uniform_50000000_randint_txn.dat"})
+         //       "e_uniform_500000_randint_txn.dat",
+         //       "e_uniform_1000000_randint_txn.dat",
+         //       "e_uniform_5000000_randint_txn.dat",
+         //       "e_uniform_10000000_randint_txn.dat",
+         //       "e_uniform_50000000_randint_txn.dat"
+        })
         String workloadFile;
 
         boolean[] operation; // what is the ith operation? true == SCAN, false == INSERT
@@ -80,7 +82,13 @@ public class E {
                 NavigableMap<Long, Object> tailMap = d.m.tailMap(d.scanStart[lastScan], true);
                 // creation of iterator results in one getCeilingEntry call
                 Iterator<Map.Entry<Long, Object>> tail = tailMap.entrySet().iterator();
-                for (int j = 0; j < d.scanRange[lastScan]-1 && tail.hasNext() ; j++) {
+                // bh.consume(tail);
+                // Is scan of 0 length effectively a GET?
+                // do we get the same performance numbers as a GET?
+
+                int limit = d.scanRange[lastScan]-1;
+                // int limit = 4;
+                for (int j = 0; j < limit && tail.hasNext() ; j++) {
                     // all next calls, call successors (which calls first on Node)
                     bh.consume(tail.next());
                 }

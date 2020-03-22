@@ -51,14 +51,14 @@ abstract class Node {
 	/**
 	 * @return the parent of this node. Returns null for root node.
 	 */
-	public InnerNode parent() {
+	final InnerNode parent() {
 		return parent;
 	}
 
 	/**
 	 * @return the uplinking partial key to parent
 	 */
-	public byte uplinkKey() {
+	final byte uplinkKey() {
 		return partialKey;
 	}
 }

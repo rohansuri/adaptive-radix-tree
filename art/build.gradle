@@ -53,28 +53,44 @@ publishing {
 }
 
 jmh {
-	include = ['com.github.rohansuri.art.ycsb.Long.Load']
+
+	include = ['com.github.rohansuri.art.ycsb.Long.E']
+	// include = ['com.github.rohansuri.art.ycsb.Long.E', 'com.github.rohansuri.art.ycsb.Long.C']
 	// include = ['com.github.rohansuri.art.ycsb.integer.Load']
 	// include = ['com.github.rohansuri.art.Long.Insert']
 	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
 	fork = 1
 	warmup = '1s'
 	warmupIterations = 10
+	// profilers = ['perf']
+	// profilers = ['perf:events=task-clock,cycles,instructions,cache-references,cache-misses']
+	// profilers = ['perfasm:events=L1-dcache-loads;hotThreshold=.05']
+	// profilers = ['perfasm:events=L1-dcache-loads']
+//	profilers = ['perf:events=MEM_UOPS_RETIRED.ALL_LOADS,' +
+//						 'L1D.REPLACEMENT,' +
+//						 'MEM_LOAD_UOPS_RETIRED.L1_HIT,' +
+//						 'MEM_LOAD_UOPS_RETIRED.L2_HIT,' +
+//						 'MEM_LOAD_UOPS_RETIRED.LLC_HIT,' +
+//						 ' MEM_LOAD_UOPS_RETIRED.L1_MISS,' +
+//						 ' MEM_LOAD_UOPS_RETIRED.L2_MISS,' +
+//						 ' MEM_LOAD_UOPS_RETIRED.LLC_MISS, L2_RQSTS.PF_HIT, L2_RQSTS.PF_MISS, L2_RQSTS.ALL_PF']
+	// profilers = ['perf:events=L1-dcache-loads']
 	// profilers = ['perfasm:hotThreshold=.1']
 	// profilers = ['dtraceasm:hotThreshold=.03']
 	// jvmArgs = '-Xmx14g -Xms8g -XX:FreqInlineSize=0'
+	// jvmArgs = '-XX:FreqInlineSize=0'
 	timeOnIteration = '1s'
-	iterations = 10
+	iterations = 50
 	benchmarkParameters = [:]
 	// benchmarkParameters['distributionType'] = ['SPARSE']
-	benchmarkParameters['workloadFile'] = ['c_uniform_1000000_randint_txn.dat']
+	// benchmarkParameters['workloadFile'] = ['e_uniform_100000_randint_txn.dat']
 	// benchmarkParameters['workloadFile'] = ["e_uniform_1000_randint_txn.dat", "e_uniform_5000_randint_txn.dat", "e_uniform_10000_randint_txn.dat", "e_uniform_50000_randint_txn.dat", "e_uniform_100000_randint_txn.dat"]
 	benchmarkParameters['mapType'] = ['ART']
 	// benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
 	// benchmarkParameters['mapType'] = ['TREE_MAP']
 	// benchmarkParameters['file'] = ['WORDS']
 	// benchmarkParameters['size'] = ['1000', '10000', '100000', '1000000', '10000000']
-	resultFormat = 'JSON'
+	// resultFormat = 'JSON'
 }
 
 dependencies {
@@ -104,7 +120,10 @@ dependencies {
 	jmh group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
 	jmh group: 'commons-io', name: 'commons-io', version: '2.6'
 
-	jmh group: 'org.openjdk.jol', name: 'jol-core', version: '0.9'
+	jmh 'org.openjdk.jmh:jmh-core:1.23'
+	jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
+
+	compile group: 'org.openjdk.jol', name: 'jol-core', version: '0.10'
 
 }
 
