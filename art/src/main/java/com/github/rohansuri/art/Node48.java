@@ -32,9 +32,9 @@ class Node48 extends InnerNode {
 			byte key = BinaryComparableUtils.signed(keys[i]);
 			int index = Byte.toUnsignedInt(key);
 			keyIndex[index] = (byte) i;
-			this.child[i] = child[i];
+			this.child[i+1] = child[i+1];
 			// update up link
-			replaceUplink(this, this.child[i]);
+			replaceUplink(this, this.child[i+1]);
 		}
 	}
 
@@ -46,10 +46,10 @@ class Node48 extends InnerNode {
 		Node[] children = node256.getChild();
 		byte j = 0;
 		for (int i = 0; i < Node256.NODE_SIZE; i++) {
-			if (children[i] != null) {
+			if (children[i+1] != null) {
 				keyIndex[i] = j;
-				child[j] = children[i];
-				replaceUplink(this, child[j]);
+				child[j+1] = children[i+1];
+				replaceUplink(this, child[j+1]);
 				j++;
 			}
 		}
@@ -64,7 +64,7 @@ class Node48 extends InnerNode {
 		}
 
 		assert index >= 0 && index <= 47;
-		return child[index];
+		return child[index+1];
 	}
 
 	@Override
@@ -74,9 +74,9 @@ class Node48 extends InnerNode {
 		assert keyIndex[index] == ABSENT;
 		// find a null place, left fragmented by a removeChild or has always been null
 		byte insertPosition = 0;
-		for (; this.child[insertPosition] != null && insertPosition < NODE_SIZE; insertPosition++) ;
+		for (; this.child[insertPosition+1] != null && insertPosition < NODE_SIZE; insertPosition++) ;
 
-		this.child[insertPosition] = child;
+		this.child[insertPosition+1] = child;
 		keyIndex[index] = insertPosition;
 		noOfChildren++;
 		createUplink(this, child, partialKey);
@@ -86,7 +86,7 @@ class Node48 extends InnerNode {
 	public void replace(byte partialKey, Node newChild) {
 		byte index = keyIndex[Byte.toUnsignedInt(partialKey)];
 		assert index >= 0 && index <= 47;
-		child[index] = newChild;
+		child[index+1] = newChild;
 		createUplink(this, newChild, partialKey);
 	}
 
@@ -96,8 +96,8 @@ class Node48 extends InnerNode {
 		int index = Byte.toUnsignedInt(partialKey);
 		int pos = keyIndex[index];
 		assert pos != ABSENT;
-		removeUplink(child[pos]);
-		child[pos] = null; // fragment
+		removeUplink(child[pos+1]);
+		child[pos+1] = null; // fragment
 		keyIndex[index] = ABSENT;
 		noOfChildren--;
 	}
@@ -124,7 +124,7 @@ class Node48 extends InnerNode {
 		assert noOfChildren > Node16.NODE_SIZE;
 		int i = 0;
 		while(keyIndex[i] == ABSENT)i++;
-		return child[keyIndex[i]];
+		return child[keyIndex[i]+1];
 	}
 
 	@Override
@@ -132,7 +132,7 @@ class Node48 extends InnerNode {
 		assert noOfChildren > Node16.NODE_SIZE;
 		int i = KEY_INDEX_SIZE - 1;
         while(keyIndex[i] == ABSENT)i--;
-		return child[keyIndex[i]];
+		return child[keyIndex[i]+1];
 	}
 
 	@Override
@@ -144,7 +144,7 @@ class Node48 extends InnerNode {
 	public Node ceil(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey); i < KEY_INDEX_SIZE; i++) {
 			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
+				return child[keyIndex[i]+1];
 			}
 		}
 		return null;
@@ -154,7 +154,7 @@ class Node48 extends InnerNode {
 	public Node greater(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < KEY_INDEX_SIZE; i++) {
 			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
+				return child[keyIndex[i]+1];
 			}
 		}
 		return null;
@@ -164,7 +164,7 @@ class Node48 extends InnerNode {
 	public Node lesser(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
 			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
+				return child[keyIndex[i]+1];
 			}
 		}
 		return null;
@@ -174,7 +174,7 @@ class Node48 extends InnerNode {
 	public Node floor(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey); i >= 0; i--) {
 			if (keyIndex[i] != ABSENT) {
-				return child[keyIndex[i]];
+				return child[keyIndex[i]+1];
 			}
 		}
 		return null;

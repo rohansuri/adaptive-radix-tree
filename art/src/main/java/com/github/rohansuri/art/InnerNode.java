@@ -30,6 +30,8 @@ abstract class InnerNode extends Node {
 
 	final Node[] child;
 
+	static final int LEAF_INDEX = 0;
+
 	InnerNode(int size) {
 		prefixKeys = new byte[PESSIMISTIC_PATH_COMPRESSION_LIMIT];
 		child = new Node[size + 1];
@@ -45,32 +47,32 @@ abstract class InnerNode extends Node {
 		this.prefixKeys = node.prefixKeys;
 
 		// copy leaf & replace uplink
-		child[size] = node.getLeaf();
-		if (child[size] != null) {
-			replaceUplink(this, child[size]);
+		child[LEAF_INDEX] = node.getLeaf();
+		if (child[LEAF_INDEX] != null) {
+			replaceUplink(this, child[LEAF_INDEX]);
 		}
 	}
 
 	public void setLeaf(LeafNode<?, ?> leaf) {
-		child[child.length - 1] = leaf;
+		child[LEAF_INDEX] = leaf;
 		createUplink(this, leaf);
 	}
 
 	public void removeLeaf() {
-		removeUplink(child[child.length - 1]);
-		child[child.length - 1] = null;
+		removeUplink(child[LEAF_INDEX]);
+		child[LEAF_INDEX] = null;
 	}
 
 	public boolean hasLeaf() {
-		return child[child.length - 1] != null;
+		return child[LEAF_INDEX] != null;
 	}
 
 	public LeafNode<?, ?> getLeaf() {
-		return (LeafNode<?, ?>) child[child.length - 1];
+		return (LeafNode<?, ?>) child[LEAF_INDEX];
 	}
 
 	@Override
-	public Node firstOrLeaf() {
+	public final Node firstOrLeaf() {
 		if (hasLeaf()) {
 			return getLeaf();
 		}

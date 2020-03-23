@@ -18,9 +18,9 @@ class Node256 extends InnerNode {
 			assert index >= 0 && index <= 47;
 			// index is byte, but gets type promoted
 			// https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html#jls-10.4-120
-			this.child[i] = child[index];
+			this.child[i+1] = child[index+1];
 			// update up link
-			replaceUplink(this, this.child[i]);
+			replaceUplink(this, this.child[i+1]);
 		}
 	}
 
@@ -28,7 +28,7 @@ class Node256 extends InnerNode {
 	public Node findChild(byte partialKey) {
 		// We treat the 8 bits as unsigned int since we've got 256 slots
 		int index = Byte.toUnsignedInt(partialKey);
-		return child[index];
+		return child[index+1];
 	}
 
     @Override
@@ -38,26 +38,26 @@ class Node256 extends InnerNode {
         // would always find the byte since the Node is full.
         assert !isFull();
         int index = Byte.toUnsignedInt(partialKey);
-        assert this.child[index] == null;
+        assert this.child[index+1] == null;
         createUplink(this, child, partialKey);
-        this.child[index] = child;
+        this.child[index+1] = child;
         noOfChildren++;
     }
 
 	@Override
 	public void replace(byte partialKey, Node newChild) {
 		int index = Byte.toUnsignedInt(partialKey);
-		assert child[index] != null;
-		child[index] = newChild;
+		assert child[index+1] != null;
+		child[index+1] = newChild;
 		createUplink(this, newChild, partialKey);
 	}
 
 	@Override
 	public void removeChild(byte partialKey) {
 		int index = Byte.toUnsignedInt(partialKey);
-		assert child[index] != null;
-		removeUplink(child[index]);
-		child[index] = null;
+		assert child[index+1] != null;
+		removeUplink(child[index+1]);
+		child[index+1] = null;
 		noOfChildren--;
 	}
 
@@ -81,23 +81,23 @@ class Node256 extends InnerNode {
 	public Node first() {
 		assert noOfChildren > Node48.NODE_SIZE;
 		int i = 0;
-		while(child[i] == null)i++;
-		return child[i];
+		while(child[i+1] == null)i++;
+		return child[i+1];
 	}
 
 	@Override
 	public Node last() {
 		assert noOfChildren > Node48.NODE_SIZE;
 		int i = NODE_SIZE - 1;
-		while(child[i] == null)i--;
-		return child[i];
+		while(child[i+1] == null)i--;
+		return child[i+1];
 	}
 
 	@Override
 	public Node ceil(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey); i < NODE_SIZE; i++) {
-			if (child[i] != null) {
-				return child[i];
+			if (child[i+1] != null) {
+				return child[i+1];
 			}
 		}
 		return null;
@@ -106,8 +106,8 @@ class Node256 extends InnerNode {
 	@Override
 	public Node greater(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < NODE_SIZE; i++) {
-			if (child[i] != null) {
-				return child[i];
+			if (child[i+1] != null) {
+				return child[i+1];
 			}
 		}
 		return null;
@@ -116,8 +116,8 @@ class Node256 extends InnerNode {
 	@Override
 	public Node lesser(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) - 1; i >= 0; i--) {
-			if (child[i] != null) {
-				return child[i];
+			if (child[i+1] != null) {
+				return child[i+1];
 			}
 		}
 		return null;
@@ -126,8 +126,8 @@ class Node256 extends InnerNode {
 	@Override
 	public Node floor(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey); i >= 0; i--) {
-			if (child[i] != null) {
-				return child[i];
+			if (child[i+1] != null) {
+				return child[i+1];
 			}
 		}
 		return null;

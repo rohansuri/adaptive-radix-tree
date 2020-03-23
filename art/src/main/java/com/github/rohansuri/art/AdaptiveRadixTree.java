@@ -213,7 +213,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 		this node's compressed path + partialKey to child + child's own compressed path)
 	 */
 	private void pathCompressOnlyChild(Node4 toCompress) {
-		Node onlyChild = toCompress.getChild()[0];
+		Node onlyChild = toCompress.getChild()[1];
 		updateCompressedPathOfOnlyChild(toCompress, onlyChild);
 		replace(toCompress.uplinkKey(), toCompress.parent(), onlyChild);
 	}
