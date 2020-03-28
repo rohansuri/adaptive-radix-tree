@@ -86,9 +86,9 @@ jmh {
 	// benchmarkParameters['distributionType'] = ['SPARSE']
 	// benchmarkParameters['workloadFile'] = ['e_uniform_100000_randint_txn.dat']
 	// benchmarkParameters['workloadFile'] = ["e_uniform_1000_randint_txn.dat", "e_uniform_5000_randint_txn.dat", "e_uniform_10000_randint_txn.dat", "e_uniform_50000_randint_txn.dat", "e_uniform_100000_randint_txn.dat"]
-	benchmarkParameters['mapType'] = ['ART']
+	// benchmarkParameters['mapType'] = ['ART']
 	// benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
-	// benchmarkParameters['mapType'] = ['TREE_MAP']
+	benchmarkParameters['mapType'] = ['TREE_MAP']
 	// benchmarkParameters['file'] = ['WORDS']
 	// benchmarkParameters['size'] = ['1000', '10000', '100000', '1000000', '10000000']
 	// resultFormat = 'JSON'

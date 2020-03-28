@@ -91,7 +91,8 @@ public class E {
                 // Is scan of 0 length effectively a GET?
                 // do we get the same performance numbers as a GET?
                 int limit = d.scanRange[lastScan]-1;
-				AdaptiveRadixTree.traversed = 0;
+				// AdaptiveRadixTree.traversed = 0;
+                TreeMap.traversed = 0;
                 // int limit = 4;
 				int j = 0;
                 for (; j < limit && tail.hasNext() ; j++) {
@@ -99,7 +100,8 @@ public class E {
                     bh.consume(tail.next());
                 }
                 totalScan+=j;
-				totalTraversed+=AdaptiveRadixTree.traversed;
+				// totalTraversed+=AdaptiveRadixTree.traversed;
+				totalTraversed+=TreeMap.traversed;
                 lastScan++;
             } else { // insert
                 bh.consume(d.m.put(d.toInsert[lastInsert++], d.holder));
