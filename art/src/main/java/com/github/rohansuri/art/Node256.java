@@ -82,6 +82,7 @@ class Node256 extends InnerNode {
 		assert noOfChildren > Node48.NODE_SIZE;
 		int i = 0;
 		while(child[i] == null)i++;
+		AdaptiveRadixTree.traversed+=i+1;
 		return child[i];
 	}
 
@@ -106,6 +107,7 @@ class Node256 extends InnerNode {
 	@Override
 	public Node greater(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < NODE_SIZE; i++) {
+			AdaptiveRadixTree.traversed++;
 			if (child[i] != null) {
 				return child[i];
 			}

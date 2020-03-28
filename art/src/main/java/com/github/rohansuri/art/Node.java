@@ -52,6 +52,7 @@ abstract class Node {
 	 * @return the parent of this node. Returns null for root node.
 	 */
 	final InnerNode parent() {
+		AdaptiveRadixTree.traversed++;
 		return parent;
 	}
 

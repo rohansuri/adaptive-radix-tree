@@ -74,6 +74,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private transient KeySet<K> navigableKeySet;
 	private transient Collection<V> values;
 	private transient int size = 0;
+	// really bad way of doing this
+	public static int traversed = 0;
 	/**
 	 * The number of structural modifications to the tree.
 	 * To be touched where ever size changes.
@@ -253,13 +255,13 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 					"\n node16Count=" + node16Count +
 					"\n node16Slots=" + node16Count *16 +
 					"\n fillNode16=" + fillNode16 +
-					"\n fillNode4%=" + (fillNode16/(node16Count*16.0)) +
+					"\n fillNode16%=" + (fillNode16/(node16Count*16.0)) +
 					"\n node16Heights=" + node16Heights +
 					"\n" +
 					"\n node48Count=" + node48Count +
 					"\n node48Slots=" + node48Count *48 +
 					"\n fillNode48=" + fillNode48 +
-					"\n fillNode4%=" + (fillNode48/(node48Count*48.0)) +
+					"\n fillNode48%=" + (fillNode48/(node48Count*48.0)) +
 					"\n node48Heights=" + node48Heights +
 					"\n" +
 					"\n node256Count=" + node256Count +
@@ -1136,6 +1138,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	static <K, V> LeafNode<K, V> successor(Node node) {
 		InnerNode uplink;
 		while ((uplink = node.parent()) != null) {
+			AdaptiveRadixTree.traversed++; // getLeaf
 			if (uplink.getLeaf() == node) {
 				// we surely have a first node
 				return getFirstEntry(uplink.first());

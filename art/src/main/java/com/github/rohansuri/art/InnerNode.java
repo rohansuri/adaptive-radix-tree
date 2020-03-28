@@ -71,6 +71,7 @@ abstract class InnerNode extends Node {
 
 	@Override
 	public Node firstOrLeaf() {
+		AdaptiveRadixTree.traversed++;
 		if (hasLeaf()) {
 			return getLeaf();
 		}

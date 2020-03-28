@@ -124,6 +124,7 @@ class Node48 extends InnerNode {
 		assert noOfChildren > Node16.NODE_SIZE;
 		int i = 0;
 		while(keyIndex[i] == ABSENT)i++;
+		AdaptiveRadixTree.traversed+=i+1;
 		return child[keyIndex[i]];
 	}
 
@@ -153,6 +154,7 @@ class Node48 extends InnerNode {
 	@Override
 	public Node greater(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < KEY_INDEX_SIZE; i++) {
+			AdaptiveRadixTree.traversed++;
 			if (keyIndex[i] != ABSENT) {
 				return child[keyIndex[i]];
 			}

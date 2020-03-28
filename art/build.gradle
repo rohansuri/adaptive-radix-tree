@@ -61,7 +61,8 @@ jmh {
 	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
 	fork = 1
 	warmup = '1s'
-	warmupIterations = 10
+	warmupIterations = 1
+	//profilers = ['perfasm:events=MEM_LOAD_UOPS_RETIRED.L1_MISS']
 	// profilers = ['perf']
 	// profilers = ['perf:events=task-clock,cycles,instructions,cache-references,cache-misses']
 	// profilers = ['perfasm:events=L1-dcache-loads;hotThreshold=.05']
@@ -78,9 +79,9 @@ jmh {
 	// profilers = ['perfasm:hotThreshold=.1']
 	// profilers = ['dtraceasm:hotThreshold=.03']
 	// jvmArgs = '-Xmx14g -Xms8g -XX:FreqInlineSize=0'
-	// jvmArgs = '-XX:FreqInlineSize=0'
+	//jvmArgs = '-XX:FreqInlineSize=0'
 	timeOnIteration = '1s'
-	iterations = 50
+	iterations = 1
 	benchmarkParameters = [:]
 	// benchmarkParameters['distributionType'] = ['SPARSE']
 	// benchmarkParameters['workloadFile'] = ['e_uniform_100000_randint_txn.dat']

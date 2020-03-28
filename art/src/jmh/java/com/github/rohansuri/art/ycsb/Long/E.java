@@ -1,5 +1,6 @@
 package com.github.rohansuri.art.ycsb.Long;
 
+import com.github.rohansuri.art.AdaptiveRadixTree;
 import org.apache.commons.io.IOUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import javax.sound.midi.Soundbank;
 
 public class E {
     @State(Scope.Benchmark)
@@ -77,6 +80,8 @@ public class E {
     public int rangeScanAndInsert(Blackhole bh, EData d) {
         int lastInsert = 0;
         int lastScan = 0;
+        int totalTraversed = 0;
+        int totalScan = 0;
         for (int i = 0; i < d.operation.length; i++) {
             if (d.operation[i]) { // scan
                 NavigableMap<Long, Object> tailMap = d.m.tailMap(d.scanStart[lastScan], true);
@@ -85,18 +90,24 @@ public class E {
                 // bh.consume(tail);
                 // Is scan of 0 length effectively a GET?
                 // do we get the same performance numbers as a GET?
-
                 int limit = d.scanRange[lastScan]-1;
+				AdaptiveRadixTree.traversed = 0;
                 // int limit = 4;
-                for (int j = 0; j < limit && tail.hasNext() ; j++) {
+				int j = 0;
+                for (; j < limit && tail.hasNext() ; j++) {
                     // all next calls, call successors (which calls first on Node)
                     bh.consume(tail.next());
                 }
+                totalScan+=j;
+				totalTraversed+=AdaptiveRadixTree.traversed;
                 lastScan++;
             } else { // insert
                 bh.consume(d.m.put(d.toInsert[lastInsert++], d.holder));
             }
         }
+        System.out.println("totalTraversed = " + totalTraversed);
+        System.out.println("totalScan = " + totalScan);
+        System.out.println("avgTraversed = " + totalTraversed/totalScan);
         return d.m.size();
     }
 }
