@@ -226,10 +226,12 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	static class Stats {
 		// Count using instanceof.
 		int node4Count, node16Count, node48Count, node256Count;
+		// Height to count.
 		Map<Integer, Integer> node4Heights = new HashMap<>();
 		Map<Integer, Integer> node16Heights = new HashMap<>();
 		Map<Integer, Integer> node48Heights = new HashMap<>();
 		Map<Integer, Integer> node256Heights = new HashMap<>();
+		Map<Integer, Integer> leafHeights = new HashMap<>();
 		// When visting a node of a type, add the number of children.
 		int fillNode4, fillNode16, fillNode48, fillNode256;
 		int leaf;
@@ -271,6 +273,8 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 					"\n node256Heights=" + node256Heights +
 					"\n" +
 					"\n leaves=" + leaf +
+					"\n leafHeights=" + leafHeights +
+					"\n"+
 					"\n maxHeight=" + maxHeight +
 					"\n avgHeight=" + avgHeight +
 					"\n}";
@@ -284,6 +288,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			stats.leaf++;
 			stats.maxHeight = Math.max(stats.maxHeight, height);
 			stats.sumHeight += height;
+			stats.leafHeights.put(height, stats.leafHeights.getOrDefault(height, 0) + 1);
 			return;
 		}
 		InnerNode innerNode = (InnerNode)node;
