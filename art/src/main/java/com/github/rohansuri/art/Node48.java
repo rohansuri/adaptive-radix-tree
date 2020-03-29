@@ -155,6 +155,7 @@ class Node48 extends InnerNode {
 	public Node greater(byte partialKey) {
 		for (int i = Byte.toUnsignedInt(partialKey) + 1; i < KEY_INDEX_SIZE; i++) {
 			AdaptiveRadixTree.traversed++;
+			AdaptiveRadixTree.right++;
 			if (keyIndex[i] != ABSENT) {
 				return child[keyIndex[i]];
 			}

@@ -422,6 +422,7 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 		LeafNode<K, V> next;
 		final Object fenceKey;
 		int expectedModCount;
+		int nextCalled;
 
 		SubMapIterator(LeafNode<K, V> first,
 				LeafNode<K, V> fence) {
@@ -442,7 +443,14 @@ abstract class NavigableSubMap<K, V> extends AbstractMap<K, V>
 				throw new NoSuchElementException();
 			if (m.getModCount() != expectedModCount)
 				throw new ConcurrentModificationException();
+			nextCalled++;
+			AdaptiveRadixTree.up = 0;
+			AdaptiveRadixTree.down = 0;
+			AdaptiveRadixTree.right = 0;
+			System.out.println("nextCalled=" + nextCalled);
 			next = AdaptiveRadixTree.successor(e);
+			System.out.println("up=" + AdaptiveRadixTree.up + ", down=" + AdaptiveRadixTree.down
+			+ ", node.greater = " + AdaptiveRadixTree.right);
 			lastReturned = e;
 			return e;
 		}

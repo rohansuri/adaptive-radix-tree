@@ -61,9 +61,11 @@ jmh {
 	// include = ['ExtraSpaceSentinelLinearSearch', 'LinearVsBinarySearch.linear']
 	fork = 1
 	warmup = '1s'
-	warmupIterations = 1
+	warmupIterations = 10
+	//profilers = ['perfasm:events=LLC-loads']
+	//profilers = ['perf:events=cache-misses']
 	//profilers = ['perfasm:events=MEM_LOAD_UOPS_RETIRED.L1_MISS']
-	// profilers = ['perf']
+	profilers = ['perf:events=L1-dcache-loads,L1-dcache-load-misses,LLC-loads,MEM_LOAD_UOPS_RETIRED.LLC_MISS']
 	// profilers = ['perf:events=task-clock,cycles,instructions,cache-references,cache-misses']
 	// profilers = ['perfasm:events=L1-dcache-loads;hotThreshold=.05']
 	// profilers = ['perfasm:events=L1-dcache-loads']
@@ -81,14 +83,14 @@ jmh {
 	// jvmArgs = '-Xmx14g -Xms8g -XX:FreqInlineSize=0'
 	//jvmArgs = '-XX:FreqInlineSize=0'
 	timeOnIteration = '1s'
-	iterations = 1
+	iterations = 10
 	benchmarkParameters = [:]
 	// benchmarkParameters['distributionType'] = ['SPARSE']
 	// benchmarkParameters['workloadFile'] = ['e_uniform_100000_randint_txn.dat']
 	// benchmarkParameters['workloadFile'] = ["e_uniform_1000_randint_txn.dat", "e_uniform_5000_randint_txn.dat", "e_uniform_10000_randint_txn.dat", "e_uniform_50000_randint_txn.dat", "e_uniform_100000_randint_txn.dat"]
 	// benchmarkParameters['mapType'] = ['ART']
-	// benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
-	benchmarkParameters['mapType'] = ['TREE_MAP']
+	benchmarkParameters['mapType'] = ['ART', 'TREE_MAP']
+	//benchmarkParameters['mapType'] = ['TREE_MAP']
 	// benchmarkParameters['file'] = ['WORDS']
 	// benchmarkParameters['size'] = ['1000', '10000', '100000', '1000000', '10000000']
 	// resultFormat = 'JSON'
@@ -109,6 +111,8 @@ dependencies {
 	testCompile group: 'org.mockito', name: 'mockito-core', version: '2.26.0'
 	testCompile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
 	testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
+	testCompile group: 'guru.nidi', name: 'graphviz-java', version: '0.15.1'
+
 	// testCompile("org.junit.jupiter:junit-jupiter-engine:5.5.2")
 
 	testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")

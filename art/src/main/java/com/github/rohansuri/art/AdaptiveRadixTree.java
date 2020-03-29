@@ -76,6 +76,7 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private transient int size = 0;
 	// really bad way of doing this
 	public static int traversed = 0;
+	public static int up = 0, down = 0, right=0;
 	/**
 	 * The number of structural modifications to the tree.
 	 * To be touched where ever size changes.
@@ -730,9 +731,11 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 	private static <K, V> LeafNode<K, V> getFirstEntry(Node startFrom) {
 		Node node = startFrom;
 		Node next = node.firstOrLeaf();
+		AdaptiveRadixTree.down++;
 		while (next != null) {
 			node = next;
 			next = node.firstOrLeaf();
+			AdaptiveRadixTree.down++;
 		}
 		return (LeafNode<K, V>) node;
 	}
@@ -1146,8 +1149,10 @@ public class AdaptiveRadixTree<K, V> extends AbstractMap<K, V> implements Naviga
 			AdaptiveRadixTree.traversed++; // getLeaf
 			if (uplink.getLeaf() == node) {
 				// we surely have a first node
+				AdaptiveRadixTree.up++;
 				return getFirstEntry(uplink.first());
 			}
+			AdaptiveRadixTree.up++;
 			Node greater = uplink.greater(node.uplinkKey());
 			if (greater != null) {
 				return getFirstEntry(greater);

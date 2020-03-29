@@ -135,6 +135,7 @@ class Node4 extends InnerNode {
 	public Node greater(byte partialKey) {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		for (int i = 0; i < noOfChildren; i++) {
+			AdaptiveRadixTree.right++;
 			AdaptiveRadixTree.traversed++;
 			if (keys[i] > partialKey) {
 				return child[i];

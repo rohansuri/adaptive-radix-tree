@@ -143,6 +143,7 @@ class Node16 extends InnerNode {
 		partialKey = BinaryComparableUtils.unsigned(partialKey);
 		for (int i = 0; i < noOfChildren; i++) {
 			AdaptiveRadixTree.traversed++;
+			AdaptiveRadixTree.right++;
 			if (keys[i] > partialKey) {
 				return child[i];
 			}
