@@ -1,0 +1,33 @@
+stats: Stats{
+ node4Count=20785
+ node4Slots=83140
+ fillNode4=60081
+ fillNode4%=0.7226485446235266
+ node4Heights={3=20193, 4=592}
+
+ node16Count=6252
+ node16Slots=100032
+ fillNode16=35725
+ fillNode16%=0.35713571657069737
+ node16Heights={3=6252}
+
+ node48Count=0
+ node48Slots=0
+ fillNode48=0
+ fillNode48%=NaN
+ node48Heights={}
+
+ node256Count=129
+ node256Slots=33024
+ fillNode256=31359
+ fillNode256%=0.9495821220930233
+ node256Heights={1=1, 2=128}
+
+ leaves=100000
+ leafHeights={3=4786, 4=94029, 5=1185}
+
+ maxHeight=5
+ avgHeight=3.96399
+}
+average fill size: 0.5881931210568188
+

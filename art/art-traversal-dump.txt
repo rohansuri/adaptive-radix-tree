@@ -1,0 +1,100 @@
+ART moves taken for SCAN 4486555203628477905 50
+
+scan=1
+up=1, down=1, node.greater.scan=2
+scan=2
+up=1, down=1, node.greater.scan=3
+scan=3
+up=2, down=2, node.greater.scan=4
+scan=4
+up=1, down=1, node.greater.scan=2
+scan=5
+up=2, down=2, node.greater.scan=3
+scan=6
+up=1, down=1, node.greater.scan=2
+scan=7
+up=1, down=1, node.greater.scan=3
+scan=8
+up=1, down=1, node.greater.scan=4
+scan=9
+up=2, down=2, node.greater.scan=5
+scan=10
+up=1, down=1, node.greater.scan=2
+scan=11
+up=2, down=2, node.greater.scan=3
+scan=12
+up=1, down=1, node.greater.scan=2
+scan=13
+up=1, down=1, node.greater.scan=3
+scan=14
+up=2, down=2, node.greater.scan=4
+scan=15
+up=1, down=1, node.greater.scan=2
+scan=16
+up=1, down=1, node.greater.scan=3
+scan=17
+up=1, down=1, node.greater.scan=4
+scan=18
+up=1, down=1, node.greater.scan=5
+scan=19
+up=1, down=1, node.greater.scan=6
+scan=20
+up=2, down=2, node.greater.scan=7
+scan=21
+up=1, down=1, node.greater.scan=2
+scan=22
+up=1, down=1, node.greater.scan=3
+scan=23
+up=1, down=1, node.greater.scan=4
+scan=24
+up=2, down=1, node.greater.scan=5
+scan=25
+up=1, down=2, node.greater.scan=1
+scan=26
+up=1, down=1, node.greater.scan=2
+scan=27
+up=1, down=1, node.greater.scan=3
+scan=28
+up=2, down=2, node.greater.scan=5
+scan=29
+up=1, down=1, node.greater.scan=2
+scan=30
+up=1, down=1, node.greater.scan=3
+scan=31
+up=1, down=1, node.greater.scan=4
+scan=32
+up=2, down=2, node.greater.scan=5
+scan=33
+up=1, down=1, node.greater.scan=2
+scan=34
+up=1, down=1, node.greater.scan=3
+scan=35
+up=1, down=1, node.greater.scan=4
+scan=36
+up=2, down=1, node.greater.scan=5
+scan=37
+up=1, down=1, node.greater.scan=2
+scan=38
+up=1, down=2, node.greater.scan=1
+scan=39
+up=1, down=1, node.greater.scan=2
+scan=40
+up=2, down=2, node.greater.scan=3
+scan=41
+up=1, down=1, node.greater.scan=2
+scan=42
+up=1, down=1, node.greater.scan=3
+scan=43
+up=2, down=2, node.greater.scan=4
+scan=44
+up=1, down=1, node.greater.scan=2
+scan=45
+up=1, down=1, node.greater.scan=3
+scan=46
+up=2, down=2, node.greater.scan=4
+scan=47
+up=1, down=1, node.greater.scan=2
+scan=48
+up=2, down=2, node.greater.scan=3
+scan=49
+up=1, down=1, node.greater.scan=2

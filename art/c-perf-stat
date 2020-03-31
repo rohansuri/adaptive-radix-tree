@@ -1,0 +1,47 @@
+ART
+Perf stats:
+--------------------------------------------------
+
+    6,53,05,35,716      MEM_UOPS_RETIRED.ALL_LOADS                                     (14.52%)
+      50,25,18,326      L1D.REPLACEMENT                                               (20.07%)
+    5,95,41,58,781      MEM_LOAD_UOPS_RETIRED.L1_HIT                                     (14.06%)
+       5,15,32,479      MEM_LOAD_UOPS_RETIRED.L2_HIT                                     (11.94%)
+       5,18,19,288      MEM_LOAD_UOPS_RETIRED.LLC_HIT                                     (13.89%)
+      19,37,70,604       MEM_LOAD_UOPS_RETIRED.L1_MISS                                     (15.23%)
+      14,20,80,796       MEM_LOAD_UOPS_RETIRED.L2_MISS                                     (17.45%)
+       8,70,17,797       MEM_LOAD_UOPS_RETIRED.LLC_MISS                                     (15.79%)
+    6,65,25,08,902      L1-dcache-loads                                               (18.21%)
+      50,88,46,794      L1-dcache-load-misses     #    7.65% of all L1-dcache hits    (12.31%)
+      38,53,24,140      LLC-loads                                                     (12.96%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         39,71,150      L1-icache-load-misses                                         (18.18%)
+    6,63,70,30,372      dTLB-loads                                                    (17.39%)
+       5,67,73,984      dTLB-load-misses          #    0.86% of all dTLB cache hits   (13.26%)
+         35,90,525      iTLB-loads                                                    (11.61%)
+          4,95,277      iTLB-load-misses          #   13.79% of all iTLB cache hits   (17.44%)
+   <not supported>      L1-dcache-prefetches                                        
+      20,14,57,169      L1-dcache-prefetch-misses                                     (23.20%)
+
+TreeMap
+2,14,99,90,189      MEM_UOPS_RETIRED.ALL_LOADS                                     (23.42%)
+      69,58,23,216      L1D.REPLACEMENT                                               (21.26%)
+    1,50,46,21,681      MEM_LOAD_UOPS_RETIRED.L1_HIT                                     (11.88%)
+      14,44,67,388      MEM_LOAD_UOPS_RETIRED.L2_HIT                                     (11.77%)
+      12,56,38,270      MEM_LOAD_UOPS_RETIRED.LLC_HIT                                     (12.89%)
+      34,81,45,985       MEM_LOAD_UOPS_RETIRED.L1_MISS                                     (12.93%)
+      20,49,19,615       MEM_LOAD_UOPS_RETIRED.L2_MISS                                     (11.77%)
+       7,24,72,864       MEM_LOAD_UOPS_RETIRED.LLC_MISS                                     (11.77%)
+    2,17,31,34,019      L1-dcache-loads                                               (11.77%)
+      71,05,42,509      L1-dcache-load-misses     #   32.70% of all L1-dcache hits    (11.77%)
+      40,97,63,206      LLC-loads                                                     (11.76%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         17,16,146      L1-icache-load-misses                                         (17.68%)
+    2,16,91,95,683      dTLB-loads                                                    (14.66%)
+      16,96,26,309      dTLB-load-misses          #    7.82% of all dTLB cache hits   (14.59%)
+       1,53,65,521      iTLB-loads                                                    (11.68%)
+            93,247      iTLB-load-misses          #    0.61% of all iTLB cache hits   (17.45%)
+   <not supported>      L1-dcache-prefetches                                        
+       1,42,33,061      L1-dcache-prefetch-misses                                     (23.25%)
+

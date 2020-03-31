@@ -1,0 +1,25 @@
+....[Hottest Regions]...............................................................................
+ 28.20%         c2, level 4  com.github.rohansuri.art.InnerNode::hasLeaf, version 866 (42 bytes) 
+ 11.40%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapEntryIterator::next, version 848 (3 bytes) 
+ 10.80%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry, version 843 (52 bytes) 
+  7.20%         c2, level 4  com.github.rohansuri.art.InnerNode::firstOrLeaf, version 856 (27 bytes) 
+  4.20%         c1, level 1  com.github.rohansuri.art.AdaptiveRadixTree::getModCount, version 818 (1 bytes) 
+  3.20%        runtime stub  StubRoutines::vectorizedMismatch (73 bytes) 
+  3.20%         c1, level 1  com.github.rohansuri.art.LeafNode::firstOrLeaf, version 819 (0 bytes) 
+  2.80%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::compare, version 872 (18 bytes) 
+  2.80%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::successor, version 886 (0 bytes) 
+  2.20%         c1, level 1  com.github.rohansuri.art.Node4::first, version 851 (37 bytes) 
+  2.20%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getHigherOrCeilEntry, version 890 (0 bytes) 
+  2.00%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getFirstEntry, version 840 (9 bytes) 
+  1.80%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapEntryIterator::next, version 841 (4 bytes) 
+  1.40%         c2, level 4  java.nio.HeapByteBuffer::&lt;init&gt;, version 729 (0 bytes) 
+  1.20%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getFirstEntry, version 840 (35 bytes) 
+  1.20%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::comparePessimisticCompressedPath, version 880 (32 bytes) 
+  1.20%         c2, level 4  com.github.rohansuri.art.Node16::ceil, version 911 (67 bytes) 
+  1.00%         c2, level 4  com.github.rohansuri.art.Node4::ceil, version 909 (16 bytes) 
+  0.80%         c1, level 1  com.github.rohansuri.art.LeafNode::firstOrLeaf, version 819 (3 bytes) 
+  0.80%         c2, level 4  com.github.rohansuri.art.Node256::greater, version 852 (0 bytes) 
+ 10.20%  <...other 34 warm regions...>
+....................................................................................................
+ 99.80%  <totals>
+

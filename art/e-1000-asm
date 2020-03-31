@@ -1,0 +1,429 @@
+To honour the JVM settings for this build a new JVM will be forked. Please consider using the daemon: https://docs.gradle.org/5.6.2/userguide/gradle_daemon.html.
+Daemon will be stopped at the end of the build stopping after processing
+
+> Configure project :
+maxParallelForks=2
+
+> Task :clean
+
+> Task :compileJava
+
+> Task :processResources NO-SOURCE
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources
+> Task :testClasses
+> Task :compileJmhJava
+> Task :processJmhResources NO-SOURCE
+> Task :jmhClasses
+
+> Task :jmhRunBytecodeGenerator
+Processing 73 classes from /home/rohansuri/adaptive-radix-tree/art/build/classes/java/jmh with "reflection" generator
+Writing out Java source to /home/rohansuri/adaptive-radix-tree/art/build/jmh-generated-sources and resources to /home/rohansuri/adaptive-radix-tree/art/build/jmh-generated-resources
+
+> Task :jmhCompileGeneratedClasses
+> Task :jmhJar
+
+> Task :jmh
+# JMH version: 1.21
+# VM version: JDK 12.0.2, Java HotSpot(TM) 64-Bit Server VM, 12.0.2+10
+# VM invoker: /usr/lib/jvm/java-12-oracle/bin/java
+# VM options: -Xmx4g -Xms2g -XX:FreqInlineSize=0
+# Warmup: 10 iterations, 1 s each
+# Measurement: 10 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert
+# Parameters: (mapType = ART, workloadFile = e_uniform_1000_randint_txn.dat)
+
+# Run progress: 0.00% complete, ETA 00:00:20
+# Fork: 1 of 1
+# Preparing profilers: LinuxPerfAsmProfiler 
+# Profilers consume stdout and stderr from target VM, use -v EXTRA to copy to console
+
+# Warmup Iteration   1: 11476158.841 ns/op
+# Warmup Iteration   2: 3009388.697 ns/op
+# Warmup Iteration   3: 3081234.542 ns/op
+# Warmup Iteration   4: 2866669.954 ns/op
+# Warmup Iteration   5: 2952074.550 ns/op
+# Warmup Iteration   6: 2968754.320 ns/op
+# Warmup Iteration   7: 2850788.177 ns/op
+# Warmup Iteration   8: 2883889.888 ns/op
+# Warmup Iteration   9: 2846001.077 ns/op
+# Warmup Iteration  10: 2941700.959 ns/op
+Iteration   1: 3019873.541 ns/op
+Iteration   2: 2984139.557 ns/op
+Iteration   3: 2895525.604 ns/op
+Iteration   4: 3053374.098 ns/op
+Iteration   5: 3240200.625 ns/op
+Iteration   6: 2960265.512 ns/op
+Iteration   7: 2855280.835 ns/op
+Iteration   8: 2848653.810 ns/op
+Iteration   9: 2860702.491 ns/op
+Iteration  10: 3276547.278 ns/op
+
+> Task :jmh
+# Processing profiler results: LinuxPerfAsmProfiler 
+
+
+Result "com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert":
+  2999456.335 ±(99.9%) 232809.618 ns/op [Average]
+  (min, avg, max) = (2848653.810, 2999456.335, 3276547.278), stdev = 153989.147
+  CI (99.9%): [2766646.717, 3232265.953] (assumes normal distribution)
+
+Secondary result "com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert:·asm":
+PrintAssembly processed: 181221 total address lines.
+Perf output processed (skipped 14.201 seconds):
+ Column 1: cycles (10050 events)
+
+Hottest code regions (>10.00% "cycles" events):
+
+....[Hottest Region 1]..............................................................................
+c2, level 4, com.github.rohansuri.art.Node16::greater, version 626 (329 bytes) 
+
+                             0x00007fcf646789c4: shl    $0x3,%r10
+                             0x00007fcf646789c8: movabs $0x800000000,%r12
+                             0x00007fcf646789d2: add    %r12,%r10
+                             0x00007fcf646789d5: xor    %r12,%r12
+                             0x00007fcf646789d8: cmp    %r10,%rax
+                             0x00007fcf646789db: jne    0x00007fcf5cba4600             ;   {runtime_call ic_miss_stub}
+                             0x00007fcf646789e1: data16 xchg %ax,%ax
+                             0x00007fcf646789e4: nopl   0x0(%rax,%rax,1)
+                             0x00007fcf646789ec: data16 data16 xchg %ax,%ax
+                           [Verified Entry Point]
+  1.13%                      0x00007fcf646789f0: mov    %eax,-0x14000(%rsp)
+  0.77%                      0x00007fcf646789f7: push   %rbp
+  0.52%                      0x00007fcf646789f8: sub    $0x20,%rsp                     ;*synchronization entry
+                                                                                       ; - com.github.rohansuri.art.Node16::greater@-1 (line 142)
+  0.14%                      0x00007fcf646789fc: mov    %rsi,%rbp
+  0.01%                      0x00007fcf646789ff: mov    %edx,%esi
+  0.28%                      0x00007fcf64678a01: xchg   %ax,%ax
+  0.16%                      0x00007fcf64678a03: callq  0x00007fcf64676c40             ; ImmutableOopMap{rbp=Oop }
+                                                                                       ;*invokestatic unsigned {reexecute=0 rethrow=0 return_oop=0}
+                                                                                       ; - com.github.rohansuri.art.Node16::greater@1 (line 142)
+                                                                                       ;   {static_call}
+  0.95%                      0x00007fcf64678a08: movswl 0x18(%rbp),%r9d                ;*getfield noOfChildren {reexecute=0 rethrow=0 return_oop=0}
+                                                                                       ; - com.github.rohansuri.art.Node16::greater@9 (line 143)
+  0.01%                      0x00007fcf64678a0d: test   %r9d,%r9d
+         ╭                   0x00007fcf64678a10: jle    0x00007fcf64678aed             ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+         │                                                                             ; - com.github.rohansuri.art.Node16::greater@12 (line 143)
+  0.31%  │                   0x00007fcf64678a16: mov    0x24(%rbp),%r10d               ;*getfield keys {reexecute=0 rethrow=0 return_oop=0}
+         │                                                                             ; - com.github.rohansuri.art.Node16::greater@16 (line 144)
+  0.13%  │                   0x00007fcf64678a1a: mov    0xc(%r12,%r10,8),%r8d          ;*baload {reexecute=0 rethrow=0 return_oop=0}
+         │                                                                             ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+         │                                                                             ; implicit exception: dispatches to 0x00007fcf64678b3b
+  0.20%  │                   0x00007fcf64678a1f: test   %r8d,%r8d
+         │╭                  0x00007fcf64678a22: jbe    0x00007fcf64678b3b
+  0.09%  ││                  0x00007fcf64678a28: mov    %r9d,%ecx
+  0.13%  ││                  0x00007fcf64678a2b: dec    %ecx
+  0.20%  ││                  0x00007fcf64678a2d: cmp    %r8d,%ecx
+         ││╭                 0x00007fcf64678a30: jae    0x00007fcf64678b3b
+  0.12%  │││                 0x00007fcf64678a36: movsbl 0x10(%r12,%r10,8),%r11d
+  0.18%  │││                 0x00007fcf64678a3c: cmp    %eax,%r11d
+         │││╭                0x00007fcf64678a3f: jg     0x00007fcf64678b31             ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+         ││││                                                                          ; - com.github.rohansuri.art.Node16::greater@22 (line 144)
+  0.27%  ││││                0x00007fcf64678a45: mov    %r9d,%ebx
+  0.14%  ││││                0x00007fcf64678a48: add    $0xfffffffd,%ebx
+  0.14%  ││││                0x00007fcf64678a4b: lea    (%r12,%r10,8),%rdi
+  0.01%  ││││                0x00007fcf64678a4f: mov    $0x1,%edx
+  0.36%  ││││                0x00007fcf64678a54: mov    $0x80000000,%r10d
+  0.09%  ││││                0x00007fcf64678a5a: cmp    %ebx,%ecx
+  0.11%  ││││                0x00007fcf64678a5c: cmovl  %r10d,%ebx
+  0.34%  ││││                0x00007fcf64678a60: cmp    $0x1,%ebx
+         ││││╭               0x00007fcf64678a63: jle    0x00007fcf64678ad1
+  0.09%  │││││               0x00007fcf64678a65: mov    $0xfa0,%r10d
+  0.05%  │││││     ↗         0x00007fcf64678a6b: mov    %ebx,%r13d
+         │││││     │         0x00007fcf64678a6e: sub    %edx,%r13d
+  0.22%  │││││     │         0x00007fcf64678a71: cmp    %r10d,%r13d
+  0.12%  │││││     │         0x00007fcf64678a74: cmovg  %r10d,%r13d
+  0.09%  │││││     │         0x00007fcf64678a78: add    %edx,%r13d
+  0.22%  │││││     │         0x00007fcf64678a7b: nopl   0x0(%rax,%rax,1)               ;*aload_0 {reexecute=0 rethrow=0 return_oop=0}
+         │││││     │                                                                   ; - com.github.rohansuri.art.Node16::greater@15 (line 144)
+  0.27%  │││││    ↗│         0x00007fcf64678a80: movslq %edx,%r8
+  0.25%  │││││    ││         0x00007fcf64678a83: movsbl 0x10(%rdi,%r8,1),%r11d         ;*baload {reexecute=0 rethrow=0 return_oop=0}
+         │││││    ││                                                                   ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+  0.22%  │││││    ││         0x00007fcf64678a89: cmp    %eax,%r11d
+         │││││╭   ││         0x00007fcf64678a8c: jg     0x00007fcf64678afe             ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+         ││││││   ││                                                                   ; - com.github.rohansuri.art.Node16::greater@22 (line 144)
+  0.20%  ││││││   ││         0x00007fcf64678a8e: movsbl 0x11(%rdi,%r8,1),%r11d         ;*baload {reexecute=0 rethrow=0 return_oop=0}
+         ││││││   ││                                                                   ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+  0.17%  ││││││   ││         0x00007fcf64678a94: cmp    %eax,%r11d
+         ││││││╭  ││         0x00007fcf64678a97: jg     0x00007fcf64678af1             ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+         │││││││  ││                                                                   ; - com.github.rohansuri.art.Node16::greater@22 (line 144)
+  0.11%  │││││││  ││         0x00007fcf64678a99: movsbl 0x12(%rdi,%r8,1),%r11d         ;*baload {reexecute=0 rethrow=0 return_oop=0}
+         │││││││  ││                                                                   ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+  0.04%  │││││││  ││         0x00007fcf64678a9f: mov    %edx,%ecx
+  0.19%  │││││││  ││         0x00007fcf64678aa1: add    $0x2,%ecx                      ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+         │││││││  ││                                                                   ; - com.github.rohansuri.art.Node16::greater@32 (line 143)
+  0.19%  │││││││  ││         0x00007fcf64678aa4: mov    %r8,%rsi
+  0.05%  │││││││  ││         0x00007fcf64678aa7: add    $0x2,%rsi                      ;*baload {reexecute=0 rethrow=0 return_oop=0}
+         │││││││  ││                                                                   ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+  0.06%  │││││││  ││         0x00007fcf64678aab: cmp    %eax,%r11d
+         │││││││╭ ││         0x00007fcf64678aae: jg     0x00007fcf64678b03             ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+         ││││││││ ││                                                                   ; - com.github.rohansuri.art.Node16::greater@22 (line 144)
+  0.14%  ││││││││ ││         0x00007fcf64678ab0: movsbl 0x13(%rdi,%r8,1),%r8d          ;*baload {reexecute=0 rethrow=0 return_oop=0}
+         ││││││││ ││                                                                   ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+  0.10%  ││││││││ ││         0x00007fcf64678ab6: cmp    %eax,%r8d
+         ││││││││╭││         0x00007fcf64678ab9: jg     0x00007fcf64678af6             ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+         │││││││││││                                                                   ; - com.github.rohansuri.art.Node16::greater@22 (line 144)
+  0.06%  │││││││││││         0x00007fcf64678abb: add    $0x4,%edx                      ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+         │││││││││││                                                                   ; - com.github.rohansuri.art.Node16::greater@32 (line 143)
+  0.03%  │││││││││││         0x00007fcf64678abe: cmp    %r13d,%edx
+         │││││││││╰│         0x00007fcf64678ac1: jl     0x00007fcf64678a80             ;*goto {reexecute=0 rethrow=0 return_oop=0}
+         │││││││││ │                                                                   ; - com.github.rohansuri.art.Node16::greater@35 (line 143)
+  0.08%  │││││││││ │         0x00007fcf64678ac3: mov    0x108(%r15),%r8                ; ImmutableOopMap{rdi=Oop rbp=Oop }
+         │││││││││ │                                                                   ;*goto {reexecute=1 rethrow=0 return_oop=0}
+         │││││││││ │                                                                   ; - com.github.rohansuri.art.Node16::greater@35 (line 143)
+  0.11%  │││││││││ │         0x00007fcf64678aca: test   %eax,(%r8)                     ;*goto {reexecute=0 rethrow=0 return_oop=0}
+         │││││││││ │                                                                   ; - com.github.rohansuri.art.Node16::greater@35 (line 143)
+         │││││││││ │                                                                   ;   {poll}
+  0.06%  │││││││││ │         0x00007fcf64678acd: cmp    %ebx,%edx
+         │││││││││ ╰         0x00007fcf64678acf: jl     0x00007fcf64678a6b
+  0.01%  ││││↘││││           0x00007fcf64678ad1: cmp    %r9d,%edx
+         ││││ ││││  ╭        0x00007fcf64678ad4: jge    0x00007fcf64678aed
+  0.05%  ││││ ││││  │        0x00007fcf64678ad6: xchg   %ax,%ax                        ;*aload_0 {reexecute=0 rethrow=0 return_oop=0}
+         ││││ ││││  │                                                                  ; - com.github.rohansuri.art.Node16::greater@15 (line 144)
+  0.20%  ││││ ││││  │ ↗      0x00007fcf64678ad8: movslq %edx,%rsi
+  0.10%  ││││ ││││  │ │      0x00007fcf64678adb: movsbl 0x10(%rdi,%rsi,1),%r11d        ;*baload {reexecute=0 rethrow=0 return_oop=0}
+         ││││ ││││  │ │                                                                ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+  0.05%  ││││ ││││  │ │      0x00007fcf64678ae1: cmp    %eax,%r11d
+         ││││ ││││  │╭│      0x00007fcf64678ae4: jg     0x00007fcf64678b37             ;*if_icmple {reexecute=0 rethrow=0 return_oop=0}
+         ││││ ││││  │││                                                                ; - com.github.rohansuri.art.Node16::greater@22 (line 144)
+  0.05%  ││││ ││││  │││      0x00007fcf64678ae6: inc    %edx                           ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+         ││││ ││││  │││                                                                ; - com.github.rohansuri.art.Node16::greater@32 (line 143)
+  0.05%  ││││ ││││  │││      0x00007fcf64678ae8: cmp    %r9d,%edx
+         ││││ ││││  ││╰      0x00007fcf64678aeb: jl     0x00007fcf64678ad8             ;*aconst_null {reexecute=0 rethrow=0 return_oop=0}
+         ││││ ││││  ││                                                                 ; - com.github.rohansuri.art.Node16::greater@38 (line 148)
+  0.27%  ↘│││ ││││  ↘│       0x00007fcf64678aed: xor    %eax,%eax
+  0.03%   │││ ││││   │ ╭     0x00007fcf64678aef: jmp    0x00007fcf64678b21
+  0.02%   │││ │↘││   │ │     0x00007fcf64678af1: mov    %r8,%rsi
+  0.01%   │││ │ ││   │ │     0x00007fcf64678af4: mov    %edx,%ecx
+  0.05%   │││ │ │↘   │ │     0x00007fcf64678af6: inc    %ecx                           ;*iinc {reexecute=0 rethrow=0 return_oop=0}
+          │││ │ │    │ │                                                               ; - com.github.rohansuri.art.Node16::greater@32 (line 143)
+  0.04%   │││ │ │    │ │     0x00007fcf64678af8: add    $0x1,%rsi                      ;*baload {reexecute=0 rethrow=0 return_oop=0}
+          │││ │ │    │ │                                                               ; - com.github.rohansuri.art.Node16::greater@20 (line 144)
+  0.08%   │││ │ │    │ │╭    0x00007fcf64678afc: jmp    0x00007fcf64678b03
+  0.04%   │││ ↘ │    │ ││    0x00007fcf64678afe: mov    %r8,%rsi
+  0.01%   │││   │    │ ││    0x00007fcf64678b01: mov    %edx,%ecx
+  0.24%   │││   ↘    │ │↘↗↗  0x00007fcf64678b03: mov    0x20(%rbp),%r11d               ;*getfield child {reexecute=0 rethrow=0 return_oop=0}
+          │││        │ │ ││                                                            ; - com.github.rohansuri.art.Node16::greater@26 (line 145)
+  0.24%   │││        │ │ ││  0x00007fcf64678b07: mov    0xc(%r12,%r11,8),%r10d         ; implicit exception: dispatches to 0x00007fcf64678b73
+  0.31%   │││        │ │ ││  0x00007fcf64678b0c: cmp    %r10d,%ecx
+          │││        │ │ ││  0x00007fcf64678b0f: jae    0x00007fcf64678b52
+  0.14%   │││        │ │ ││  0x00007fcf64678b11: lea    (%r12,%r11,8),%r10
+  0.15%   │││        │ │ ││  0x00007fcf64678b15: mov    0x10(%r10,%rsi,4),%r11d
+  0.10%   │││        │ │ ││  0x00007fcf64678b1a: mov    %r11,%rax
+  0.08%   │││        │ │ ││  0x00007fcf64678b1d: shl    $0x3,%rax                      ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+          │││        │ │ ││                                                            ; - com.github.rohansuri.art.Node16::greater@12 (line 143)
+  0.29%   │││        │ ↘ ││  0x00007fcf64678b21: add    $0x20,%rsp
+  0.30%   │││        │   ││  0x00007fcf64678b25: pop    %rbp
+  0.31%   │││        │   ││  0x00007fcf64678b26: mov    0x108(%r15),%r10
+  0.14%   │││        │   ││  0x00007fcf64678b2d: test   %eax,(%r10)                    ;   {poll_return}
+  0.46%   │││        │   ││  0x00007fcf64678b30: retq   
+          ││↘        │   ││  0x00007fcf64678b31: xor    %ecx,%ecx
+          ││         │   ││  0x00007fcf64678b33: xor    %esi,%esi
+          ││         │   ╰│  0x00007fcf64678b35: jmp    0x00007fcf64678b03
+  0.09%   ││         ↘    │  0x00007fcf64678b37: mov    %edx,%ecx
+  0.04%   ││              ╰  0x00007fcf64678b39: jmp    0x00007fcf64678b03
+          ↘↘                 0x00007fcf64678b3b: mov    $0xffffff7e,%esi
+                             0x00007fcf64678b40: mov    %eax,(%rsp)
+                             0x00007fcf64678b43: mov    %r9d,0x4(%rsp)
+                             0x00007fcf64678b48: data16 xchg %ax,%ax
+                             0x00007fcf64678b4b: callq  0x00007fcf5cba6280             ; ImmutableOopMap{rbp=Oop }
+                                                                                       ;*if_icmpge {reexecute=1 rethrow=0 return_oop=0}
+                                                                                       ; - com.github.rohansuri.art.Node16::greater@12 (line 143)
+                                                                                       ;   {runtime_call UncommonTrapBlob}
+                             0x00007fcf64678b50: ud2                                   ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
+                                                                                       ; - com.github.rohansuri.art.Node16::greater@12 (line 143)
+....................................................................................................
+ 13.80%  <total for region 1>
+
+....[Hottest Region 2]..............................................................................
+c2, level 4, com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry, version 646 (208 bytes) 
+
+           0x00007fcf6467bb64: shl    $0x3,%r10
+           0x00007fcf6467bb68: movabs $0x800000000,%r12
+           0x00007fcf6467bb72: add    %r12,%r10
+           0x00007fcf6467bb75: xor    %r12,%r12
+           0x00007fcf6467bb78: cmp    %r10,%rax
+           0x00007fcf6467bb7b: jne    0x00007fcf5cba4600             ;   {runtime_call ic_miss_stub}
+           0x00007fcf6467bb81: data16 xchg %ax,%ax
+           0x00007fcf6467bb84: nopl   0x0(%rax,%rax,1)
+           0x00007fcf6467bb8c: data16 data16 xchg %ax,%ax
+         [Verified Entry Point]
+  0.40%    0x00007fcf6467bb90: mov    %eax,-0x14000(%rsp)
+  0.09%    0x00007fcf6467bb97: push   %rbp
+  0.19%    0x00007fcf6467bb98: sub    $0x30,%rsp                     ;*synchronization entry
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@-1 (line 440)
+  0.20%    0x00007fcf6467bb9c: mov    %rsi,(%rsp)
+  0.14%    0x00007fcf6467bba0: mov    0x14(%rsi),%r10d               ;*getfield next {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@1 (line 440)
+  0.21%    0x00007fcf6467bba4: mov    %r10d,0x10(%rsp)
+  0.27%    0x00007fcf6467bba9: test   %r10d,%r10d
+           0x00007fcf6467bbac: je     0x00007fcf6467bdcc             ;*ifnull {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@6 (line 441)
+  0.01%    0x00007fcf6467bbb2: lea    (%r12,%r10,8),%rsi             ;*getfield next {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@1 (line 440)
+  0.04%    0x00007fcf6467bbb6: mov    %rsi,%rbp
+  0.20%    0x00007fcf6467bbb9: mov    %rsi,0x8(%rsp)
+  0.24%    0x00007fcf6467bbbe: nop
+           0x00007fcf6467bbbf: callq  0x00007fcf64678680             ; ImmutableOopMap{rbp=Oop [0]=Oop [8]=Oop [16]=NarrowOop }
+                                                                     ;*invokevirtual getKey {reexecute=0 rethrow=0 return_oop=1}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@10 (line 441)
+                                                                     ;   {optimized virtual_call}
+  3.15%    0x00007fcf6467bbc4: mov    (%rsp),%r10
+  0.06%    0x00007fcf6467bbc8: mov    0x18(%r10),%ebp                ;*getfield fenceKey {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@14 (line 441)
+  0.02%    0x00007fcf6467bbcc: mov    %rbp,%r10
+  0.49%    0x00007fcf6467bbcf: shl    $0x3,%r10
+  0.03%    0x00007fcf6467bbd3: cmp    %r10,%rax
+           0x00007fcf6467bbd6: je     0x00007fcf6467bde2             ;*if_acmpne {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@17 (line 441)
+  0.03%    0x00007fcf6467bbdc: mov    (%rsp),%r10
+  0.01%    0x00007fcf6467bbe0: mov    0x1c(%r10),%r11d               ;*getfield this$0 {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@29 (line 443)
+  0.48%    0x00007fcf6467bbe4: mov    0x18(%r12,%r11,8),%r10d        ;*getfield m {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@32 (line 443)
+                                                                     ; implicit exception: dispatches to 0x00007fcf6467be2d
+  0.54%    0x00007fcf6467bbe9: test   %r10d,%r10d
+           0x00007fcf6467bbec: je     0x00007fcf6467bd96             ;*invokevirtual getModCount {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@35 (line 443)
+  0.12%    0x00007fcf6467bbf2: lea    (%r12,%r10,8),%rsi             ;*getfield m {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@32 (line 443)
+           0x00007fcf6467bbf6: nop
+  0.42%    0x00007fcf6467bbf7: callq  0x00007fcf64679180             ; ImmutableOopMap{[0]=Oop [8]=Oop [16]=NarrowOop }
+                                                                     ;*invokevirtual getModCount {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@35 (line 443)
+                                                                     ;   {optimized virtual_call}
+  0.12%    0x00007fcf6467bbfc: mov    (%rsp),%r10
+           0x00007fcf6467bc00: mov    0xc(%r10),%ebp                 ;*getfield expectedModCount {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@39 (line 443)
+  0.48%    0x00007fcf6467bc04: cmp    %ebp,%eax
+           0x00007fcf6467bc06: jne    0x00007fcf6467be06             ;*if_icmpeq {reexecute=0 rethrow=0 return_oop=0}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@42 (line 443)
+  0.01%    0x00007fcf6467bc0c: mov    0x8(%rsp),%rsi
+           0x00007fcf6467bc11: mov    %r10,%rbp
+           0x00007fcf6467bc14: data16 xchg %ax,%ax
+  0.39%    0x00007fcf6467bc17: callq  0x00007fcf646794e0             ; ImmutableOopMap{rbp=Oop [8]=Oop [16]=NarrowOop }
+                                                                     ;*invokestatic successor {reexecute=0 rethrow=0 return_oop=1}
+                                                                     ; - com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry@55 (line 445)
+                                                                     ;   {static_call}
+  0.09%    0x00007fcf6467bc1c: mov    %rax,%rbx
+  0.36%    0x00007fcf6467bc1f: cmpb   $0x0,0x30(%r15)
+  0.02%    0x00007fcf6467bc24: jne    0x00007fcf6467bd30
+           0x00007fcf6467bc2a: mov    %rbp,%r10
+  0.12%    0x00007fcf6467bc2d: mov    %rbx,%r11
+  0.38%    0x00007fcf6467bc30: shr    $0x3,%r11
+           0x00007fcf6467bc34: mov    %r11d,0x14(%rbp)
+  0.07%    0x00007fcf6467bc38: mov    %rbx,%r11
+  0.16%    0x00007fcf6467bc3b: xor    %r10,%r11
+  0.48%    0x00007fcf6467bc3e: shr    $0x14,%r11
+           0x00007fcf6467bc42: test   %r11,%r11
+           0x00007fcf6467bc45: je     0x00007fcf6467bc9f
+  0.02%    0x00007fcf6467bc47: test   %rbx,%rbx
+           0x00007fcf6467bc4a: je     0x00007fcf6467bc9f
+  0.03%    0x00007fcf6467bc4c: shr    $0x9,%r10
+  0.31%    0x00007fcf6467bc50: movabs $0x7fcf75164000,%rdi
+  0.01%    0x00007fcf6467bc5a: add    %r10,%rdi
+  0.02%    0x00007fcf6467bc5d: cmpb   $0x20,(%rdi)
+  0.13%    0x00007fcf6467bc60: je     0x00007fcf6467bc9f
+           0x00007fcf6467bc62: mov    0x70(%r15),%r10
+           0x00007fcf6467bc66: mov    0x80(%r15),%r11
+           0x00007fcf6467bc6d: lock addl $0x0,-0x40(%rsp)
+           0x00007fcf6467bc73: cmpb   $0x0,(%rdi)
+           0x00007fcf6467bc76: je     0x00007fcf6467bc9f
+           0x00007fcf6467bc78: movb   $0x0,(%rdi)
+           0x00007fcf6467bc7b: test   %r10,%r10
+           0x00007fcf6467bc7e: jne    0x00007fcf6467bc92
+           0x00007fcf6467bc80: mov    %r15,%rsi
+           0x00007fcf6467bc83: movabs $0x7fcf7c462820,%r10
+....................................................................................................
+ 10.51%  <total for region 2>
+
+....[Hottest Regions]...............................................................................
+ 13.80%         c2, level 4  com.github.rohansuri.art.Node16::greater, version 626 (329 bytes) 
+ 10.51%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry, version 646 (208 bytes) 
+  6.81%         c2, level 4  com.github.rohansuri.art.ycsb.Long.E::rangeScanAndInsert, version 733 (276 bytes) 
+  5.97%         c2, level 4  com.github.rohansuri.art.InnerNode::getLeaf, version 639 (78 bytes) 
+  5.73%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::successor, version 630 (149 bytes) 
+  4.84%        runtime stub  StubRoutines::vectorizedMismatch (142 bytes) 
+  3.99%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getFirstEntry, version 640 (123 bytes) 
+  3.39%         c1, level 1  com.github.rohansuri.art.LeafNode::getKey, version 608 (34 bytes) 
+  3.31%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::hasNext, version 638 (68 bytes) 
+  3.31%         c1, level 1  com.github.rohansuri.art.LeafNode::firstOrLeaf, version 612 (37 bytes) 
+  3.13%         c2, level 4  org.openjdk.jmh.infra.Blackhole::consume, version 642 (75 bytes) 
+  2.85%         c1, level 1  java.lang.Integer::intValue, version 520 (30 bytes) 
+  2.76%         c1, level 1  com.github.rohansuri.art.AdaptiveRadixTree::getModCount, version 611 (30 bytes) 
+  2.36%         c2, level 4  com.github.rohansuri.art.Node256::greater, version 657 (84 bytes) 
+  2.19%         c1, level 1  com.github.rohansuri.art.BinaryComparableUtils::unsigned, version 577 (46 bytes) 
+  1.93%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry, version 646 (63 bytes) 
+  1.91%         c1, level 1  com.github.rohansuri.art.Node::uplinkKey, version 609 (37 bytes) 
+  1.89%         c1, level 1  com.github.rohansuri.art.Node::parent, version 610 (34 bytes) 
+  1.89%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapEntryIterator::next, version 641 (35 bytes) 
+  1.73%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapEntryIterator::next, version 647 (35 bytes) 
+ 15.69%  <...other 261 warm regions...>
+....................................................................................................
+ 99.99%  <totals>
+
+....[Hottest Methods (after inlining)]..............................................................
+ 13.80%         c2, level 4  com.github.rohansuri.art.Node16::greater, version 626 
+ 13.31%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry, version 646 
+  7.03%         c2, level 4  com.github.rohansuri.art.ycsb.Long.E::rangeScanAndInsert, version 733 
+  5.97%         c2, level 4  com.github.rohansuri.art.InnerNode::getLeaf, version 639 
+  5.73%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::successor, version 630 
+  4.85%        runtime stub  StubRoutines::vectorizedMismatch 
+  3.99%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getFirstEntry, version 640 
+  3.39%         c1, level 1  com.github.rohansuri.art.LeafNode::getKey, version 608 
+  3.31%         c1, level 1  com.github.rohansuri.art.LeafNode::firstOrLeaf, version 612 
+  3.31%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::hasNext, version 638 
+  3.13%         c2, level 4  org.openjdk.jmh.infra.Blackhole::consume, version 642 
+  2.85%         c1, level 1  java.lang.Integer::intValue, version 520 
+  2.76%         c1, level 1  com.github.rohansuri.art.AdaptiveRadixTree::getModCount, version 611 
+  2.36%         c2, level 4  com.github.rohansuri.art.Node256::greater, version 657 
+  2.19%         c1, level 1  com.github.rohansuri.art.BinaryComparableUtils::unsigned, version 577 
+  2.00%   [kernel.kallsyms]  [unknown] 
+  1.91%         c1, level 1  com.github.rohansuri.art.Node::uplinkKey, version 609 
+  1.89%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapEntryIterator::next, version 641 
+  1.89%         c1, level 1  com.github.rohansuri.art.Node::parent, version 610 
+  1.73%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapEntryIterator::next, version 647 
+ 12.58%  <...other 123 warm methods...>
+....................................................................................................
+ 99.99%  <totals>
+
+....[Distribution by Source]........................................................................
+ 72.96%         c2, level 4
+ 19.25%         c1, level 1
+  4.85%        runtime stub
+  2.00%   [kernel.kallsyms]
+  0.53%           libjvm.so
+  0.25%        libc-2.27.so
+  0.07%      hsdis-amd64.so
+  0.04%      perf-25078.map
+  0.03%  libpthread-2.27.so
+  0.02%         interpreter
+....................................................................................................
+ 99.99%  <totals>
+
+
+
+# Run complete. Total time: 00:00:26
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+Benchmark                       (mapType)                  (workloadFile)  Mode  Cnt        Score        Error  Units
+Long.E.rangeScanAndInsert             ART  e_uniform_1000_randint_txn.dat  avgt   10  2999456.335 ± 232809.618  ns/op
+Long.E.rangeScanAndInsert:·asm        ART  e_uniform_1000_randint_txn.dat  avgt               NaN                 ---
+
+Benchmark result is saved to /home/rohansuri/adaptive-radix-tree/art/build/reports/jmh/results.json
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 6.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/5.6.2/userguide/command_line_interface.html#sec:command_line_warnings
+
+BUILD SUCCESSFUL in 45s
+9 actionable tasks: 9 executed

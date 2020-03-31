@@ -1,0 +1,13 @@
+Largely from two places:
+
+InnerNode.getLeaf
+and LeafNode.getKey
+
+And it is understandable why.
+Both are the point of "first" accesses after reaching a node.
+Meaning they are the first loads to be done on a node.
+Hence naturally will incur a LLC miss.
+
+One important point to note here is that in Tries the inner nodes don't have keys.
+All n keys are stored in LeafNodes. All the structure other than that is just supporting
+the access to leaf nodes. Whereas in RB tree every :

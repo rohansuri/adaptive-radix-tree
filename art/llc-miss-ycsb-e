@@ -1,0 +1,9 @@
+ART
+8,17,03,901      MEM_LOAD_UOPS_RETIRED.LLC_MISS
+
+ART leaf front
+7,97,55,367      MEM_LOAD_UOPS_RETIRED.LLC_MISS                                     (35.94%)
+
+TreeMap
+
+5,76,01,969      MEM_LOAD_UOPS_RETIRED.LLC_MISS

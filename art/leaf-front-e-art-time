@@ -1,0 +1,2 @@
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  252209787.100 ± 2282972.092  ns/op
+

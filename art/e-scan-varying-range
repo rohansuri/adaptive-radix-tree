@@ -1,0 +1,27 @@
+Benchmark                  (mapType)                    (workloadFile)  Mode  Cnt          Score         Error  Units
+Long.C.lookup                    ART  c_uniform_100000_randint_txn.dat  avgt   10  25,086,917.003 ±  191970.945  ns/op
+Long.C.lookup               TREE_MAP  c_uniform_100000_randint_txn.dat  avgt   10  37,851,474.304 ± 2240760.164  ns/op
+
+0
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  33,203,979.001 ±  356175.398  ns/op
+Long.E.rangeScanAndInsert   TREE_MAP  e_uniform_100000_randint_txn.dat  avgt   10  44,386,074.791 ±  282866.780  ns/op
+
+3
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  53,357,385.674 ± 1718088.082  ns/op
+Long.E.rangeScanAndInsert   TREE_MAP  e_uniform_100000_randint_txn.dat  avgt   10  59,033,689.260 ± 1192165.754  ns/op
+
+4
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  59,006,552.452 ± 314410.122  ns/op
+Long.E.rangeScanAndInsert   TREE_MAP  e_uniform_100000_randint_txn.dat  avgt   10  57,952,318.374 ± 748605.329  ns/op
+
+5
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  66,286,327.169 ± 324344.508  ns/op
+Long.E.rangeScanAndInsert   TREE_MAP  e_uniform_100000_randint_txn.dat  avgt   10  65,567,023.538 ± 569552.843  ns/op
+
+10
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  93,685,345.891 ± 1258103.899  ns/op
+Long.E.rangeScanAndInsert   TREE_MAP  e_uniform_100000_randint_txn.dat  avgt   10  75,073,718.831 ± 1199940.395  ns/op
+
+actual
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  322,092,918.625 ± 2102800.463  ns/op
+Long.E.rangeScanAndInsert   TREE_MAP  e_uniform_100000_randint_txn.dat  avgt   10  160,018,016.300 ± 1351832.972  ns/op

@@ -1,0 +1,26 @@
+....[Hottest Regions]...............................................................................
+ 16.19%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapEntryIterator::next, version 826 (0 bytes) 
+ 14.98%         c2, level 4  com.github.rohansuri.art.InnerNode::hasLeaf, version 834 (42 bytes) 
+ 14.78%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry, version 823 (14 bytes) 
+  8.10%        runtime stub  StubRoutines::vectorizedMismatch (7 bytes) 
+  5.67%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getFirstEntry, version 814 (12 bytes) 
+  5.47%         c2, level 4  com.github.rohansuri.art.Node4::ceil, version 866 (38 bytes) 
+  4.66%         c2, level 4  com.github.rohansuri.art.InnerNode::firstOrLeaf, version 825 (48 bytes) 
+  3.64%         c1, level 1  com.github.rohansuri.art.Node4::first, version 828 (32 bytes) 
+  3.04%         c1, level 1  com.github.rohansuri.art.LeafNode::firstOrLeaf, version 796 (27 bytes) 
+  2.83%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getFirstEntry, version 814 (33 bytes) 
+  2.23%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::compare, version 845 (18 bytes) 
+  2.02%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::getHigherOrCeilEntry, version 864 (78 bytes) 
+  1.82%         c1, level 1  com.github.rohansuri.art.AdaptiveRadixTree::getModCount, version 795 (5 bytes) 
+  1.82%         c2, level 4  java.nio.HeapByteBuffer::&lt;init&gt;, version 865 (0 bytes) 
+  1.42%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::comparePessimisticCompressedPath, version 858 (67 bytes) 
+  1.42%         c2, level 4  com.github.rohansuri.art.Node4::ceil, version 866 (40 bytes) 
+  1.01%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::compare, version 845 (11 bytes) 
+  0.81%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::compare, version 845 (0 bytes) 
+  0.61%         c2, level 4  com.github.rohansuri.art.NavigableSubMap$SubMapIterator::nextEntry, version 823 (22 bytes) 
+  0.61%         c2, level 4  com.github.rohansuri.art.AdaptiveRadixTree::compare, version 845 (2 bytes) 
+  6.68%  <...other 26 warm regions...>
+....................................................................................................
+ 99.80%  <totals>
+
+

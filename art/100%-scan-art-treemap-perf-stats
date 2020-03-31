@@ -1,0 +1,46 @@
+ART
+Secondary result "com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert:·perf":
+Perf stats:
+--------------------------------------------------
+
+      21,18,74,617      MEM_LOAD_UOPS_RETIRED.L1_MISS                                     (31.14%)
+       7,79,00,228      MEM_LOAD_UOPS_RETIRED.L2_MISS                                     (32.07%)
+       5,62,94,440      MEM_LOAD_UOPS_RETIRED.LLC_MISS                                     (26.12%)
+   15,20,70,48,129      L1-dcache-loads                                               (24.54%)
+      42,13,45,737      L1-dcache-load-misses     #    2.77% of all L1-dcache hits    (20.64%)
+      16,48,01,627      LLC-loads                                                     (20.50%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         38,46,380      L1-icache-load-misses                                         (26.83%)
+   15,21,61,37,695      dTLB-loads                                                    (21.68%)
+       4,65,07,195      dTLB-load-misses          #    0.31% of all dTLB cache hits   (19.52%)
+       2,78,22,776      iTLB-loads                                                    (16.54%)
+          3,04,139      iTLB-load-misses          #    1.09% of all iTLB cache hits   (24.75%)
+   <not supported>      L1-dcache-prefetches                                        
+      16,82,31,328      L1-dcache-prefetch-misses                                     (32.77%)
+
+      22.068947062 seconds time elapsed
+
+TreeMap
+Secondary result "com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert:·perf":
+Perf stats:
+--------------------------------------------------
+
+      27,27,08,113      MEM_LOAD_UOPS_RETIRED.L1_MISS                                     (28.97%)
+       8,17,41,700      MEM_LOAD_UOPS_RETIRED.L2_MISS                                     (24.77%)
+       4,31,81,501      MEM_LOAD_UOPS_RETIRED.LLC_MISS                                     (20.39%)
+   12,34,85,99,016      L1-dcache-loads                                               (20.08%)
+      70,32,35,151      L1-dcache-load-misses     #    5.69% of all L1-dcache hits    (20.53%)
+      26,85,12,182      LLC-loads                                                     (19.67%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         23,55,903      L1-icache-load-misses                                         (27.93%)
+   12,43,88,41,858      dTLB-loads                                                    (24.78%)
+      10,37,81,817      dTLB-load-misses          #    0.83% of all dTLB cache hits   (16.62%)
+         16,94,940      iTLB-loads                                                    (16.53%)
+          3,38,935      iTLB-load-misses          #   20.00% of all iTLB cache hits   (24.75%)
+   <not supported>      L1-dcache-prefetches                                        
+      35,18,45,301      L1-dcache-prefetch-misses                                     (32.69%)
+
+      22.870066791 seconds time elapsed
+

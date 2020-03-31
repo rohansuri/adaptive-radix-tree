@@ -1,0 +1,3 @@
+Benchmark                  (mapType)                    (workloadFile)  Mode  Cnt         Score         Error  Units
+Long.E.rangeScanAndInsert        ART  e_uniform_100000_randint_txn.dat  avgt   10  93685345.891 ± 1258103.899  ns/op
+Long.E.rangeScanAndInsert   TREE_MAP  e_uniform_100000_randint_txn.dat  avgt   10  75073718.831 ± 1199940.395  ns/op

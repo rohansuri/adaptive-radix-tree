@@ -1,0 +1,90 @@
+0
+Perf stats:
+--------------------------------------------------
+
+      10399.483330      task-clock (msec)         #    0.487 CPUs utilized          
+             1,157      context-switches          #    0.111 K/sec                  
+               201      cpu-migrations            #    0.019 K/sec                  
+               120      page-faults               #    0.012 K/sec                  
+   31,25,20,45,342      cycles                    #    3.005 GHz                      (28.40%)
+   22,30,87,61,537      stalled-cycles-frontend   #   71.38% frontend cycles idle     (28.68%)
+   26,79,71,17,225      instructions              #    0.86  insn per cycle         
+                                                  #    0.83  stalled cycles per insn  (35.91%)
+    4,36,84,41,424      branches                  #  420.063 M/sec                    (36.08%)
+       9,57,17,117      branch-misses             #    2.19% of all branches          (36.21%)
+    7,55,36,53,695      L1-dcache-loads           #  726.349 M/sec                    (24.25%)
+      49,25,35,411      L1-dcache-load-misses     #    6.52% of all L1-dcache hits    (16.22%)
+      34,27,56,131      LLC-loads                 #   32.959 M/sec                    (14.31%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         64,45,360      L1-icache-load-misses                                         (21.26%)
+    7,56,51,51,716      dTLB-loads                #  727.455 M/sec                    (21.07%)
+       7,47,50,239      dTLB-load-misses          #    0.99% of all dTLB cache hits   (14.70%)
+       4,76,80,259      iTLB-loads                #    4.585 M/sec                    (14.12%)
+          7,53,894      iTLB-load-misses          #    1.58% of all iTLB cache hits   (21.22%)
+   <not supported>      L1-dcache-prefetches                                        
+      19,74,81,774      L1-dcache-prefetch-misses #   18.990 M/sec                    (28.24%)
+
+      21.345683620 seconds time elapsed
+
+
+5
+Perf stats:
+--------------------------------------------------
+
+      10915.105551      task-clock (msec)         #    0.499 CPUs utilized          
+               921      context-switches          #    0.084 K/sec                  
+               163      cpu-migrations            #    0.015 K/sec                  
+               865      page-faults               #    0.079 K/sec                  
+   32,89,85,97,568      cycles                    #    3.014 GHz                      (28.31%)
+   23,06,74,06,305      stalled-cycles-frontend   #   70.12% frontend cycles idle     (28.62%)
+   29,79,43,06,989      instructions              #    0.91  insn per cycle         
+                                                  #    0.77  stalled cycles per insn  (35.93%)
+    5,23,93,88,066      branches                  #  480.013 M/sec                    (36.10%)
+       9,01,52,859      branch-misses             #    1.72% of all branches          (36.22%)
+    8,53,42,67,637      L1-dcache-loads           #  781.877 M/sec                    (28.43%)
+      38,69,79,956      L1-dcache-load-misses     #    4.53% of all L1-dcache hits    (14.30%)
+      30,84,19,580      LLC-loads                 #   28.256 M/sec                    (14.22%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         63,00,155      L1-icache-load-misses                                         (21.31%)
+    8,55,97,33,278      dTLB-loads                #  784.210 M/sec                    (21.19%)
+       3,82,96,668      dTLB-load-misses          #    0.45% of all dTLB cache hits   (14.18%)
+       1,44,15,634      iTLB-loads                #    1.321 M/sec                    (14.11%)
+          7,03,962      iTLB-load-misses          #    4.88% of all iTLB cache hits   (21.16%)
+   <not supported>      L1-dcache-prefetches                                        
+      13,01,89,436      L1-dcache-prefetch-misses #   11.927 M/sec                    (28.19%)
+
+      21.861368149 seconds time elapsed
+
+
+
+10
+Secondary result "com.github.rohansuri.art.ycsb.Long.E.rangeScanAndInsert:·perf":
+Perf stats:
+--------------------------------------------------
+
+      11532.309464      task-clock (msec)         #    0.504 CPUs utilized          
+               865      context-switches          #    0.075 K/sec                  
+               159      cpu-migrations            #    0.014 K/sec                  
+               829      page-faults               #    0.072 K/sec                  
+   34,76,14,57,931      cycles                    #    3.014 GHz                      (28.50%)
+   23,02,13,05,971      stalled-cycles-frontend   #   66.23% frontend cycles idle     (28.79%)
+   34,79,89,77,963      instructions              #    1.00  insn per cycle         
+                                                  #    0.66  stalled cycles per insn  (36.09%)
+    6,22,53,54,480      branches                  #  539.819 M/sec                    (36.22%)
+      12,88,22,948      branch-misses             #    2.07% of all branches          (36.32%)
+   10,05,77,26,991      L1-dcache-loads           #  872.135 M/sec                    (34.47%)
+      40,92,88,037      L1-dcache-load-misses     #    4.07% of all L1-dcache hits    (32.87%)
+      32,05,37,742      LLC-loads                 #   27.795 M/sec                    (26.58%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         49,68,838      L1-icache-load-misses                                         (27.44%)
+   10,12,15,66,980      dTLB-loads                #  877.670 M/sec                    (21.16%)
+       5,25,62,703      dTLB-load-misses          #    0.52% of all dTLB cache hits   (14.15%)
+       3,11,80,767      iTLB-loads                #    2.704 M/sec                    (14.13%)
+          5,52,641      iTLB-load-misses          #    1.77% of all iTLB cache hits   (21.25%)
+   <not supported>      L1-dcache-prefetches                                        
+      16,76,06,810      L1-dcache-prefetch-misses #   14.534 M/sec                    (28.28%)
+
+      22.891507243 seconds time elapsed

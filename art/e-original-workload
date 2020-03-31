@@ -1,0 +1,30 @@
+ART
+
+Perf stats:
+--------------------------------------------------
+
+      11638.160904      task-clock (msec)         #    0.516 CPUs utilized          
+               651      context-switches          #    0.056 K/sec                  
+               109      cpu-migrations            #    0.009 K/sec                  
+               252      page-faults               #    0.022 K/sec                  
+   35,11,83,31,392      cycles                    #    3.018 GHz                      (28.31%)
+   19,91,38,66,839      stalled-cycles-frontend   #   56.71% frontend cycles idle     (28.51%)
+   50,54,41,29,570      instructions              #    1.44  insn per cycle         
+                                                  #    0.39  stalled cycles per insn  (35.79%)
+    9,20,39,39,001      branches                  #  790.841 M/sec                    (36.00%)
+      13,30,15,356      branch-misses             #    1.45% of all branches          (36.22%)
+   16,21,51,62,242      L1-dcache-loads           # 1393.275 M/sec                    (28.32%)
+      42,93,42,825      L1-dcache-load-misses     #    2.65% of all L1-dcache hits    (14.29%)
+      20,62,84,175      LLC-loads                 #   17.725 M/sec                    (14.28%)
+   <not supported>      LLC-load-misses                                             
+   <not supported>      L1-icache-loads                                             
+         48,21,845      L1-icache-load-misses                                         (21.37%)
+   16,23,04,87,266      dTLB-loads                # 1394.592 M/sec                    (21.24%)
+       3,38,03,143      dTLB-load-misses          #    0.21% of all dTLB cache hits   (14.20%)
+       2,15,20,534      iTLB-loads                #    1.849 M/sec                    (14.12%)
+          4,41,164      iTLB-load-misses          #    2.05% of all iTLB cache hits   (21.12%)
+   <not supported>      L1-dcache-prefetches                                        
+      19,07,04,231      L1-dcache-prefetch-misses #   16.386 M/sec                    (28.12%)
+
+      22.568558178 seconds time elapsed
+
